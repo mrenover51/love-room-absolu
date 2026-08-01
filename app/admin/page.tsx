@@ -1,3 +1,30 @@
-import {requireAdmin} from "@/lib/admin/auth";import {createAdminClient} from "@/lib/supabase/admin";import {StatCard} from "@/components/admin/stat-card";import {AdminPageHeader} from "@/components/admin/admin-page-header";import {MiniBarChart} from "@/components/admin/mini-bar-chart";
-const euro=(c:number)=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(c/100);
-export default async function Dashboard(){await requireAdmin();const db=createAdminClient(),now=new Date(),today=now.toISOString().slice(0,10),month=`${today.slice(0,7)}-01`,year=`${today.slice(0,4)}-01-01`,nextYear=`${Number(today.slice(0,4))+1}-01-01`,monthEnd=new Date(`${month}T12:00:00Z`);monthEnd.setUTCMonth(monthEnd.getUTCMonth()+1);const[{data:yearRows},{data:upcoming},{count:pending},{count:payments}]=await Promise.all([db.from('reservations').select('created_at,total,nights,source,status,payment_status').gte('created_at',year).lt('created_at',nextYear).eq('payment_status','paid'),db.from('reservations').select('reference,guest_first_name,guest_last_name,check_in,check_out,total').gte('check_in',today).eq('status','confirmed').order('check_in').limit(6),db.from('reservations').select('id',{count:'exact',head:true}).eq('status','pending'),db.from('reservations').select('id',{count:'exact',head:true}).eq('status','pending_payment')]);const paid=yearRows??[],todayRevenue=paid.filter(r=>r.created_at.startsWith(today)).reduce((s,r)=>s+r.total,0),monthRevenue=paid.filter(r=>r.created_at>=month&&r.created_at<monthEnd.toISOString()).reduce((s,r)=>s+r.total,0),yearRevenue=paid.reduce((s,r)=>s+r.total,0),average=paid.length?Math.round(yearRevenue/paid.length):0,months=Array.from({length:12},(_,i)=>paid.filter(r=>new Date(r.created_at).getUTCMonth()===i).reduce((s,r)=>s+r.total,0)),occupied=paid.reduce((s,r)=>s+r.nights,0),occupation=Math.min(100,Math.round(occupied/365*100)),sources=['direct','booking','airbnb'].map(source=>paid.filter(r=>r.source===source).length);return <><AdminPageHeader eyebrow="Pilotage" title="Bonjour, voici Absolu." description="Les indicateurs sont calculés exclusivement à partir des réservations et paiements enregistrés."/><section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatCard label="CA aujourd’hui" value={euro(todayRevenue)}/><StatCard label="CA du mois" value={euro(monthRevenue)}/><StatCard label="CA annuel" value={euro(yearRevenue)}/><StatCard label="Occupation" value={`${occupation} %`}/><StatCard label="Panier moyen" value={euro(average)}/><StatCard label="Réservations" value={paid.length}/><StatCard label="Demandes en attente" value={pending??0}/><StatCard label="Paiements en attente" value={payments??0}/><StatCard label="Prochaine arrivée" value={upcoming?.[0]?.check_in??'—'}/><StatCard label="Prochain départ" value={upcoming?.[0]?.check_out??'—'}/></section><section className="mt-8 grid gap-5 xl:grid-cols-3"><div className="xl:col-span-2"><MiniBarChart data={months} label="Évolution du chiffre d’affaires"/></div><MiniBarChart data={sources} label="Origine des réservations"/></section><section className="mt-8 rounded-2xl border border-white/10 bg-[#121212] p-6"><h2 className="font-heading text-2xl">Prochaines arrivées</h2><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="text-white/35"><tr><th className="pb-3">Référence</th><th>Client</th><th>Arrivée</th><th>Départ</th><th className="text-right">Montant</th></tr></thead><tbody>{upcoming?.map(row=><tr key={row.reference} className="border-t border-white/8"><td className="py-4 text-[#C9A86A]">{row.reference}</td><td>{row.guest_first_name} {row.guest_last_name}</td><td>{row.check_in}</td><td>{row.check_out}</td><td className="text-right">{euro(row.total)}</td></tr>)}</tbody></table></div></section></>}
+import dynamic from "next/dynamic";
+import { requireAdmin } from "@/lib/admin/auth";
+import { getDashboardData } from "@/lib/dashboard/queries";
+import { Hero } from "@/components/admin/dashboard/Hero";
+import { StatsCards } from "@/components/admin/dashboard/StatsCards";
+import { OccupancyCalendar } from "@/components/admin/dashboard/OccupancyCalendar";
+import { Timeline } from "@/components/admin/dashboard/Timeline";
+import { SyncStatus } from "@/components/admin/dashboard/SyncStatus";
+import { RecentBookings } from "@/components/admin/dashboard/RecentBookings";
+import { WeatherCard } from "@/components/admin/dashboard/WeatherCard";
+import { Alerts } from "@/components/admin/dashboard/Alerts";
+import { Heatmap } from "@/components/admin/dashboard/Heatmap";
+import { AiAssistant } from "@/components/admin/dashboard/AiAssistant";
+
+const RevenueChart = dynamic(() => import("@/components/admin/dashboard/RevenueChart").then((module) => module.RevenueChart), { loading: () => <div className="h-[390px] animate-pulse rounded-[1.5rem] bg-[#121212]" /> });
+
+export default async function Dashboard() {
+  await requireAdmin();
+  const data = await getDashboardData();
+  return <div className="space-y-5 sm:space-y-7">
+    <Hero nowIso={data.nowIso} reservations={data.reservations} />
+    <StatsCards stats={data.stats} />
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]"><RevenueChart data={data.charts} /><Timeline events={data.timeline} /></div>
+    <OccupancyCalendar days={data.calendar} />
+    <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3"><SyncStatus items={data.sync} /><WeatherCard /><Alerts items={data.alerts} /></div>
+    <RecentBookings rows={data.recent} />
+    <Heatmap days={data.heatmap} />
+    <AiAssistant />
+  </div>;
+}

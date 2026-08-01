@@ -1,0 +1,4 @@
+import type { ReactNode } from "react";
+export function Card({children,className=""}:{children:ReactNode;className?:string}){return <section className={`rounded-[1.5rem] border border-white/[.08] bg-[#121212]/90 shadow-[0_20px_60px_rgba(0,0,0,.24)] backdrop-blur-xl ${className}`}>{children}</section>}
+export function SectionTitle({eyebrow,title,action}:{eyebrow:string;title:string;action?:ReactNode}){return <div className="flex items-end justify-between gap-4"><div><p className="text-[10px] font-semibold uppercase tracking-[.24em] text-[#C8A66A]">{eyebrow}</p><h2 className="mt-1 font-heading text-xl text-[#F6F2EC] sm:text-2xl">{title}</h2></div>{action}</div>}
+export const euro=(cents:number)=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(cents/100);
