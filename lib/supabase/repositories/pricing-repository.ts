@@ -1,0 +1,4 @@
+import "server-only";
+import { createAdminClient } from "../admin";
+import { BOOKING_CONFIG } from "@/lib/booking/constants";
+export class SupabasePricingRepository {async getConfig(){const db=createAdminClient();const[{data:prices,error:pe},{data:options,error:oe}]=await Promise.all([db.from("pricing").select("weekday,price"),db.from("options").select("option_key,name,description,price,active,order").eq("active",true).order("order")]);if(pe||oe)throw new Error("PRICING_READ_FAILED");return{weekdayAmounts:Object.fromEntries((prices??[]).map((row)=>[row.weekday,row.price])) as Record<number,number>,extras:(options??[]).map((row)=>({key:row.option_key,label:row.name,description:row.description,amount:row.price,enabled:row.active})),currency:BOOKING_CONFIG.currency,minimumNights:BOOKING_CONFIG.minimumNights,maximumNights:BOOKING_CONFIG.maximumNights}}}

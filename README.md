@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Absolu — Love Room
 
-## Getting Started
+Site Next.js 16 pour une suite romantique avec réservation directe, paiement Stripe, disponibilités Supabase, synchronisation iCal et administration sécurisée.
 
-First, run the development server:
+## Démarrage local
+
+```bash
+npm install
+copy .env.example .env.local
+npm run dev
+```
+
+Sans clés Stripe/Supabase, le parcours utilise `data/bookings.json` uniquement en développement. En production, une configuration incomplète bloque la création plutôt que d’écrire sur le disque Vercel.
+
+## Commandes
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npx tsc --noEmit
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Mise en production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Appliquer les migrations dans `supabase/migrations`.
+2. Créer l’administrateur Supabase selon `docs/admin-setup.md`.
+3. Renseigner toutes les variables Vercel à partir de `.env.example`.
+4. Configurer Stripe, Resend, le cron et les calendriers selon `docs/deployment-vercel.md`.
+5. Remplacer tous les champs légaux et SEO encore non renseignés.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Documentation détaillée dans [`docs/`](docs/), notamment la checklist finale et le rapport d’audit.
 
-## Learn More
+## Production et exploitation
 
-To learn more about Next.js, take a look at the following resources:
+- Installation : [`INSTALL.md`](INSTALL.md)
+- Déploiement : [`DEPLOYMENT.md`](DEPLOYMENT.md)
+- Checklist : [`docs/checklist.md`](docs/checklist.md)
+- Exploitation et sauvegardes : [`docs/production.md`](docs/production.md)
+- Rapport vérifié : [`docs/final-audit.md`](docs/final-audit.md)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+La PWA ne met jamais en cache l’administration, les API ou la réservation. IA, push/SMS, analytics et langues supplémentaires restent désactivés tant qu’un fournisseur réel et le consentement requis ne sont pas configurés.

@@ -1,0 +1,2 @@
+"use client";import { useEffect } from "react";
+export default function ErrorPage({error,reset}:{error:Error&{digest?:string};reset:()=>void}){useEffect(()=>{console.error("page_render_failed",{digest:error.digest})},[error]);return <main className="grid min-h-screen place-items-center bg-[#080808] p-6 text-center"><div><p className="eyebrow text-[#C9A86A]">Un imprévu est survenu</p><h1 className="mt-5 font-heading text-5xl">La page n’a pas pu être affichée.</h1><button onClick={reset} className="mt-8 bg-[#C9A86A] px-6 py-3 text-black">Réessayer</button></div></main>}

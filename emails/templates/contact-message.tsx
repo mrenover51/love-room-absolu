@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";
+export function ContactMessageEmail({name,email,phone,message}:{name:string;email:string;phone?:string;message:string}){return <EmailShell preview="Nouveau message depuis le site" title="Nouveau message"><Text style={emailText}><strong>Nom :</strong> {name}</Text><Text style={emailText}><strong>Email :</strong> {email}</Text>{phone&&<Text style={emailText}><strong>Téléphone :</strong> {phone}</Text>}<Text style={{...emailText,whiteSpace:"pre-wrap"}}>{message}</Text></EmailShell>}

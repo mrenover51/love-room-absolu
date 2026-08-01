@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import type {BookingEmailData} from "@/lib/email";
+export function PaymentFailedEmail({firstName,reference}:BookingEmailData){return <EmailShell preview="Paiement non abouti" title="Votre paiement n’a pas abouti"><Text style={emailText}>Bonjour {firstName},</Text><Text style={emailText}>La réservation {reference} n’a pas été confirmée. Vous pouvez reprendre votre demande depuis le site.</Text></EmailShell>}

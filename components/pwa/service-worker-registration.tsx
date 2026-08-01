@@ -1,0 +1,1 @@
+"use client";import {useEffect} from 'react';export function ServiceWorkerRegistration(){useEffect(()=>{if('serviceWorker' in navigator&&process.env.NODE_ENV==='production')navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>console.error('service_worker_registration_failed'))},[]);return null}

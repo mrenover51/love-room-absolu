@@ -1,0 +1,1 @@
+export type AnalyticsConsent={analytics:boolean;marketing:boolean;preferences:boolean};export const analyticsConfig={googleAnalyticsId:process.env.NEXT_PUBLIC_GA_ID,plausibleDomain:process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN,metaPixelId:process.env.NEXT_PUBLIC_META_PIXEL_ID,searchConsoleVerification:process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} as const;

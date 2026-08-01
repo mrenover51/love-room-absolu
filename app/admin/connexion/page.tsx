@@ -1,0 +1,5 @@
+import { login } from "./actions";
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
+  return <main className="grid min-h-screen place-items-center bg-[#080808] px-4"><form action={login} className="w-full max-w-sm border border-white/10 bg-[#121212] p-8"><p className="font-heading text-3xl tracking-widest">ABSOLU</p><h1 className="mt-8 text-xl">Administration</h1>{error && <p className="mt-4 text-sm text-red-300">Connexion impossible. Vérifiez vos accès.</p>}<label className="mt-6 block text-sm">Email<input name="email" type="email" required autoComplete="email" className="mt-2 w-full border border-white/20 bg-black p-3" /></label><label className="mt-4 block text-sm">Mot de passe<input name="password" type="password" required minLength={8} autoComplete="current-password" className="mt-2 w-full border border-white/20 bg-black p-3" /></label><button className="mt-6 w-full bg-[#C9A86A] p-3 font-semibold text-black">Se connecter</button></form></main>;
+}

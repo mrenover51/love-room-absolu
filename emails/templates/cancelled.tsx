@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import type {BookingEmailData} from "@/lib/email";
+export function CancelledEmail({firstName,reference}:BookingEmailData){return <EmailShell preview="Réservation annulée" title="Votre réservation a été annulée"><Text style={emailText}>Bonjour {firstName},</Text><Text style={emailText}>L’annulation de la réservation {reference} a bien été prise en compte.</Text></EmailShell>}

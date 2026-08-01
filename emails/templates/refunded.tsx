@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import type {BookingEmailData} from "@/lib/email";
+export function RefundedEmail({firstName,reference}:BookingEmailData){return <EmailShell preview="Remboursement traité" title="Votre remboursement a été traité"><Text style={emailText}>Bonjour {firstName},</Text><Text style={emailText}>Le remboursement associé à la réservation {reference} a été traité.</Text></EmailShell>}

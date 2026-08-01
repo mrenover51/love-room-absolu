@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="min-h-screen bg-[#080808] pb-24 pt-36"><div className="page-shell animate-pulse"><div className="h-4 w-32 bg-white/10"/><div className="mt-6 h-16 max-w-xl bg-white/10"/><div className="mt-14 h-[34rem] border border-white/10 bg-white/[.03]"/><span className="sr-only">Chargement de la réservation</span></div></main>}

@@ -1,0 +1,3 @@
+import type { Metadata } from "next";import Link from "next/link";
+export const metadata:Metadata={title:"Paiement annulé | Absolu",robots:{index:false,follow:false}};
+export default function Cancelled(){return <main className="grid min-h-screen place-items-center bg-[#080808] p-6 text-center"><div><p className="eyebrow text-[#C9A86A]">Paiement interrompu</p><h1 className="mt-5 font-heading text-5xl">Aucun paiement n’a été prélevé.</h1><p className="mt-5 text-white/60">La réservation n’est pas confirmée. Vous pouvez reprendre votre sélection.</p><Link href="/reservation" className="mt-8 inline-block bg-[#C9A86A] px-6 py-3 text-black">Retour à la réservation</Link></div></main>}

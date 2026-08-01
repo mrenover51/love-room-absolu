@@ -1,0 +1,1 @@
+export const locales=['fr','en','de','nl'] as const;export type Locale=typeof locales[number];export const defaultLocale:Locale='fr';export const localeNames:Record<Locale,string>={fr:'Français',en:'English',de:'Deutsch',nl:'Nederlands'};export type MessageDictionary=Record<string,string>;export interface TranslationProvider{getMessages(locale:Locale):Promise<MessageDictionary>}

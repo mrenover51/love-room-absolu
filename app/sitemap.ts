@@ -1,0 +1,2 @@
+import type { MetadataRoute } from "next";import { siteConfig } from "@/lib/site-config";
+export default function sitemap():MetadataRoute.Sitemap{return ["","/la-suite","/galerie","/equipements","/contact","/faq","/reservation","/mentions-legales","/politique-confidentialite","/conditions"].map((path,index)=>{const legal=["/mentions-legales","/politique-confidentialite","/conditions"].includes(path);return {url:`${siteConfig.url}${path}`,lastModified:new Date(),changeFrequency:index===0?"weekly":"monthly",priority:index===0?1:legal?.5:.8}})}

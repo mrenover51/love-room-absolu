@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <main className="grid min-h-screen place-items-center bg-[#080808] p-6 text-center"><div><p className="eyebrow text-[#C9A86A]">Erreur 404</p><h1 className="mt-5 font-heading text-6xl">Cette page n’existe pas.</h1><p className="mt-5 text-white/60">Revenez à la suite pour poursuivre votre visite.</p><Link href="/" className="mt-8 inline-block border border-white/25 px-6 py-3">Retour à l’accueil</Link></div></main>}

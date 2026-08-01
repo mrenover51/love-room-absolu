@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import type {BookingEmailData} from "@/lib/email";
+export function ReservationConfirmationEmail({firstName,reference,checkIn,checkOut}:BookingEmailData){return <EmailShell preview={`Réservation ${reference} confirmée`} title="Votre parenthèse est confirmée"><Text style={emailText}>Bonjour {firstName},</Text><Text style={emailText}>Votre réservation du {checkIn} au {checkOut} est confirmée.</Text><Text style={emailText}>Référence : <strong>{reference}</strong></Text></EmailShell>}

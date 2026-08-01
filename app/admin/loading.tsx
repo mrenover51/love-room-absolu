@@ -1,0 +1,1 @@
+import {Skeleton} from '@/components/shared/skeleton';export default function AdminLoading(){return <div aria-label="Chargement du tableau de bord"><Skeleton className="h-12 w-72"/><div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({length:8},(_,i)=><Skeleton key={i} className="h-28"/>)}</div></div>}
