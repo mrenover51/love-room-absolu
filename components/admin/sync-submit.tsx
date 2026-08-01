@@ -1,0 +1,2 @@
+"use client";import {RefreshCw} from "lucide-react";import {useFormStatus} from "react-dom";
+export function SyncSubmit(){const{pending}=useFormStatus();return <button disabled={pending} className="flex min-h-11 items-center gap-2 rounded-full bg-[#C8A66A] px-5 text-sm font-semibold text-black disabled:opacity-60"><RefreshCw className={`size-4 ${pending?"animate-spin":""}`}/>{pending?"Synchronisation…":"Tout synchroniser"}</button>}
