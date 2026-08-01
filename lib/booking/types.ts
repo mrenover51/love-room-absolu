@@ -4,6 +4,8 @@ export type NightPrice = { date: string; weekday: number; amount: number };
 export type ExtraSelection = { key: string; quantity: number };
 export type SelectedExtra = { key: string; label: string; amount: number; quantity?: number };
 export type PublicPricingConfig = {
+  weekdayAmounts?: Record<number, number>;
+  seasonalPrices?: Array<{ startDate: string; endDate: string; amount: number }>;
   baseNightAmount?: number;
   fridaySupplement?: number;
   saturdaySupplement?: number;

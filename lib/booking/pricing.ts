@@ -30,9 +30,23 @@ export function calculateStayPrice(checkIn: string, checkOut: string, extraKeys:
   return { nights, nightPrices, baseAmount, weekendSupplements: 0, extrasAmount, feesAmount: 0, totalAmount: baseAmount + extrasAmount, currency: BOOKING_CONFIG.currency, extras };
 }
 
-export function calculatePriceFromConfig(checkIn: string, checkOut: string, extraKeys: string[], _config?: PublicPricingConfig) {
-  void _config;
-  return calculateStayPrice(checkIn, checkOut, extraKeys);
+export function calculatePriceFromConfig(checkIn: string, checkOut: string, extraKeys: string[], config: PublicPricingConfig = defaultPricingConfig): PriceBreakdown {
+  const nights = nightsBetween(checkIn, checkOut);
+  if (nights < config.minimumNights || nights > config.maximumNights) throw new Error("INVALID_STAY_LENGTH");
+  const nightPrices = Array.from({ length: nights }, (_, index) => {
+    const date = addDays(checkIn, index), weekday = parseIsoDate(date).getUTCDay();
+    const seasonal = config.seasonalPrices?.filter((item) => item.startDate <= date && item.endDate > date).at(-1);
+    const amount = seasonal?.amount ?? config.weekdayAmounts?.[weekday] ?? BOOKING_CONFIG.weekdayAmounts[weekday];
+    if (!Number.isInteger(amount)) throw new Error("PRICING_INCOMPLETE");
+    return { date, weekday, amount };
+  });
+  const extras = [...new Set(extraKeys)].map((key) => {
+    const extra = config.extras.find((item) => item.key === key && item.enabled !== false);
+    if (!extra) throw new Error("INVALID_EXTRA");
+    return { key: extra.key, label: extra.label, amount: extra.amount, quantity: 1 };
+  });
+  const baseAmount = nightPrices.reduce((sum, night) => sum + night.amount, 0), extrasAmount = extras.reduce((sum, extra) => sum + extra.amount, 0);
+  return { nights, nightPrices, baseAmount, weekendSupplements: 0, extrasAmount, feesAmount: 0, totalAmount: baseAmount + extrasAmount, currency: config.currency, extras };
 }
 export const calculatePrice = calculateStayPrice;
 export function formatAmount(amount: number) {
