@@ -80,7 +80,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   if(siteConfig.startingPrice!==undefined) structuredData.priceRange=`À partir de ${siteConfig.startingPrice} EUR`;
   const graph={"@context":"https://schema.org","@graph":[structuredData,{"@type":"Organization","@id":`${provisionalUrl}/#organization`,name:siteConfig.commercialName,url:provisionalUrl},{"@type":"WebSite","@id":`${provisionalUrl}/#website`,name:siteConfig.commercialName,url:provisionalUrl,inLanguage:"fr-FR",publisher:{"@id":`${provisionalUrl}/#organization`},potentialAction:{"@type":"SearchAction",target:{"@type":"EntryPoint",urlTemplate:`${provisionalUrl}/recherche?q={search_term_string}`},"query-input":"required name=search_term_string"}}]};
   return (
-    <html lang="fr" suppressHydrationWarning className={`${serif.variable} ${sans.variable} dark antialiased`}>
+    <html
+  lang="fr"
+  data-scroll-behavior="smooth"
+  suppressHydrationWarning
+  className={`${serif.variable} ${sans.variable} dark antialiased`}
+>
       <body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replaceAll("<", "\\u003c") }} />{children}<ConsentManager/><ThemeControl/><ServiceWorkerRegistration/></body>
     </html>
   );

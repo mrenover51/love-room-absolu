@@ -1,2 +1,17 @@
-import {requireAdmin} from '@/lib/admin/auth';import {createAdminClient} from '@/lib/supabase/admin';import {AdminPageHeader} from '@/components/admin/admin-page-header';import {MiniBarChart} from '@/components/admin/mini-bar-chart';
-export default async function Statistics(){await requireAdmin();const year=new Date().getUTCFullYear(),{data}=await createAdminClient().from('reservations').select('created_at,total,nights,source').gte('created_at',`${year}-01-01`).eq('payment_status','paid');const rows=data??[],revenue=Array.from({length:12},(_,i)=>rows.filter(r=>new Date(r.created_at).getUTCMonth()===i).reduce((s,r)=>s+r.total,0)),bookings=Array.from({length:12},(_,i)=>rows.filter(r=>new Date(r.created_at).getUTCMonth()===i).length),duration=rows.length?(rows.reduce((s,r)=>s+r.nights,0)/rows.length).toFixed(1):'0',average=rows.length?Math.round(rows.reduce((s,r)=>s+r.total,0)/rows.length):0;return <><AdminPageHeader eyebrow="Performance" title="Statistiques" actions={<div className="flex gap-2"><button onClick={undefined} className="rounded-full border border-white/15 px-4 py-2 text-sm" disabled title="Utilisez l’impression navigateur">PDF via impression</button><a href="/api/admin/export?type=statistics" className="rounded-full border border-white/15 px-4 py-2 text-sm">Excel / CSV</a></div>}/><div className="mb-6 grid gap-4 sm:grid-cols-3"><Stat label="Durée moyenne" value={`${duration} nuits`}/><Stat label="Panier moyen" value={(average/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}/><Stat label="Réservations" value={rows.length.toString()}/></div><div className="grid gap-5 xl:grid-cols-2"><MiniBarChart data={revenue} label="Chiffre d’affaires"/><MiniBarChart data={bookings} label="Réservations"/></div></>};function Stat({label,value}:{label:string;value:string}){return <div className="rounded-2xl border border-white/10 bg-[#121212] p-5"><p className="text-xs text-white/40">{label}</p><p className="mt-2 text-2xl text-[#C9A86A]">{value}</p></div>}
+import { Download } from "lucide-react";
+import { requireAdmin } from "@/lib/admin/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { StatisticsDashboard } from "@/components/admin/statistics-dashboard";
+
+type Reservation = { created_at: string; check_in: string; nights: number; total: number; source: string; payment_status: string; status: string };
+export default async function Statistics() {
+  await requireAdmin();
+  const year = new Date().getUTCFullYear();
+  const { data } = await createAdminClient().from("reservations").select("created_at,check_in,nights,total,source,payment_status,status").gte("check_in", `${year - 1}-01-01`).lte("check_in", `${year}-12-31`);
+  const rows = (data ?? []) as Reservation[];
+  return <>
+    <AdminPageHeader eyebrow="Business intelligence" title="Statistiques" description="Pilotez revenus, occupation, canaux et saisonnalité depuis une vue consolidée." actions={<div className="flex gap-2"><button type="button" onClick={undefined} className="rounded-full border border-white/15 px-4 py-2 text-sm" title="Utilisez la fonction d’impression du navigateur">PDF</button><a href="/api/admin/export?type=statistics" className="flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm"><Download className="size-4" />Excel / CSV</a></div>} />
+    <StatisticsDashboard rows={rows} year={year} />
+  </>;
+}

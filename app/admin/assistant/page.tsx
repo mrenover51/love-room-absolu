@@ -1,1 +1,17 @@
-import {requireAdmin} from '@/lib/admin/auth';import {AdminPageHeader} from '@/components/admin/admin-page-header';const prompts=['Combien ai-je gagné ce mois ?','Quel est mon taux d’occupation ?','Quel est mon meilleur mois ?','Génère une promotion.','Génère un texte Instagram.','Génère un email.','Génère une réponse client.'];export default async function Assistant(){await requireAdmin();return <><AdminPageHeader eyebrow="Architecture IA" title="Absolu Assistant" description="Aucun fournisseur IA n’est configuré. Les données ne quittent pas Absolu tant qu’un provider explicite n’est pas activé."/><section className="rounded-2xl border border-[#8E48FF]/25 bg-[#8E48FF]/5 p-6"><label htmlFor="assistant" className="font-heading text-2xl">Votre demande</label><textarea id="assistant" disabled rows={5} placeholder="Connectez un provider IA pour activer l’assistant." className="mt-4 w-full rounded-xl border border-white/10 bg-black p-4 disabled:opacity-50"/><button disabled className="mt-3 rounded-full bg-[#C9A86A] px-5 py-3 text-black opacity-40">Demander</button></section><div className="mt-6 flex flex-wrap gap-2">{prompts.map(prompt=><span key={prompt} className="rounded-full border border-white/10 px-4 py-2 text-xs text-white/45">{prompt}</span>)}</div></>}
+import { requireAdmin } from "@/lib/admin/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AssistantConversation } from "@/components/admin/assistant-conversation";
+
+export default async function Assistant() {
+  await requireAdmin();
+  const year = new Date().getUTCFullYear();
+  const { data } = await createAdminClient().from("reservations").select("total,nights,check_in,check_out,source,status,payment_status").gte("check_in", `${year}-01-01`).lte("check_in", `${year}-12-31`);
+  const rows = data ?? [];
+  const paid = rows.filter((row) => row.payment_status === "paid");
+  const context = { revenue: paid.reduce((sum, row) => sum + row.total, 0), bookings: rows.length, nights: rows.reduce((sum, row) => sum + row.nights, 0), bestCustomer: "Disponible dans le CRM", occupancy: Math.round(rows.filter((row) => row.status !== "cancelled").reduce((sum, row) => sum + row.nights, 0) / 365 * 100) };
+  return <>
+    <AdminPageHeader eyebrow="Intelligence hôtelière" title="Absolu Assistant" description="Une interface conversationnelle prête pour OpenAI, avec réponses locales sûres sur vos indicateurs essentiels." />
+    <AssistantConversation context={context} />
+  </>;
+}
