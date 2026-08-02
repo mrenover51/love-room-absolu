@@ -67,6 +67,7 @@ if (!isDev) {
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+  trailingSlash: false,
 
   images: {
     formats: ["image/avif", "image/webp"],
@@ -79,6 +80,12 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: securityHeaders,
       },
+    ];
+  },
+  async redirects() {
+    return [
+      { source: "/confidentialite", destination: "/politique-confidentialite", permanent: true },
+      { source: "/conditions-reservation", destination: "/conditions", permanent: true },
     ];
   },
 };

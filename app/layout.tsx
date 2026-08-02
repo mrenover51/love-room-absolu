@@ -7,6 +7,7 @@ import { ConsentManager } from "@/components/privacy/consent-manager";
 import { ThemeControl } from "@/components/theme/theme-control";
 import { analyticsConfig } from "@/lib/analytics/providers";
 import { getStaySettings } from "@/lib/stay-settings";
+import { StructuredData } from "@/components/seo/structured-data";
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -42,8 +43,8 @@ export const metadata: Metadata = {
     "parenthèse romantique",
     "rituel de détente",
   ],
-  alternates: { canonical: provisionalUrl },
-  robots: { index: true, follow: true },
+  alternates: { canonical: provisionalUrl, languages: { "fr-FR": provisionalUrl, "x-default": provisionalUrl } },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -96,7 +97,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   suppressHydrationWarning
   className={`${serif.variable} ${sans.variable} dark antialiased`}
 >
-      <body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replaceAll("<", "\\u003c") }} />{children}<ConsentManager/><ThemeControl/><ServiceWorkerRegistration/></body>
+      <body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replaceAll("<", "\\u003c") }} /><StructuredData />{children}<ConsentManager/><ThemeControl/><ServiceWorkerRegistration/></body>
     </html>
   );
 }

@@ -1,5 +1,6 @@
 ﻿import type {Metadata} from "next";
 import {Suspense} from "react";
+import {pageMetadata} from "@/lib/seo";
 import {Header} from "@/components/layout/header";
 import {Footer} from "@/components/layout/footer";
 import {Breadcrumb} from "@/components/shared/breadcrumb";
@@ -7,7 +8,7 @@ import {BookingFlow} from "@/components/reservation/booking-flow";
 import {getPublicPricingConfig} from "@/lib/booking/server-pricing";
 import {StayTimesNotice} from "@/components/shared/stay-times-notice";import {getStaySettings} from "@/lib/stay-settings";
 
-export const metadata:Metadata={title:"RÃ©servation directe | Absolu",description:"RÃ©servez votre sÃ©jour romantique dans la Suite Absolu, une parenthÃ¨se de bien-Ãªtre en couple avec paiement sÃ©curisÃ©.",alternates:{canonical:"/reservation"}};
+export const metadata:Metadata=pageMetadata({title:"Réserver la Suite Absolu au meilleur tarif",description:"Réservez en direct votre séjour romantique dans la Suite Absolu à Avize : disponibilités en temps réel et paiement sécurisé.",path:"/reservation"});
 
 async function ReservationEngine(){const pricingConfig=await getPublicPricingConfig();return <BookingFlow pricingConfig={pricingConfig}/>}
 
