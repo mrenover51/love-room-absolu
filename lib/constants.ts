@@ -27,6 +27,7 @@ export const navigation = [
   { label: "Équipements", href: "/equipements" },
   { label: "Réservation", href: "/reservation" },
   { label: "Contact", href: "/contact" },
+  { label: "Autour de nous", href: "/love-room" },
 ] as const;
 
 export const experiences = [
