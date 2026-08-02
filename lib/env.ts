@@ -61,7 +61,7 @@ const schema = z.object({
   // ==========================
   // SITE
   // ==========================
-  SITE_URL: z.string().url().default("http://localhost:3000"),
+  SITE_URL: z.string().url().default("https://love-room-absolu.fr"),
 
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   NEXT_PUBLIC_SITE_NAME: optionalString,

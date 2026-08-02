@@ -55,7 +55,7 @@ export function ConsentManager() {
 
   return <section role="dialog" aria-modal="true" aria-labelledby="consent-title" className="fixed inset-x-3 bottom-3 z-[80] mx-auto max-w-3xl rounded-2xl border border-[#C9A86A]/30 bg-[#121212] p-5 text-[#F6F2EC] shadow-2xl">
     <h2 id="consent-title" className="font-heading text-2xl">Votre intimité compte.</h2>
-    <p className="mt-2 text-sm leading-6 text-white/55">Les cookies nécessaires fonctionnent toujours. Analytics, marketing et préférences restent désactivés sans votre accord.</p>
+    <p className="mt-2 text-sm leading-6 text-white/55">Les cookies nécessaires fonctionnent toujours. Analytics, marketing et préférences restent désactivés sans votre accord. <a href="/cookies" className="text-[#C9A86A] underline underline-offset-4">En savoir plus</a>.</p>
     <div className="mt-4 flex flex-wrap gap-4 text-sm">{(["analytics", "marketing", "preferences"] as const).map((key) => <label key={key} className="flex gap-2"><input type="checkbox" checked={settings[key]} onChange={(event) => setSettings({ ...settings, [key]: event.target.checked })}/>{key === "analytics" ? "Mesure d’audience" : key === "marketing" ? "Marketing" : "Préférences"}</label>)}</div>
     <div className="mt-5 flex flex-wrap gap-3">
       <button type="button" onClick={() => apply(empty)} className="min-h-11 border border-white/20 px-4">Tout refuser</button>

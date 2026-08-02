@@ -9,6 +9,8 @@ import { Hero } from "@/components/home/hero";
 import { Introduction } from "@/components/home/introduction";
 import { Testimonials } from "@/components/home/testimonials";
 import { WhyAbsolu } from "@/components/home/why-absolu";
+import { ReconnectSection } from "@/components/home/reconnect-section";
+import { TantraExperience } from "@/components/amenities/tantra-experience";
 
 export default function Home() {
   return (
@@ -17,7 +19,9 @@ export default function Home() {
       <main>
         <Hero />
         <Introduction />
+        <ReconnectSection />
         <ExperienceGrid />
+        <TantraExperience />
         <AtmosphereTransition />
         <Amenities />
         <WhyAbsolu />

@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import {getStayCopy,type StaySettings} from "@/lib/stay-config";
+export function CheckOutReminderEmail({staySettings}:{staySettings:StaySettings}){const copy=getStayCopy(staySettings);return <EmailShell preview="Votre départ de la suite" title="Avant votre départ"><Text style={emailText}>{copy.departureText}</Text><Text style={emailText}>{copy.flexibilityText}</Text></EmailShell>}

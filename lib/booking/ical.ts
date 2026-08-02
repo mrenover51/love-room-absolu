@@ -3,7 +3,7 @@ import ICAL from "ical.js";
 import type { DateRange } from "./types";
 
 export type CalendarSource = "booking" | "airbnb";
-export type ExternalCalendarEvent = DateRange & { uid: string; source: CalendarSource };
+export type ExternalCalendarEvent = DateRange & { uid: string; source: CalendarSource; summary:string; description:string; cancelled:boolean };
 export type CalendarSyncStatus = "ok" | "not_configured" | "error";
 type CachedCalendar = { expiresAt: number; events: ExternalCalendarEvent[] };
 const cache = new Map<CalendarSource, CachedCalendar>();
@@ -22,7 +22,8 @@ export function parseIcal(content: string, source: CalendarSource = "booking"): 
       const start = calendarDate(event.startDate);
       const end = calendarDate(event.endDate);
       if (end <= start) return [];
-      return [{ start, end, uid: event.uid || `${source}-${start}-${end}`, source }];
+      const status=component.getFirstPropertyValue("status");
+      return [{ start, end, uid: event.uid || `${source}-${start}-${end}`, source, summary:event.summary||"Indisponible", description:event.description||"", cancelled:typeof status==="string"&&status.toUpperCase()==="CANCELLED" }];
     } catch { return []; }
   });
   return [...new Map(events.map((event) => [`${event.source}:${event.uid}:${event.start}:${event.end}`, event])).values()];
@@ -53,7 +54,7 @@ export async function getExternalCalendarData() {
 export async function getExternalOccupiedRanges() { return (await getExternalCalendarData()).events.map(({ start, end }) => ({ start, end })); }
 
 function escapeIcal(value: string) { return value.replaceAll("\\", "\\\\").replaceAll(",", "\\,").replaceAll(";", "\\;").replaceAll("\n", "\\n"); }
-export function generateIcal(ranges: Array<DateRange & { id: string }>) {
+export function generateIcal(ranges: Array<DateRange & { id: string; summary?:string; description?:string; status?:string }>) {
   const stamp = new Date().toISOString().replaceAll(/[-:]/g, "").replace(/\.\d{3}/, "");
-  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Absolu//Disponibilites//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", ...ranges.flatMap((range) => ["BEGIN:VEVENT", `UID:${escapeIcal(range.id)}@absolu`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${range.start.replaceAll("-", "")}`, `DTEND;VALUE=DATE:${range.end.replaceAll("-", "")}`, "SUMMARY:Indisponible", "DESCRIPTION:Réservation directe Absolu", "TRANSP:OPAQUE", "END:VEVENT"]), "END:VCALENDAR", ""].join("\r\n");
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Love Room Absolu//Channel Manager//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", ...ranges.flatMap((range) => ["BEGIN:VEVENT", `UID:${escapeIcal(range.id)}@love-room-absolu`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${range.start.replaceAll("-", "")}`, `DTEND;VALUE=DATE:${range.end.replaceAll("-", "")}`, `SUMMARY:${escapeIcal(range.summary??"Indisponible")}`, `DESCRIPTION:${escapeIcal(range.description??"Période indisponible — Love Room Absolu")}`, `STATUS:${escapeIcal(range.status??"CONFIRMED")}`, "TRANSP:OPAQUE", "END:VEVENT"]), "END:VCALENDAR", ""].join("\r\n");
 }

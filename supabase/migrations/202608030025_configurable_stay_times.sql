@@ -1,0 +1,1 @@
+insert into public.settings (key,value,updated_at) values ('times','{"checkIn":"16:00","checkOut":"10:00","earlyCheckInEnabled":false,"lateCheckOutEnabled":false,"earlyCheckInFee":0,"lateCheckOutFee":0}'::jsonb,now()) on conflict(key) do update set value=excluded.value,updated_at=excluded.updated_at;

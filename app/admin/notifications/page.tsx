@@ -11,7 +11,7 @@ const automations = [
   { label: "Check-in demain", timing: "J−1 · 10:00", icon: Bell, active: false },
   { label: "Code d’accès", timing: "Jour J · 14:00", icon: KeyRound, active: false },
   { label: "Check-out demain", timing: "J−1 · 18:00", icon: RefreshCcw, active: false },
-  { label: "Demande d’avis", timing: "J+1 · 11:00", icon: MessageSquareHeart, active: false },
+  { label: "Demande d’avis", timing: "J+1 · 10:30", icon: MessageSquareHeart, active: false },
   { label: "Relance", timing: "Panier + 2 h", icon: Send, active: false },
   { label: "Anniversaire", timing: "Jour J · 09:00", icon: CakeSlice, active: false },
   { label: "Promotion", timing: "À la demande", icon: Sparkles, active: false },

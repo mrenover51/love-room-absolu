@@ -1,25 +1,28 @@
+import { STAY_TIMES } from "@/lib/stay-config";
+
 const value = (name: string) => process.env[name]?.trim() || undefined;
 const numberValue = (name: string) => { const raw = value(name); return raw && Number.isFinite(Number(raw)) ? Number(raw) : undefined; };
+export const PUBLIC_SITE_URL = "https://love-room-absolu.fr" as const;
 
 export const siteConfig = {
   commercialName: value("NEXT_PUBLIC_SITE_NAME") ?? "Absolu",
-  city: value("NEXT_PUBLIC_SITE_CITY"), department: value("NEXT_PUBLIC_SITE_DEPARTMENT"), region: value("NEXT_PUBLIC_SITE_REGION"),
-  address: value("NEXT_PUBLIC_SITE_ADDRESS"), phone: value("NEXT_PUBLIC_SITE_PHONE"), email: value("NEXT_PUBLIC_SITE_EMAIL"),
-  url: value("NEXT_PUBLIC_SITE_URL") ?? "http://localhost:3000", instagram: value("NEXT_PUBLIC_INSTAGRAM_URL"),
+  city: "Avize", department: "Marne", region: "Grand Est",
+  address: "36 rue Pasteur, 51190 Avize, France", phone: "0687010464", email: "love.room.absolu@gmail.com",
+  url: PUBLIC_SITE_URL, instagram: value("NEXT_PUBLIC_INSTAGRAM_URL"),
   latitude: numberValue("NEXT_PUBLIC_SITE_LATITUDE"), longitude: numberValue("NEXT_PUBLIC_SITE_LONGITUDE"),
-  checkInTime: value("NEXT_PUBLIC_CHECK_IN_TIME"), checkOutTime: value("NEXT_PUBLIC_CHECK_OUT_TIME"),
+  checkInTime: STAY_TIMES.checkIn, checkOutTime: STAY_TIMES.checkOut,
   capacity: numberValue("NEXT_PUBLIC_SITE_CAPACITY"), startingPrice: numberValue("NEXT_PUBLIC_STARTING_PRICE"),
 } as const;
 
 export const hasLocalSeo = Boolean(siteConfig.city && siteConfig.department);
 
-const placeholder = (label:string) => `[${label} — À COMPLÉTER]`;
 export const legalConfig = {
-  companyName: value("NEXT_PUBLIC_LEGAL_COMPANY_NAME") ?? placeholder("RAISON SOCIALE"),
-  operatorName: value("NEXT_PUBLIC_LEGAL_OPERATOR_NAME") ?? placeholder("NOM DE L’EXPLOITANT"),
-  address: siteConfig.address ?? placeholder("ADRESSE"), siret: value("NEXT_PUBLIC_LEGAL_SIRET") ?? placeholder("SIRET"),
-  host: value("NEXT_PUBLIC_LEGAL_HOST") ?? placeholder("HÉBERGEUR ET ADRESSE"), email:siteConfig.email??placeholder("EMAIL"), phone:siteConfig.phone??placeholder("TÉLÉPHONE"),
-  cancellation:value("NEXT_PUBLIC_CANCELLATION_POLICY")??placeholder("POLITIQUE D’ANNULATION"), deposit:value("NEXT_PUBLIC_SECURITY_DEPOSIT")??placeholder("DÉPÔT DE GARANTIE"),
-  times:siteConfig.checkInTime&&siteConfig.checkOutTime?`Arrivée : ${siteConfig.checkInTime}. Départ : ${siteConfig.checkOutTime}.`:placeholder("HORAIRES D’ARRIVÉE ET DE DÉPART"),
-  houseRules:value("NEXT_PUBLIC_HOUSE_RULES")??placeholder("RÈGLEMENT INTÉRIEUR"),
+  companyName: "SCI MICAMÉLIA",
+  operatorName: "Rodrigues Caroline",
+  ownerAddress: "425 Rempart du Nord, 51190 Avize, France",
+  establishmentName: "Love Room Absolu",
+  address: "36 rue Pasteur, 51190 Avize, France",
+  host: "Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis — vercel.com",
+  email: "love.room.absolu@gmail.com",
+  phone: "06 87 01 04 64",
 } as const;

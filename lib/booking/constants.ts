@@ -1,5 +1,9 @@
+import { STAY_TIMES } from "@/lib/stay-config";
+
 // Valeurs de démonstration centralisées pour le Sprint 3. À valider avant production.
 export const BOOKING_CONFIG = {
+  checkInTime: STAY_TIMES.checkIn,
+  checkOutTime: STAY_TIMES.checkOut,
   currency: "EUR",
   minimumNights: 1,
   maximumNights: 7,

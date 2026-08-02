@@ -1,0 +1,6 @@
+import { Flower2 } from "lucide-react";
+import { Reveal } from "@/components/shared/reveal";
+
+export function TantraStory() {
+  return <section className="relative overflow-hidden bg-[#15120F] py-20 text-[#F6F2EC] sm:py-28"><div className="pointer-events-none absolute right-0 top-0 size-80 rounded-full bg-[#C9A86A]/10 blur-[100px]" /><div className="page-shell relative"><Reveal><div className="grid gap-8 rounded-[2rem] border border-white/10 bg-white/[.045] p-7 shadow-2xl backdrop-blur-lg sm:p-12 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-12"><span className="grid size-16 place-items-center rounded-full border border-[#C9A86A]/25 bg-[#C9A86A]/10"><Flower2 className="size-8 stroke-[1.2] text-[#DCC18E]" aria-hidden="true" /></span><div><p className="eyebrow text-[#C9A86A]">L’art de ralentir</p><h2 className="mt-4 font-heading text-4xl sm:text-5xl">Une expérience inspirée des rituels tantriques</h2><p className="mt-6 max-w-4xl text-sm leading-8 text-white/60 sm:text-base">La suite Absolu a été pensée pour favoriser la déconnexion du quotidien et la reconnexion du couple grâce à une atmosphère apaisante, une baignoire balnéo, un sauna privatif et un espace propice à la détente et au partage.</p></div></div></Reveal></div></section>;
+}

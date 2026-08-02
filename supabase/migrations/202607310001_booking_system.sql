@@ -74,7 +74,7 @@ insert into public.pricing_settings(key, value) values
  ('minimum_nights', '{"value":1}'),
  ('pending_expiration_minutes', '{"value":30}'),
  ('options', '[{"key":"romantic_pack","label":"Pack romantique","amount":4500,"enabled":true}]'),
- ('times', '{"checkIn":"17:00","checkOut":"11:00"}')
+ ('times', '{"checkIn":"16:00","checkOut":"10:00"}')
 on conflict (key) do nothing;
 
 create or replace function public.create_pending_reservation(

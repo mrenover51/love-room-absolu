@@ -1,0 +1,2 @@
+import {Text} from "@react-email/components";import {EmailShell,emailText} from "./email-shell";import {getStayCopy,type StaySettings} from "@/lib/stay-config";
+export function CheckInReminderEmail({staySettings}:{staySettings:StaySettings}){const copy=getStayCopy(staySettings);return <EmailShell preview="Votre arrivée chez Absolu" title="Votre arrivée approche"><Text style={emailText}>{copy.arrivalText}</Text><Text style={emailText}>{copy.flexibilityText}</Text></EmailShell>}
