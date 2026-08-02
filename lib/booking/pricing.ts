@@ -33,12 +33,15 @@ export function calculateStayPrice(checkIn: string, checkOut: string, extraKeys:
 export function calculatePriceFromConfig(checkIn: string, checkOut: string, extraKeys: string[], config: PublicPricingConfig = defaultPricingConfig): PriceBreakdown {
   const nights = nightsBetween(checkIn, checkOut);
   if (nights < config.minimumNights || nights > config.maximumNights) throw new Error("INVALID_STAY_LENGTH");
+  const rules=config.revenueRules,daysBefore=Math.max(0,Math.ceil((Date.parse(`${checkIn}T12:00:00Z`)-Date.now())/86400000));
+  const automaticDiscount=Math.max(rules&&daysBefore<=rules.lastMinuteDays?rules.lastMinuteDiscount:0,rules&&nights>=rules.longStayNights?rules.longStayDiscount:0);
   const nightPrices = Array.from({ length: nights }, (_, index) => {
     const date = addDays(checkIn, index), weekday = parseIsoDate(date).getUTCDay();
     const seasonal = config.seasonalPrices?.filter((item) => item.startDate <= date && item.endDate > date).at(-1);
     const amount = seasonal?.amount ?? config.weekdayAmounts?.[weekday] ?? BOOKING_CONFIG.weekdayAmounts[weekday];
     if (!Number.isInteger(amount)) throw new Error("PRICING_INCOMPLETE");
-    return { date, weekday, amount };
+    const promotion=config.promotions?.filter(item=>item.startDate<=date&&item.endDate>date).reduce((max,item)=>Math.max(max,item.discountPercent),0)??0,discount=Math.max(automaticDiscount,promotion);
+    return { date, weekday, amount:Math.round(amount*(100-discount)/100) };
   });
   const extras = [...new Set(extraKeys)].map((key) => {
     const extra = config.extras.find((item) => item.key === key && item.enabled !== false);

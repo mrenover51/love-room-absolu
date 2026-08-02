@@ -6,6 +6,8 @@ export type SelectedExtra = { key: string; label: string; amount: number; quanti
 export type PublicPricingConfig = {
   weekdayAmounts?: Record<number, number>;
   seasonalPrices?: Array<{ startDate: string; endDate: string; amount: number }>;
+  promotions?: Array<{ startDate: string; endDate: string; discountPercent: number }>;
+  revenueRules?: { lastMinuteDays:number; lastMinuteDiscount:number; longStayNights:number; longStayDiscount:number };
   baseNightAmount?: number;
   fridaySupplement?: number;
   saturdaySupplement?: number;
