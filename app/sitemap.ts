@@ -3,6 +3,7 @@ import { siteConfig } from "@/lib/site-config";
 import { localCities } from "@/lib/local-seo/cities";
 import { searchIntents } from "@/lib/seo-intents/intents";
 import { magazineArticles, magazineCategories, magazineTags } from "@/lib/magazine/articles";
+import { equipmentItems } from "@/lib/equipment/equipment-data";
 const routes = [
   { path: "", priority: 1, changeFrequency: "weekly" as const, images: ["lit.webp", "salledebain.webp", "sauna.webp"] },
   { path: "/la-suite", priority: 0.9, changeFrequency: "monthly" as const, images: ["entree2.webp", "lit.webp", "salledebain.webp"] },
@@ -29,5 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const toSlug=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-");
   const articleRoutes=magazineArticles.map(article=>({url:`${siteConfig.url}/blog/${article.slug}`,lastModified:article.modified,changeFrequency:"monthly" as const,priority:article.featured?0.8:0.65,alternates:{languages:{fr:`${siteConfig.url}/blog/${article.slug}`}},images:[`${siteConfig.url}${article.image}`]}));
   const archiveRoutes=[...magazineCategories.map(category=>`/blog/categorie/${toSlug(category)}`),...magazineTags.map(tag=>`/blog/tag/${toSlug(tag)}`),"/blog/auteur/redaction-absolu"].map(path=>({url:`${siteConfig.url}${path}`,lastModified:new Date(),changeFrequency:"weekly" as const,priority:0.5}));
-  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes];
+  const equipmentRoutes=equipmentItems.map(item=>({url:`${siteConfig.url}/equipements/${item.slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:item.status==="confirmed"?0.75:0.55,alternates:{languages:{fr:`${siteConfig.url}/equipements/${item.slug}`}},images:item.gallery.map(image=>`${siteConfig.url}${image}`)}));
+  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes,...equipmentRoutes];
 }
