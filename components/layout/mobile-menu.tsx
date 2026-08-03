@@ -32,14 +32,14 @@ export function MobileMenu({ open, onClose, pathname }: { open: boolean; onClose
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; previous?.focus(); };
   }, [open, onClose]);
 
-  return <AnimatePresence>{open && <motion.div ref={dialogRef} initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .35 }} className="fixed inset-0 z-50 overflow-y-auto bg-[#080808]/98 px-6 pb-12 pt-5 backdrop-blur-2xl xl:hidden" role="dialog" aria-modal="true" aria-label="Navigation mobile">
+  return <AnimatePresence>{open && <motion.div ref={dialogRef} initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .35 }} className="fixed inset-0 z-50 overflow-y-auto bg-[#0B0908]/98 px-6 pb-12 pt-5 backdrop-blur-2xl xl:hidden" role="dialog" aria-modal="true" aria-label="Navigation mobile">
     <div className="mx-auto max-w-2xl">
       <div className="flex h-16 items-center justify-between border-b border-white/10">
         <Link href="/" onClick={onClose} className="font-heading text-2xl tracking-[.3em]">ABSOLU</Link>
         <button type="button" onClick={onClose} className="grid size-12 place-items-center rounded-full border border-white/10 transition-colors hover:border-[#C9A86A]/50 hover:text-[#D8BD87]" aria-label="Fermer le menu"><X aria-hidden="true" /></button>
       </div>
       <motion.div initial={reduced ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: .55, delay: .08, ease: [.22, 1, .36, 1] }}>
-        <Link href="/reservation" onClick={onClose} className="premium-action mt-8 flex min-h-14 w-full items-center justify-between rounded-full bg-[#C9A86A] px-7 text-xs font-semibold uppercase tracking-[.22em] text-[#090909]">Réserver maintenant <ArrowUpRight className="size-4" aria-hidden="true" /></Link>
+        <Link href="/reservation" onClick={onClose} className="premium-action mt-8 flex min-h-14 w-full items-center justify-between rounded-full border border-[#DEC38E] bg-[linear-gradient(135deg,#D7B778,#B88C50)] px-7 text-xs font-semibold uppercase tracking-[.22em] text-[#110D0A] shadow-[0_14px_38px_rgba(91,61,46,.24)]">Réserver maintenant <ArrowUpRight className="size-4" aria-hidden="true" /></Link>
         <nav className="mt-9" aria-label="Navigation mobile principale">
           {primaryLinks.map(link => { const active = pathname.startsWith(link.href); return <Link key={link.href} href={link.href} onClick={onClose} aria-current={active ? "page" : undefined} className={`group flex items-center justify-between border-b border-white/10 py-4 font-heading text-3xl transition-colors ${active ? "text-[#C9A86A]" : "text-[#F6F2EC] hover:text-[#D8BD87]"}`}>{link.label}<ArrowUpRight className="size-4 opacity-30 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:opacity-100" aria-hidden="true" /></Link>; })}
         </nav>

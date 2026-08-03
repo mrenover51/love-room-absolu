@@ -3,7 +3,7 @@ import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import type { ReservationRequestInput } from "@/lib/booking/validation";
 const inputClass =
-  "mt-2 w-full border border-white/15 bg-[#121212] px-4 py-3 outline-none transition focus:border-[#C9A86A] focus-visible:ring-2 focus-visible:ring-[#C9A86A]/40";
+  "mt-2 min-h-13 w-full border border-[#D0AE72]/20 bg-[#17120F]/85 px-4 py-3 text-[#F7F1E8] shadow-[inset_0_1px_0_rgba(255,244,225,.035)] outline-none placeholder:text-white/30";
 function fieldError(
   errors: FieldErrors<ReservationRequestInput>,
   name: keyof ReservationRequestInput,
@@ -108,7 +108,7 @@ export function GuestDetailsForm({
           <input
             {...register("acceptTerms")}
             type="checkbox"
-            className="mt-1 size-5 accent-[#C9A86A]"
+            className="mt-1 size-5 accent-[#D0AE72]"
             aria-invalid={!!errors.acceptTerms}
             aria-describedby={
               errors.acceptTerms ? "acceptTerms-error" : undefined
@@ -127,7 +127,7 @@ export function GuestDetailsForm({
           <input
             {...register("acceptPrivacy")}
             type="checkbox"
-            className="mt-1 size-5 accent-[#C9A86A]"
+            className="mt-1 size-5 accent-[#D0AE72]"
             aria-invalid={!!errors.acceptPrivacy}
             aria-describedby={
               errors.acceptPrivacy ? "acceptPrivacy-error" : undefined

@@ -9,10 +9,11 @@ export function Footer() {
   return (
     <footer
       id="contact"
-      className="relative overflow-hidden border-t border-[#C9A86A]/15 bg-[#080807] py-28 text-white/55 sm:py-40"
+      className="relative overflow-hidden border-t border-[#D0AE72]/15 bg-[#0B0908] py-28 text-white/55 sm:py-40"
     >
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#C9A86A]/55 to-transparent" />
-      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 size-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C9A86A]/[.055] blur-[120px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 size-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D0AE72]/[.065] blur-[120px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(105deg,transparent_0,transparent_11px,rgba(255,255,255,.012)_12px)]" />
       <SmartContextLinks />
       <div className="page-shell relative mt-20 grid gap-16 md:grid-cols-2 lg:mt-24 lg:grid-cols-[1.25fr_.8fr_.9fr_1.15fr] lg:gap-20">
         <div>

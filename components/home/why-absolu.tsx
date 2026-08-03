@@ -11,7 +11,7 @@ const reasons = [
 
 export function WhyAbsolu() {
   return (
-    <section className="bg-[#090909] py-28 sm:py-40">
+    <section className="bg-[#0B0908] py-28 sm:py-40">
       <div className="page-shell">
         <Reveal><div className="text-center"><p className="eyebrow text-[#C9A86A]">L’essentiel, en privé</p><h2 className="mt-5 font-heading text-5xl leading-tight sm:text-6xl lg:text-7xl">Pourquoi choisir Absolu ?</h2></div></Reveal>
         <div className="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-4">

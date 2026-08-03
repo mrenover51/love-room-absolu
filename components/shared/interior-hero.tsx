@@ -27,7 +27,7 @@ export function InteriorHero({
         blurDataURL={neutralBlurDataUrl}
         className={`object-cover ${position}`}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/35 to-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0B0908] via-[#1B120E]/38 to-black/32" />
       <div className="page-shell relative">
         <Breadcrumb current={title} />
         <p className="eyebrow mt-9 text-[#C9A86A]">{eyebrow}</p>

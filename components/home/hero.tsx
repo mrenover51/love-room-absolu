@@ -14,7 +14,7 @@ export function Hero() {
   return (
     <section
       id="accueil"
-      className="relative flex min-h-[86svh] items-end overflow-hidden bg-black pb-16 pt-32 sm:min-h-[88svh] sm:items-center sm:pb-0"
+      className="relative flex min-h-[84svh] items-end overflow-hidden bg-[#0B0908] pb-16 pt-32 sm:min-h-[87svh] sm:items-center sm:pb-0"
     >
       <motion.div
         className="absolute -inset-y-16 inset-x-0"
@@ -40,9 +40,10 @@ export function Hero() {
           className="object-cover object-[58%_center] sm:object-center"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,9,9,.86)_0%,rgba(9,9,9,.4)_55%,rgba(9,9,9,.16)_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(9,9,9,.82)_0%,transparent_55%,rgba(9,9,9,.3)_100%)]" />
-      <div className="absolute -bottom-32 left-1/4 size-[34rem] rounded-full bg-[#F13C98]/10 blur-[120px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,9,8,.9)_0%,rgba(28,18,14,.44)_55%,rgba(11,9,8,.12)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,9,8,.88)_0%,transparent_56%,rgba(11,9,8,.34)_100%)]" />
+      <div className="absolute -bottom-32 left-1/4 size-[34rem] rounded-full bg-[#D4A4A0]/10 blur-[120px]" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#D0AE72]/45 to-transparent" />
       <div className="page-shell relative z-10 py-10">
         <motion.div className="max-w-2xl" initial={reduced ? false : "hidden"} animate="show" variants={{hidden:{opacity:0},show:{opacity:1,transition:{staggerChildren:.12,delayChildren:.15}}}}>
           <motion.div variants={{hidden:{opacity:0,y:18},show:{opacity:1,y:0,transition:{duration:.8,ease:[.22,1,.36,1]}}}}>
