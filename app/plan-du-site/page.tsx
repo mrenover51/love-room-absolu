@@ -7,6 +7,7 @@ import { localCities } from "@/lib/local-seo/cities";
 import { magazineArticles, magazineCategories, magazineTags } from "@/lib/magazine/articles";
 import { pageMetadata } from "@/lib/seo";
 import { searchIntents } from "@/lib/seo-intents/intents";
+import { restaurants } from "@/lib/restaurants/restaurants";
 
 export const metadata = pageMetadata({ title: "Plan du site | Absolu", description: "Retrouvez toutes les pages, destinations, expériences, équipements et guides du magazine Absolu.", path: "/plan-du-site" });
 const slugify = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -22,6 +23,7 @@ export default function SiteMapPage() {
     <LinkSection title="Love Rooms et villes proches" links={[{ href: "/love-room", label: "Toutes les destinations" }, ...localCities.map((city) => ({ href: `/love-room/${city.slug}`, label: `Love Room près de ${city.name}` }))]} />
     <LinkSection title="Expériences romantiques" links={[{ href: "/experiences-romantiques", label: "Toutes les inspirations" }, ...searchIntents.map((intent) => ({ href: `/experiences-romantiques/${intent.slug}`, label: intent.keyword }))]} />
     <LinkSection title="Équipements de la suite" links={[{ href: "/equipements", label: "Tous les équipements" }, ...equipmentItems.map((item) => ({ href: `/equipements/${item.slug}`, label: item.name }))]} />
+    <LinkSection title="Restaurants autour d’Absolu" links={[{ href: "/restaurants", label: "Annuaire des restaurants" }, ...restaurants.map((item) => ({ href: `/restaurants/${item.slug}`, label: `${item.name} — ${item.city}` }))]} />
     <LinkSection title="Magazine et conseils" links={[{ href: "/blog", label: "Le magazine Absolu" }, { href: "/blog/auteur/redaction-absolu", label: "La rédaction Absolu" }, ...magazineCategories.map((category) => ({ href: `/blog/categorie/${slugify(category)}`, label: `Dossier ${category}` })), ...magazineTags.map((tag) => ({ href: `/blog/tag/${slugify(tag)}`, label: `Conseils ${tag}` })), ...magazineArticles.map((article) => ({ href: `/blog/${article.slug}`, label: article.title }))]} />
   </div></main><Footer /></>;
 }

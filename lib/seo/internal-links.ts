@@ -11,7 +11,7 @@ const discovery: InternalLink[] = [
 const advice: InternalLink[] = [
   { href: "/blog/que-faire-epernay-en-amoureux", label: "Que faire à Épernay en amoureux ?" },
   { href: "/blog/route-touristique-champagne", label: "Parcourir la route du Champagne" },
-  { href: "/blog/restaurant-romantique-champagne", label: "Choisir un restaurant romantique" },
+  { href: "/restaurants", label: "Choisir un restaurant romantique" },
   { href: "/blog/caves-de-champagne", label: "Découvrir les caves de Champagne" },
 ];
 

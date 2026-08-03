@@ -4,6 +4,7 @@ import { localCities } from "@/lib/local-seo/cities";
 import { searchIntents } from "@/lib/seo-intents/intents";
 import { magazineArticles, magazineCategories, magazineTags } from "@/lib/magazine/articles";
 import { equipmentItems } from "@/lib/equipment/equipment-data";
+import { restaurants } from "@/lib/restaurants/restaurants";
 const routes = [
   { path: "", priority: 1, changeFrequency: "weekly" as const, images: ["lit.webp", "salledebain.webp", "sauna.webp"] },
   { path: "/la-suite", priority: 0.9, changeFrequency: "monthly" as const, images: ["entree2.webp", "lit.webp", "salledebain.webp"] },
@@ -17,6 +18,7 @@ const routes = [
   { path: "/love-room", priority: 0.8, changeFrequency: "monthly" as const },
   { path: "/experiences-romantiques", priority: 0.8, changeFrequency: "monthly" as const },
   { path: "/plan-du-site", priority: 0.5, changeFrequency: "weekly" as const },
+  { path: "/restaurants", priority: 0.8, changeFrequency: "weekly" as const },
 ];
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes=routes.map(({ path, images, ...route }) => ({
@@ -32,5 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const articleRoutes=magazineArticles.map(article=>({url:`${siteConfig.url}/blog/${article.slug}`,lastModified:article.modified,changeFrequency:"monthly" as const,priority:article.featured?0.8:0.65,alternates:{languages:{fr:`${siteConfig.url}/blog/${article.slug}`}},images:[`${siteConfig.url}${article.image}`]}));
   const archiveRoutes=[...magazineCategories.map(category=>`/blog/categorie/${toSlug(category)}`),...magazineTags.map(tag=>`/blog/tag/${toSlug(tag)}`),"/blog/auteur/redaction-absolu"].map(path=>({url:`${siteConfig.url}${path}`,lastModified:new Date(),changeFrequency:"weekly" as const,priority:0.5}));
   const equipmentRoutes=equipmentItems.map(item=>({url:`${siteConfig.url}/equipements/${item.slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:item.status==="confirmed"?0.75:0.55,alternates:{languages:{fr:`${siteConfig.url}/equipements/${item.slug}`}},images:item.gallery.map(image=>`${siteConfig.url}${image}`)}));
-  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes,...equipmentRoutes];
+  const restaurantRoutes=restaurants.map(item=>({url:`${siteConfig.url}/restaurants/${item.slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65,alternates:{languages:{fr:`${siteConfig.url}/restaurants/${item.slug}`}},images:[`${siteConfig.url}/images/restaurant-directory-hero.png`]}));
+  const restaurantSelections=["top-10-romantiques","top-champagne","top-brunch","top-terrasse"].map(slug=>({url:`${siteConfig.url}/restaurants/selection/${slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65}));
+  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes,...equipmentRoutes,...restaurantRoutes,...restaurantSelections];
 }
