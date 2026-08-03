@@ -1,0 +1,3 @@
+import {ArticleCard} from "./article-card";
+import type {MagazineArticle} from "@/lib/magazine/articles";
+export function ArchivePage({eyebrow,title,description,articles}:{eyebrow:string;title:string;description:string;articles:MagazineArticle[]}){return <main><header className="page-shell pb-16 pt-36"><p className="eyebrow text-[#C9A86A]">{eyebrow}</p><h1 className="mt-5 font-heading text-6xl sm:text-8xl">{title}</h1><p className="mt-6 max-w-2xl leading-8 text-white/55">{description}</p><p className="mt-5 text-sm text-white/35">{articles.length} article{articles.length>1?"s":""}</p></header><section className="page-shell grid gap-5 pb-28 md:grid-cols-2 lg:grid-cols-3">{articles.map(article=><ArticleCard key={article.slug} article={article}/>)}</section></main>}
