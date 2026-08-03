@@ -1,10 +1,171 @@
 import Image from "next/image";
 import Link from "next/link";
-import {Check,Minus,TriangleAlert} from "lucide-react";
-import {Footer} from "@/components/layout/footer";
-import {Header} from "@/components/layout/header";
-import {EquipmentExplorer} from "@/components/equipment/equipment-explorer";
-import {equipmentCategories,equipmentItems} from "@/lib/equipment/equipment-data";
-import {pageMetadata} from "@/lib/seo";
-export const metadata=pageMetadata({title:"Équipements de la Suite Absolu | Comparateur complet",description:"Comparez les équipements de la Suite Absolu : baignoire balnéo, sauna, douche, literie, coin café, Wi-Fi et services à confirmer.",path:"/equipements",image:"/images/optimized/salledebainviolet.webp",imageAlt:"Équipements bien-être de la Suite Absolu"});
-export default function EquipmentHub(){return <><Header/><main><section className="relative flex min-h-[78svh] items-end overflow-hidden pb-16 pt-32"><Image src="/images/optimized/salledebainviolet.webp" alt="Baignoire balnéo et ambiance lumineuse de la Suite Absolu" fill preload sizes="100vw" className="object-cover"/><div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/20"/><div className="page-shell relative"><p className="eyebrow text-[#C9A86A]">Comparer avant de réserver</p><h1 className="mt-4 max-w-5xl font-heading text-6xl leading-none sm:text-8xl">Tous les équipements Absolu</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">Une lecture transparente de ce qui est confirmé et de ce qui doit encore être vérifié avant votre séjour.</p></div></section><nav aria-label="Navigation des équipements" className="border-b border-black/10 bg-[#F6F2EC] text-[#201B18]"><div className="page-shell flex gap-6 overflow-x-auto py-5">{equipmentItems.map(item=><Link key={item.slug} href={`/equipements/${item.slug}`} className="whitespace-nowrap text-xs uppercase tracking-wider text-black/55 hover:text-black">{item.shortName}</Link>)}</div></nav><section id="pourquoi" className="bg-[#F6F2EC] py-24 text-[#201B18]"><div className="page-shell grid gap-12 lg:grid-cols-[.7fr_1.3fr]"><div><p className="eyebrow text-[#8B6B36]">Pourquoi choisir Absolu ?</p><h2 className="mt-4 font-heading text-5xl">Le confort, sans zone grise.</h2><p className="mt-6 leading-8 text-black/55">Les équipements majeurs de détente sont intégrés à la suite et réservés aux occupants. Le comparateur signale aussi clairement les caractéristiques qui ne sont pas encore garanties.</p></div><div className="grid gap-4 sm:grid-cols-3"><div className="rounded-2xl border border-black/10 bg-white/55 p-6"><strong className="font-heading text-4xl">35 m²</strong><p className="mt-3 text-sm text-black/50">Suite indépendante</p></div><div className="rounded-2xl border border-black/10 bg-white/55 p-6"><strong className="font-heading text-4xl">100 %</strong><p className="mt-3 text-sm text-black/50">Spa et sauna privatifs</p></div><div className="rounded-2xl border border-black/10 bg-white/55 p-6"><strong className="font-heading text-4xl">16</strong><p className="mt-3 text-sm text-black/50">Guides détaillés</p></div></div></div></section><section className="bg-[#EEE8DF] py-24 text-[#201B18]"><div className="page-shell"><p className="eyebrow text-[#8B6B36]">Filtrer et rechercher</p><h2 className="mt-4 font-heading text-5xl">Trouvez ce qui compte pour vous</h2><div className="mt-10"><EquipmentExplorer items={equipmentItems} categories={equipmentCategories}/></div></div></section><section className="overflow-hidden bg-white py-24 text-[#201B18]"><div className="page-shell"><p className="eyebrow text-[#8B6B36]">Tableau des équipements</p><h2 className="mt-4 font-heading text-5xl">Comparer en un regard</h2><div className="mt-10 overflow-x-auto"><table className="w-full min-w-[720px] border-collapse text-left"><thead><tr className="border-b-2 border-black"><th className="py-4">Équipement</th><th>Catégorie</th><th>Statut</th><th>Caractéristique principale</th><th><span className="sr-only">Détails</span></th></tr></thead><tbody>{equipmentItems.map(item=><tr key={item.slug} className="border-b border-black/10"><th className="py-5 font-heading text-xl">{item.name}</th><td>{item.category}</td><td><span className={`inline-flex items-center gap-2 ${item.status==="confirmed"?"text-emerald-700":"text-amber-700"}`}>{item.status==="confirmed"?<Check className="size-4"/>:<TriangleAlert className="size-4"/>}{item.status==="confirmed"?"Confirmé":"À confirmer"}</span></td><td>{item.features[0]??<Minus/>}</td><td><Link href={`/equipements/${item.slug}`} className="text-[#8B6B36] underline underline-offset-4">Voir</Link></td></tr>)}</tbody></table></div></div></section></main><Footer/></>}
+import { Check, Minus, TriangleAlert } from "lucide-react";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
+import { EquipmentExplorer } from "@/components/equipment/equipment-explorer";
+import {
+  equipmentCategories,
+  equipmentItems,
+} from "@/lib/equipment/equipment-data";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata({
+  title: "Équipements de la Suite Absolu | Comparateur complet",
+  description:
+    "Comparez les équipements de la Suite Absolu : baignoire balnéo, sauna, douche, literie, coin café, Wi-Fi et services à confirmer.",
+  path: "/equipements",
+  image: "/images/optimized/salledebainviolet.webp",
+  imageAlt: "Équipements bien-être de la Suite Absolu",
+});
+export default function EquipmentHub() {
+  return (
+    <>
+      <Header />
+      <main>
+        <section className="relative flex min-h-[78svh] items-end overflow-hidden pb-16 pt-32">
+          <Image
+            src="/images/optimized/salledebainviolet.webp"
+            alt="Baignoire balnéo et ambiance lumineuse de la Suite Absolu"
+            fill
+            preload
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/20" />
+          <div className="page-shell relative">
+            <p className="eyebrow text-[#C9A86A]">
+              Les détails qui changent tout
+            </p>
+            <h1 className="mt-4 max-w-5xl font-heading text-6xl leading-none sm:text-8xl">
+              L’expérience se révèle dans chaque détail
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
+              L’eau chaude après les vignes, la chaleur douce du bois, un café
+              pris sans hâte. Découvrez les équipements de la Suite Absolu et
+              les attentions qui donneront leur rythme à votre séjour.
+            </p>
+          </div>
+        </section>
+        <nav
+          aria-label="Navigation des équipements"
+          className="border-b border-black/10 bg-[#F6F2EC] text-[#201B18]"
+        >
+          <div className="page-shell flex gap-6 overflow-x-auto py-5">
+            {equipmentItems.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/equipements/${item.slug}`}
+                className="whitespace-nowrap text-xs uppercase tracking-wider text-black/55 hover:text-black"
+              >
+                {item.shortName}
+              </Link>
+            ))}
+          </div>
+        </nav>
+        <section id="pourquoi" className="bg-[#F6F2EC] py-24 text-[#201B18]">
+          <div className="page-shell grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
+            <div>
+              <p className="eyebrow text-[#8B6B36]">
+                Pourquoi choisir Absolu ?
+              </p>
+              <h2 className="mt-4 font-heading text-5xl">
+                Le confort se ressent avant de se décrire.
+              </h2>
+              <p className="mt-6 leading-8 text-black/55">
+                La baignoire balnéo et le sauna infrarouge sont intégrés à la
+                suite, exclusivement pour vous. Et parce que le luxe commence
+                par la confiance, chaque caractéristique encore à confirmer
+                reste clairement signalée.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-black/10 bg-white/55 p-6">
+                <strong className="font-heading text-4xl">35 m²</strong>
+                <p className="mt-3 text-sm text-black/50">Suite indépendante</p>
+              </div>
+              <div className="rounded-2xl border border-black/10 bg-white/55 p-6">
+                <strong className="font-heading text-4xl">100 %</strong>
+                <p className="mt-3 text-sm text-black/50">
+                  Spa et sauna privatifs
+                </p>
+              </div>
+              <div className="rounded-2xl border border-black/10 bg-white/55 p-6">
+                <strong className="font-heading text-4xl">16</strong>
+                <p className="mt-3 text-sm text-black/50">Guides détaillés</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="bg-[#EEE8DF] py-24 text-[#201B18]">
+          <div className="page-shell">
+            <p className="eyebrow text-[#8B6B36]">Filtrer et rechercher</p>
+            <h2 className="mt-4 font-heading text-5xl">
+              Composez la parenthèse qui vous ressemble
+            </h2>
+            <div className="mt-10">
+              <EquipmentExplorer
+                items={equipmentItems}
+                categories={equipmentCategories}
+              />
+            </div>
+          </div>
+        </section>
+        <section className="overflow-hidden bg-white py-24 text-[#201B18]">
+          <div className="page-shell">
+            <p className="eyebrow text-[#8B6B36]">Tableau des équipements</p>
+            <h2 className="mt-4 font-heading text-5xl">
+              Comparer en un regard
+            </h2>
+            <div className="mt-10 overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-left">
+                <thead>
+                  <tr className="border-b-2 border-black">
+                    <th className="py-4">Équipement</th>
+                    <th>Catégorie</th>
+                    <th>Statut</th>
+                    <th>Caractéristique principale</th>
+                    <th>
+                      <span className="sr-only">Détails</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {equipmentItems.map((item) => (
+                    <tr key={item.slug} className="border-b border-black/10">
+                      <th className="py-5 font-heading text-xl">{item.name}</th>
+                      <td>{item.category}</td>
+                      <td>
+                        <span
+                          className={`inline-flex items-center gap-2 ${item.status === "confirmed" ? "text-emerald-700" : "text-amber-700"}`}
+                        >
+                          {item.status === "confirmed" ? (
+                            <Check className="size-4" />
+                          ) : (
+                            <TriangleAlert className="size-4" />
+                          )}
+                          {item.status === "confirmed"
+                            ? "Confirmé"
+                            : "À confirmer"}
+                        </span>
+                      </td>
+                      <td>{item.features[0] ?? <Minus />}</td>
+                      <td>
+                        <Link
+                          href={`/equipements/${item.slug}`}
+                          className="text-[#8B6B36] underline underline-offset-4"
+                        >
+                          Voir
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

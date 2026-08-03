@@ -45,7 +45,7 @@ export const experiences = [
   {
     title: "Baignoire balnéo privative",
     description:
-      "Profitez d’un véritable moment de détente dans une baignoire balnéo pensée pour deux.",
+      "Glissez-vous dans une eau chaude après une journée au cœur des vignobles, puis laissez les bulles et le silence suspendre le temps.",
     detail: "Bien-être à deux",
     natural: "/images/optimized/salledebain.webp",
     ambient: "/images/optimized/salledebainviolet.webp",
@@ -53,7 +53,8 @@ export const experiences = [
   },
   {
     title: "Sauna infrarouge",
-    description: "Une chaleur douce pour un moment de relaxation absolue.",
+    description:
+      "Entrez dans la chaleur douce du bois et prolongez cette parenthèse à deux dans une atmosphère calme et enveloppante.",
     detail: "Chaleur enveloppante",
     natural: "/images/optimized/sauna.webp",
     ambient: "/images/optimized/saunaviolet.webp",
@@ -61,7 +62,8 @@ export const experiences = [
   },
   {
     title: "Douche à l’italienne",
-    description: "Une douche élégante dans une atmosphère feutrée.",
+    description:
+      "Retrouvez la fraîcheur de l’eau dans un espace aux lignes pures, doucement redessiné par la lumière du soir.",
     detail: "Rituel sensoriel",
     natural: "/images/optimized/douche.webp",
     ambient: "/images/optimized/doucheviolet.webp",

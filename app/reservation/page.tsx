@@ -15,7 +15,7 @@ import { getPublishedReviews } from "@/lib/reviews/reviews";
 export const metadata: Metadata = pageMetadata({
   title: "Réserver la Suite Absolu au meilleur tarif",
   description:
-    "Réservez en direct votre séjour romantique dans la Suite Absolu à Avize : disponibilités en temps réel et paiement sécurisé.",
+    "Préparez votre séjour romantique dans la Suite Absolu à Avize : dates disponibles, réservation directe et paiement sécurisé au meilleur tarif.",
   path: "/reservation",
 });
 
@@ -42,18 +42,21 @@ export default async function ReservationPage() {
         <div className="page-shell relative">
           <Breadcrumb current="Réservation" />
           <div className="mt-10 max-w-3xl">
-            <p className="eyebrow text-[#C9A86A]">Réservation directe</p>
+            <p className="eyebrow text-[#C9A86A]">
+              Le début de votre parenthèse
+            </p>
             <h1 className="mt-4 text-balance font-heading text-5xl sm:text-7xl">
-              Composez votre parenthèse.
+              Choisissez le soir où le temps ralentira.
             </h1>
             <p className="mt-5 max-w-2xl leading-8 text-white/60">
-              Disponibilités en temps réel, prix transparent et paiement
-              sécurisé. Votre séjour se réserve en quelques instants.
+              Imaginez les vignes au crépuscule, la chaleur du sauna puis les
+              bulles dans l’eau. Choisissez votre date&nbsp;: le reste peut
+              attendre.
             </p>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/45">
-              Votre séjour est une invitation à ralentir, respirer et vivre un
-              moment privilégié à deux dans une ambiance inspirée des rituels de
-              bien-être.
+              Les disponibilités sont actualisées en temps réel, le prix reste
+              lisible et le paiement sécurisé. Parce que la confiance fait déjà
+              partie de l’expérience.
             </p>
             <div className="mt-6 flex flex-wrap gap-4 text-[11px] uppercase tracking-wider text-white/40">
               <span>✓ Paiement Stripe sécurisé</span>

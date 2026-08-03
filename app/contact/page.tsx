@@ -9,5 +9,85 @@ import { LocationSection } from "@/components/contact/location-section";
 import { StayTimesNotice } from "@/components/shared/stay-times-notice";
 import { getStaySettings } from "@/lib/stay-settings";
 
-export const metadata=pageMetadata({title:"Contact et accès",description:"Contactez Love Room Absolu et préparez votre arrivée à Avize : téléphone, email, accès et réponses pratiques pour votre séjour.",path:"/contact"});
-export default async function ContactPage(){const staySettings=await getStaySettings();const faqItems=createFaqItems(staySettings);return <><Header/><main><InteriorHero image="/images/optimized/entree1.webp" title="Nous contacter" eyebrow="Préparer votre parenthèse" description="Une question sur la suite ou votre prochain séjour ? Écrivez-nous. Nous avons imaginé Absolu comme un véritable cocon dédié au bien-être du couple."/><section className="bg-[#080808] py-24"><div className="page-shell grid gap-14 lg:grid-cols-[.7fr_1.3fr] lg:gap-20"><div><p className="eyebrow text-[#C9A86A]">Coordonnées</p><h2 className="mt-4 font-heading text-4xl">Restons en contact.</h2><dl className="mt-8 space-y-5 text-sm"><div><dt className="text-white/40">Téléphone</dt><dd className="mt-1"><a href={`tel:${contactDetails.phone}`} className="hover:text-[#C9A86A]">{contactDetails.phone}</a></dd></div><div><dt className="text-white/40">Email</dt><dd className="mt-1"><a href={`mailto:${contactDetails.email}`} className="hover:text-[#C9A86A]">{contactDetails.email}</a></dd></div></dl><div className="mt-10 border-t border-white/10 pt-8"><p className="eyebrow text-white/40">Accès</p><p className="mt-4 text-sm leading-7 text-white/60">{contactDetails.access}</p></div><StayTimesNotice settings={staySettings} className="mt-8"/></div><ContactForm/></div></section><LocationSection/><section className="bg-[#F6F2EC] py-24 text-[#161311]"><div className="page-shell grid gap-12 lg:grid-cols-[.65fr_1.35fr]"><div><p className="eyebrow text-[#9A7844]">Questions fréquentes</p><h2 className="mt-4 font-heading text-5xl">Avant votre séjour.</h2><p className="mt-5 leading-7 text-[#665E56]">Retrouvez les informations essentielles pour préparer votre arrivée et profiter sereinement de votre séjour.</p></div><Faq items={faqItems}/></div></section></main><Footer/></>}
+export const metadata = pageMetadata({
+  title: "Contact et accès | Préparer votre séjour chez Absolu",
+  description:
+    "Échangez avec Love Room Absolu et préparez sereinement votre arrivée à Avize : accès, horaires et attentions pour votre parenthèse en Champagne.",
+  path: "/contact",
+});
+export default async function ContactPage() {
+  const staySettings = await getStaySettings();
+  const faqItems = createFaqItems(staySettings);
+  return (
+    <>
+      <Header />
+      <main>
+        <InteriorHero
+          image="/images/optimized/entree1.webp"
+          title="Votre séjour commence par un échange"
+          eyebrow="Préparer votre parenthèse"
+          description="Une question, une attention particulière, un détail qui compte pour vous ? Écrivez-nous. Nous vous répondrons avec le même soin que celui porté à la suite."
+        />
+        <section className="bg-[#080808] py-24">
+          <div className="page-shell grid gap-14 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
+            <div>
+              <p className="eyebrow text-[#C9A86A]">Coordonnées</p>
+              <h2 className="mt-4 font-heading text-4xl">
+                Prenons le temps de vous répondre.
+              </h2>
+              <dl className="mt-8 space-y-5 text-sm">
+                <div>
+                  <dt className="text-white/40">Téléphone</dt>
+                  <dd className="mt-1">
+                    <a
+                      href={`tel:${contactDetails.phone}`}
+                      className="hover:text-[#C9A86A]"
+                    >
+                      {contactDetails.phone}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-white/40">Email</dt>
+                  <dd className="mt-1">
+                    <a
+                      href={`mailto:${contactDetails.email}`}
+                      className="hover:text-[#C9A86A]"
+                    >
+                      {contactDetails.email}
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-10 border-t border-white/10 pt-8">
+                <p className="eyebrow text-white/40">Accès</p>
+                <p className="mt-4 text-sm leading-7 text-white/60">
+                  {contactDetails.access}
+                </p>
+              </div>
+              <StayTimesNotice settings={staySettings} className="mt-8" />
+            </div>
+            <ContactForm />
+          </div>
+        </section>
+        <LocationSection />
+        <section className="bg-[#F6F2EC] py-24 text-[#161311]">
+          <div className="page-shell grid gap-12 lg:grid-cols-[.65fr_1.35fr]">
+            <div>
+              <p className="eyebrow text-[#9A7844]">Questions fréquentes</p>
+              <h2 className="mt-4 font-heading text-5xl">
+                Avant votre séjour.
+              </h2>
+              <p className="mt-5 leading-7 text-[#665E56]">
+                Retrouvez les informations essentielles pour préparer votre
+                arrivée et profiter sereinement de votre séjour.
+              </p>
+            </div>
+            <Faq items={faqItems} />
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

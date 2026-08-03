@@ -50,8 +50,9 @@ export default function RestaurantsPage() {
               Restaurants autour de Love Room Absolu
             </h1>
             <p className="mt-6 max-w-2xl leading-8 text-white/70">
-              Des tables d’Avize aux grandes maisons de Champagne, choisissez
-              votre étape avant la soirée ou après votre séjour.
+              Une table éclairée à la bougie, un accord inattendu, quelques
+              bulles partagées. D’Avize aux grandes maisons de Champagne,
+              choisissez l’adresse qui donnera le ton de votre soirée.
             </p>
             <p className="mt-3 text-xs text-white/40">
               Visuel d’ambiance généré — il ne représente aucun établissement
@@ -77,7 +78,9 @@ export default function RestaurantsPage() {
         <section className="bg-[#F3EEE7] py-24 text-[#201B18]">
           <div className="page-shell">
             <p className="eyebrow text-[#8B6B36]">Annuaire local</p>
-            <h2 className="mt-4 font-heading text-5xl">Trouver votre table</h2>
+            <h2 className="mt-4 font-heading text-5xl">
+              Choisir le goût de votre soirée
+            </h2>
             <div className="mt-10">
               <RestaurantDirectory items={restaurants} />
             </div>

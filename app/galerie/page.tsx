@@ -82,7 +82,7 @@ export default function GalleryPage() {
           image="/images/optimized/lit.webp"
           title="Galerie de la Suite Absolu"
           eyebrow="Une parenthèse en images"
-          description="Explorez chaque espace, de la lumière naturelle aux ambiances du soir, puis imaginez votre propre séjour à Avize."
+          description="Laissez les images vous conduire de la pierre claire aux reflets du soir, puis imaginez le silence, la chaleur et votre propre séjour à Avize."
         />
         <section className="bg-[#080808] py-20 sm:py-28">
           <div className="page-shell">
@@ -92,10 +92,10 @@ export default function GalleryPage() {
                 Chaque détail compose l’expérience
               </h2>
               <p className="mt-6 leading-8 text-white/55">
-                Filtrez les espaces, ouvrez une photo en plein écran, zoomez ou
-                faites glisser sur mobile. Les images sont optimisées
-                automatiquement selon votre écran afin de préserver leur
-                précision sans ralentir la visite.
+                Observez la lumière courir sur les matières, la vapeur adoucir
+                les contours et la nuit transformer la suite. Chaque image est
+                une invitation à imaginer ce que les photographies ne disent pas
+                encore&nbsp;: le calme, la chaleur et le temps retrouvé.
               </p>
             </div>
             <Lightbox images={luxuryGalleryImages} />
@@ -130,17 +130,18 @@ export default function GalleryPage() {
               La prochaine image peut être la vôtre
             </p>
             <h2 className="mx-auto mt-4 max-w-4xl font-heading text-6xl">
-              Passez de la visite au séjour
+              La prochaine lumière pourrait être la vôtre
             </h2>
             <p className="mx-auto mt-6 max-w-2xl leading-8 text-black/55">
-              Consultez les dates disponibles et choisissez le moment où vous
-              découvrirez la Suite Absolu autrement qu’en photo.
+              Choisissez le soir où vous découvrirez la Suite Absolu autrement
+              qu’en image, lorsque le silence d’Avize laissera place à votre
+              histoire.
             </p>
             <Link
               href="/reservation"
               className="mt-9 inline-flex min-h-14 items-center bg-[#201B18] px-8 text-xs uppercase tracking-[.18em] text-white transition hover:bg-[#8B6B36]"
             >
-              Voir les disponibilités
+              Vivre cette expérience
             </Link>
             <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-black/45">
               <Link href="/la-suite">Découvrir la suite</Link>
