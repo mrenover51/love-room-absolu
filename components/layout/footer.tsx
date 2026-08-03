@@ -44,6 +44,12 @@ export function Footer() {
             <Link href="/plan-du-site" className="hover:text-white">
               Plan du site HTML
             </Link>
+            <Link href="/partenaires" className="hover:text-white">
+              Partenaires locaux
+            </Link>
+            <Link href="/presse" className="hover:text-white">
+              Presse et médias
+            </Link>
           </nav>
         </div>
         <div>

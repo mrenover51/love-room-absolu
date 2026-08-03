@@ -16,6 +16,7 @@ import { touristAttractions } from "@/lib/tourism/attractions";
 import { resourcePillars } from "@/lib/ai-seo/resources";
 import { getPublishedReviews } from "@/lib/reviews/reviews";
 import { semanticClusters } from "@/lib/seo/internal-links";
+import { getPublishedPartners } from "@/lib/partners/partners";
 
 export const metadata = pageMetadata({
   title: "Plan du site | Absolu",
@@ -37,6 +38,11 @@ const mainPages = [
   { href: "/bons-cadeaux", label: "Bons cadeaux" },
   { href: "/faq", label: "Questions fréquentes" },
   { href: "/contact", label: "Contact" },
+  { href: "/partenaires", label: "Partenaires locaux" },
+  { href: "/presse", label: "Espace presse" },
+  { href: "/medias", label: "Médiathèque" },
+  { href: "/influenceurs", label: "Collaborations influenceurs" },
+  { href: "/communiques-presse", label: "Communiqués de presse" },
 ];
 
 function LinkSection({
@@ -63,7 +69,10 @@ function LinkSection({
 }
 
 export default async function SiteMapPage() {
-  const reviews = await getPublishedReviews();
+  const [reviews, partners] = await Promise.all([
+    getPublishedReviews(),
+    getPublishedPartners(),
+  ]);
   return (
     <>
       <Header />
@@ -84,6 +93,16 @@ export default async function SiteMapPage() {
             }))}
           />
           <LinkSection title="Absolu" links={mainPages} />
+          <LinkSection
+            title="Partenaires vérifiés"
+            links={[
+              { href: "/partenaires", label: "Annuaire des partenaires" },
+              ...partners.map((partner) => ({
+                href: `/partenaires/${partner.slug}`,
+                label: `${partner.name} — ${partner.city}`,
+              })),
+            ]}
+          />
           <LinkSection
             title="Avis clients vérifiés"
             links={[

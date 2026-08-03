@@ -12,6 +12,7 @@ import { restaurants } from "@/lib/restaurants/restaurants";
 import { touristAttractions } from "@/lib/tourism/attractions";
 import { resourcePillars } from "@/lib/ai-seo/resources";
 import { getPublishedReviews } from "@/lib/reviews/reviews";
+import { getPublishedPartners } from "@/lib/partners/partners";
 const routes = [
   {
     path: "",
@@ -69,9 +70,21 @@ const routes = [
     priority: 0.75,
     changeFrequency: "monthly" as const,
   },
+  { path: "/partenaires", priority: 0.6, changeFrequency: "weekly" as const },
+  { path: "/presse", priority: 0.55, changeFrequency: "monthly" as const },
+  { path: "/medias", priority: 0.5, changeFrequency: "monthly" as const },
+  { path: "/influenceurs", priority: 0.5, changeFrequency: "monthly" as const },
+  {
+    path: "/communiques-presse",
+    priority: 0.5,
+    changeFrequency: "monthly" as const,
+  },
 ];
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const reviews = await getPublishedReviews();
+  const [reviews, partners] = await Promise.all([
+    getPublishedReviews(),
+    getPublishedPartners(),
+  ]);
   const staticRoutes = routes.map(({ path, images, ...route }) => ({
     url: `${siteConfig.url}${path}`,
     lastModified: new Date(),
@@ -196,6 +209,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: item.featured ? 0.75 : 0.6,
     alternates: { languages: { fr: `${siteConfig.url}/avis/${item.slug}` } },
   }));
+  const partnerRoutes = partners.map((item) => ({
+    url: `${siteConfig.url}/partenaires/${item.slug}`,
+    lastModified: item.published_at ? new Date(item.published_at) : new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+    alternates: {
+      languages: { fr: `${siteConfig.url}/partenaires/${item.slug}` },
+    },
+    ...(item.image_url ? { images: [item.image_url] } : {}),
+  }));
   return [
     ...staticRoutes,
     ...localRoutes,
@@ -209,5 +232,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tourismSelections,
     ...resourceRoutes,
     ...reviewRoutes,
+    ...partnerRoutes,
   ];
 }
