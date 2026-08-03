@@ -13,6 +13,7 @@ const advice: InternalLink[] = [
   { href: "/blog/route-touristique-champagne", label: "Parcourir la route du Champagne" },
   { href: "/restaurants", label: "Choisir un restaurant romantique" },
   { href: "/blog/caves-de-champagne", label: "Découvrir les caves de Champagne" },
+  { href: "/guide-touristique", label: "Explorer les activités en Champagne" },
 ];
 
 const nearby: InternalLink[] = [
