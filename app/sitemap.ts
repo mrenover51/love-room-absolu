@@ -37,6 +37,12 @@ const routes = [
     images: ["entree2.webp", "lit.webp"],
   },
   {
+    path: "/l-art-de-recevoir",
+    priority: 0.75,
+    changeFrequency: "monthly" as const,
+    images: ["lit.webp", "entree1.webp"],
+  },
+  {
     path: "/galerie",
     priority: 0.8,
     changeFrequency: "monthly" as const,

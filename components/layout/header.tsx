@@ -15,6 +15,7 @@ const exploreColumns = [
     { label: "Maisons de Champagne", detail: "L’Avenue de Champagne", href: "/guide-touristique/avenue-de-champagne" },
     { label: "Magazine", detail: "Histoires et art de vivre", href: "/blog" },
     { label: "Notre histoire", detail: "Les origines d’Absolu", href: "/notre-histoire" },
+    { label: "L’art de recevoir", detail: "Notre manière de vous accueillir", href: "/l-art-de-recevoir" },
   ] },
   { title: "Expérience", links: [
     { label: "Équipements", detail: "Le confort en privé", href: "/equipements" },

@@ -35,6 +35,7 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-");
 const mainPages = [
   { href: "/notre-histoire", label: "Notre histoire" },
+  { href: "/l-art-de-recevoir", label: "L’art de recevoir" },
   { href: "/la-suite", label: "La suite Absolu" },
   { href: "/galerie", label: "Galerie" },
   { href: "/videos", label: "Vidéos immersives" },
