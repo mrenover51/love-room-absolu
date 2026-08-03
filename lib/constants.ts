@@ -140,8 +140,6 @@ export const galleryImages = [
 export const contactDetails = {
   phone: siteConfig.phone as string,
   email: siteConfig.email as string,
-  instagramLabel: "Instagram",
-  instagramUrl: siteConfig.instagram || "#",
   address: siteConfig.address,
   access: "36 rue Pasteur, 51190 Avize, France",
 } as const;

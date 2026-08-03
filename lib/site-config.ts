@@ -8,7 +8,7 @@ export const siteConfig = {
   commercialName: value("NEXT_PUBLIC_SITE_NAME") ?? "Absolu",
   city: "Avize", department: "Marne", region: "Grand Est",
   address: "36 rue Pasteur, 51190 Avize, France", phone: "0687010464", email: "love.room.absolu@gmail.com",
-  url: PUBLIC_SITE_URL, instagram: value("NEXT_PUBLIC_INSTAGRAM_URL"),
+  url: PUBLIC_SITE_URL,
   latitude: numberValue("NEXT_PUBLIC_SITE_LATITUDE"), longitude: numberValue("NEXT_PUBLIC_SITE_LONGITUDE"),
   checkInTime: STAY_TIMES.checkIn, checkOutTime: STAY_TIMES.checkOut,
   capacity: numberValue("NEXT_PUBLIC_SITE_CAPACITY"), startingPrice: numberValue("NEXT_PUBLIC_STARTING_PRICE"),

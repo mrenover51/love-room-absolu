@@ -32,7 +32,7 @@ Audit réalisé le 31 juillet 2026 sur l’implémentation locale. Le code est p
 ## Éléments obligatoires à compléter par le propriétaire
 
 1. Remplir toutes les variables de `.env.example`, notamment les clés Supabase, Stripe, Resend, `CRON_SECRET` et l’URL finale.
-2. Compléter `lib/site-config.ts` via les variables publiques : ville, département, région, adresse, téléphone, email, Instagram, GPS, horaires et prix à partir de.
+2. Compléter `lib/site-config.ts` via les variables publiques : ville, département, région, adresse, téléphone, email, GPS, horaires et prix à partir de.
 3. Remplacer les champs entre crochets des pages légales : exploitant, raison sociale, SIRET, hébergeur, médiateur, politique d’annulation, dépôt, horaires et règlement.
 4. Valider les tarifs et options de démonstration centralisés dans `lib/constants.ts` avant d’accepter un paiement réel.
 5. Vérifier le domaine d’envoi Resend et créer le premier administrateur selon `docs/admin-setup.md`.

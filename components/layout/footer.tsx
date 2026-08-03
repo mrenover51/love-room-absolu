@@ -82,18 +82,6 @@ export function Footer() {
             ) : (
               <span>Email — à renseigner</span>
             )}
-            {contactDetails.instagramUrl !== "#" ? (
-              <a
-                href={contactDetails.instagramUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white"
-              >
-                Instagram
-              </a>
-            ) : (
-              <span>Instagram — à renseigner</span>
-            )}
           </div>
         </div>
         <div>
