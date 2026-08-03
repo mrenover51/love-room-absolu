@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
 
-export const absoluteUrl = (path = "/") => new URL(path, `${siteConfig.url}/`).toString();
+export const absoluteUrl = (path = "/") =>
+  new URL(path, `${siteConfig.url}/`).toString();
 
 type PageMetadataOptions = {
   title: string;
@@ -35,7 +36,13 @@ export function pageMetadata({
     robots: {
       index,
       follow: true,
-      googleBot: { index, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+      googleBot: {
+        index,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
     openGraph: {
       type: "website",
@@ -44,8 +51,20 @@ export function pageMetadata({
       title,
       description,
       url: canonical,
-      images: [{ url: socialImage, width: 1448, height: 1086, alt: imageAlt }],
+      images: [
+        {
+          url: socialImage,
+          width: image === "/images/optimized/lit.webp" ? 1448 : undefined,
+          height: image === "/images/optimized/lit.webp" ? 1086 : undefined,
+          alt: imageAlt,
+        },
+      ],
     },
-    twitter: { card: "summary_large_image", title, description, images: [socialImage] },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [{ url: socialImage, alt: imageAlt }],
+    },
   };
 }
