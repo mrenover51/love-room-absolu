@@ -9,8 +9,8 @@
     "heroPreloadsLimited": true
   },
   "inventory": {
-    "sourceFiles": 199,
-    "clientBoundaries": 46,
+    "sourceFiles": 202,
+    "clientBoundaries": 47,
     "images": 32,
     "optimizedImages": 18,
     "eagerImages": 18,

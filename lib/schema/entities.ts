@@ -51,7 +51,36 @@ export function rootSchema(stay: StaySettings): JsonLdGraph {
     numberOfRooms: 1,
     checkinTime: stay.checkIn,
     checkoutTime: stay.checkOut,
+    potentialAction: {
+      "@type": "ReserveAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${url}/reservation`,
+        actionPlatform: [
+          "https://schema.org/DesktopWebPlatform",
+          "https://schema.org/MobileWebPlatform",
+        ],
+      },
+      result: {
+        "@type": "LodgingReservation",
+        name: "Réservation directe chez Absolu",
+      },
+    },
+    areaServed: [
+      { "@type": "City", name: "Avize" },
+      { "@type": "City", name: "Épernay" },
+      { "@type": "AdministrativeArea", name: "Marne" },
+      { "@type": "AdministrativeArea", name: "Champagne" },
+    ],
+    knowsAbout: [
+      "Séjour romantique en Champagne",
+      "Baignoire balnéo privative",
+      "Sauna infrarouge privatif",
+      "Œnotourisme à Avize",
+    ],
   };
+  const googleProfileUrl = process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_PROFILE_URL;
+  if (googleProfileUrl) lodging.sameAs = [googleProfileUrl];
   if (siteConfig.latitude !== undefined && siteConfig.longitude !== undefined)
     lodging.geo = {
       "@type": "GeoCoordinates",
