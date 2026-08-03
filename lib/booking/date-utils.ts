@@ -15,11 +15,19 @@ export function addDays(value: string, days: number) {
 }
 
 export function nightsBetween(checkIn: string, checkOut: string) {
-  return Math.round((parseIsoDate(checkOut).getTime() - parseIsoDate(checkIn).getTime()) / DAY_MS);
+  return Math.round(
+    (parseIsoDate(checkOut).getTime() - parseIsoDate(checkIn).getTime()) /
+      DAY_MS,
+  );
 }
 
 // Les séjours sont des intervalles semi-ouverts [arrivée, départ[ : un départ
 // et une nouvelle arrivée le même jour ne se chevauchent donc pas.
-export function dateRangesOverlap(startA: string, endA: string, startB: string, endB: string) {
+export function dateRangesOverlap(
+  startA: string,
+  endA: string,
+  startB: string,
+  endB: string,
+) {
   return startA < endB && endA > startB;
 }
