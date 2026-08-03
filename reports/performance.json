@@ -9,11 +9,11 @@
     "heroPreloadsLimited": true
   },
   "inventory": {
-    "sourceFiles": 211,
-    "clientBoundaries": 47,
+    "sourceFiles": 238,
+    "clientBoundaries": 54,
     "images": 32,
     "optimizedImages": 18,
-    "eagerImages": 19,
+    "eagerImages": 20,
     "largestOriginal": {
       "path": "public/images/champagne-local-hero.png",
       "bytes": 2371645

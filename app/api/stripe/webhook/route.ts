@@ -3,6 +3,7 @@ import { stripeProvider } from "@/lib/stripe/stripe-provider";
 import { PaymentService } from "@/lib/stripe/payment-service";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendConfirmation, sendStatusEmail } from "@/lib/email";
+import { sendGiftCard } from "@/lib/gifts/email";
 export const runtime = "nodejs";
 type EmailRow = {
   reference: string;
@@ -35,8 +36,17 @@ export async function POST(request: Request) {
       return new Response("OK");
     const db = createAdminClient();
     if (event.type === "checkout.session.completed") {
-      const session = event.data.object,
-        id = session.metadata?.reservation_id;
+      const session = event.data.object;
+      const giftId = session.metadata?.gift_id;
+      if (giftId) {
+        if (session.payment_status !== "paid") throw new Error("INVALID_GIFT_SESSION");
+        const activatedAt = new Date(), expiresAt = new Date(activatedAt); expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        const { data: gift, error } = await db.from("gift_cards").update({ status: "active", activated_at: activatedAt.toISOString(), expires_at: expiresAt.toISOString(), stripe_payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : null, updated_at: activatedAt.toISOString() }).eq("id", giftId).eq("status", "pending_payment").select("reference,recipient_name,sender_name,purchaser_email,message,amount,expires_at").maybeSingle();
+        if (error) throw error;
+        if (gift) await sendGiftCard({ email: gift.purchaser_email, reference: gift.reference, recipient: gift.recipient_name, sender: gift.sender_name, message: gift.message, amount: gift.amount, expiresAt: new Date(gift.expires_at).toLocaleDateString("fr-FR") });
+        return new Response("OK");
+      }
+      const id = session.metadata?.reservation_id;
       if (!id || session.payment_status !== "paid")
         throw new Error("INVALID_SESSION");
       const changed = await payments.confirm(
@@ -70,6 +80,8 @@ export async function POST(request: Request) {
         if (data) await sendConfirmation(emailData(data));
       }
     } else if (event.type === "checkout.session.expired") {
+      const giftId = event.data.object.metadata?.gift_id;
+      if (giftId) { await db.from("gift_cards").update({ status: "cancelled", updated_at: new Date().toISOString() }).eq("id", giftId).eq("status", "pending_payment"); return new Response("OK"); }
       const id = event.data.object.metadata?.reservation_id;
       if (id) {
         const { data } = await db

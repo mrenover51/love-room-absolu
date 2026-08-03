@@ -18,10 +18,10 @@ export const assistantScenarios = [
       "La Saint-Valentin est une période très demandée. Vérifiez le calendrier au plus tôt et envisagez une date voisine si la nuit du 14 février n’est plus disponible.",
   },
   {
-    id: "week-end",
-    label: "Week-end romantique",
+    id: "lune-de-miel",
+    label: "Lune de miel",
     answer:
-      "Pour un week-end romantique, gardez un programme léger : une activité en Champagne, un dîner réservé et du temps dans la suite avec baignoire balnéo et sauna privatifs.",
+      "Pour une lune de miel, construisez un programme léger : une découverte de la Champagne, un dîner réservé et du temps dans la suite avec baignoire balnéo et sauna privatifs.",
   },
 ] as const;
 

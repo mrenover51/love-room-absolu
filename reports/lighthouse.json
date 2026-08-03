@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-08-03T03:38:23.519Z",
+  "status": "pending-ci",
+  "configuration": "lighthouserc.json",
+  "workflow": ".github/workflows/performance.yml",
+  "targets": [
+    "/",
+    "/la-suite",
+    "/reservation",
+    "/love-room/avize"
+  ],
+  "thresholds": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "tbtMs": 200
+  },
+  "note": "Ce fichier décrit la campagne. Les résultats réels sont les artefacts Lighthouse CI, générés avec Chrome après déploiement/build."
+}

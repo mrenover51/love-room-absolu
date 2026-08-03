@@ -1,0 +1,206 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-08-03T03:38:23.519Z",
+  "status": "pass",
+  "summary": {
+    "passed": 16,
+    "failed": 0,
+    "manual": 5,
+    "total": 21
+  },
+  "checks": [
+    {
+      "area": "quality",
+      "name": "Lint configuré",
+      "status": "pass",
+      "evidence": "eslint.config.mjs"
+    },
+    {
+      "area": "quality",
+      "name": "Tests automatiques",
+      "status": "pass",
+      "evidence": "npm test"
+    },
+    {
+      "area": "seo",
+      "name": "Robots et sitemap",
+      "status": "pass",
+      "evidence": "MetadataRoute"
+    },
+    {
+      "area": "seo",
+      "name": "Audit SEO",
+      "status": "pass",
+      "evidence": "reports/seo-audit.json"
+    },
+    {
+      "area": "schema",
+      "name": "Validation JSON-LD",
+      "status": "pass",
+      "evidence": "npm run validate:schema"
+    },
+    {
+      "area": "performance",
+      "name": "Budgets statiques",
+      "status": "pass",
+      "evidence": "npm run performance:audit"
+    },
+    {
+      "area": "performance",
+      "name": "Lighthouse CI",
+      "status": "pass",
+      "evidence": "Lighthouse réel en CI"
+    },
+    {
+      "area": "security",
+      "name": "En-têtes de sécurité",
+      "status": "pass",
+      "evidence": "CSP, HSTS, nosniff"
+    },
+    {
+      "area": "security",
+      "name": "Secrets ignorés",
+      "status": "pass",
+      "evidence": ".gitignore"
+    },
+    {
+      "area": "accessibility",
+      "name": "Lint accessibilité",
+      "status": "pass",
+      "evidence": "eslint-config-next"
+    },
+    {
+      "area": "responsive",
+      "name": "Points de rupture responsifs",
+      "status": "pass",
+      "evidence": "Tailwind responsive"
+    },
+    {
+      "area": "pwa",
+      "name": "PWA hors-ligne",
+      "status": "pass",
+      "evidence": "manifest + service worker + offline"
+    },
+    {
+      "area": "errors",
+      "name": "Fallback global",
+      "status": "pass",
+      "evidence": "Error boundaries accessibles"
+    },
+    {
+      "area": "monitoring",
+      "name": "Instrumentation serveur",
+      "status": "pass",
+      "evidence": "onRequestError + health"
+    },
+    {
+      "area": "backup",
+      "name": "Sauvegarde et restauration",
+      "status": "pass",
+      "evidence": "pg_dump/pg_restore"
+    },
+    {
+      "area": "integrations",
+      "name": "Supabase",
+      "status": "manual",
+      "evidence": "SUPABASE_SERVICE_ROLE_KEY documenté"
+    },
+    {
+      "area": "integrations",
+      "name": "Stripe",
+      "status": "manual",
+      "evidence": "STRIPE_WEBHOOK_SECRET documenté"
+    },
+    {
+      "area": "integrations",
+      "name": "Resend",
+      "status": "manual",
+      "evidence": "RESEND_API_KEY documenté"
+    },
+    {
+      "area": "integrations",
+      "name": "iCal",
+      "status": "manual",
+      "evidence": "BOOKING_ICAL_URL documenté"
+    },
+    {
+      "area": "integrations",
+      "name": "Google",
+      "status": "manual",
+      "evidence": "GOOGLE_BUSINESS_CLIENT_ID documenté"
+    },
+    {
+      "area": "analytics",
+      "name": "Consentement et collecte",
+      "status": "pass",
+      "evidence": "collecte first-party avec consentement"
+    }
+  ],
+  "largestSources": [
+    {
+      "file": "components/google-business/google-business-dashboard.tsx",
+      "bytes": 21967
+    },
+    {
+      "file": "lib/local-seo/cities.ts",
+      "bytes": 21405
+    },
+    {
+      "file": "app/love-room/[ville]/page.tsx",
+      "bytes": 19622
+    },
+    {
+      "file": "app/experiences-romantiques/[intention]/page.tsx",
+      "bytes": 19472
+    },
+    {
+      "file": "components/assistant/booking-assistant.tsx",
+      "bytes": 16539
+    },
+    {
+      "file": "lib/restaurants/restaurants.ts",
+      "bytes": 14807
+    },
+    {
+      "file": "components/gallery/lightbox.tsx",
+      "bytes": 14531
+    },
+    {
+      "file": "components/admin/admin-calendar.tsx",
+      "bytes": 13942
+    },
+    {
+      "file": "app/evenements/[evenement]/page.tsx",
+      "bytes": 13775
+    },
+    {
+      "file": "lib/magazine/articles.ts",
+      "bytes": 13365
+    },
+    {
+      "file": "lib/ai-seo/conversations.ts",
+      "bytes": 12818
+    },
+    {
+      "file": "components/reservation/booking-flow.tsx",
+      "bytes": 12546
+    },
+    {
+      "file": "app/restaurants/[restaurant]/page.tsx",
+      "bytes": 12351
+    },
+    {
+      "file": "lib/faq/faq-data.ts",
+      "bytes": 12290
+    },
+    {
+      "file": "lib/equipment/equipment-data.ts",
+      "bytes": 10514
+    }
+  ],
+  "limitations": [
+    "Les scores Lighthouse sont produits par un navigateur en CI, jamais simulés.",
+    "Les intégrations externes exigent une recette en préproduction avec les identifiants du propriétaire.",
+    "La sauvegarde n’est valide qu’après un test de restauration isolé."
+  ]
+}

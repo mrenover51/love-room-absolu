@@ -52,9 +52,10 @@ export function BookingAssistant() {
   const [checking, setChecking] = useState(false),
     [dates, setDates] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null),
-    inputRef = useRef<HTMLInputElement>(null);
+    inputRef = useRef<HTMLInputElement>(null), sessionRef = useRef("");
   const reduced = useReducedMotion();
   useEffect(() => {
+    const saved=localStorage.getItem("absolu-concierge-session");sessionRef.current=saved??crypto.randomUUID();if(!saved)localStorage.setItem("absolu-concierge-session",sessionRef.current);void fetch(`/api/assistant?session=${encodeURIComponent(sessionRef.current)}`).then(response=>response.ok?response.json():null).then((data:{messages?:{id:number;role:"assistant"|"user";content:string}[]} | null)=>{if(data?.messages?.length)setMessages(data.messages.map(item=>({id:String(item.id),role:item.role,content:item.content})));}).catch(()=>undefined);
     try {
       const stored = localStorage.getItem("absolu-assistant-history");
       if (stored) {
@@ -118,16 +119,17 @@ export function BookingAssistant() {
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ query: value }),
+        body: JSON.stringify({ query: value, sessionId: sessionRef.current || crypto.randomUUID(), context: { checkIn: checkIn || undefined, checkOut: checkOut || undefined } }),
       });
       const data = (await response.json()) as {
         answer?: string;
         href?: string;
         label?: string;
+        suggestions?: string[];
       };
       add(
         "assistant",
-        response.ok && data.answer ? data.answer : findAssistantAnswer(value),
+        response.ok && data.answer ? `${data.answer}${data.suggestions?.length ? `\n\nVous pouvez aussi demander : ${data.suggestions.join(" · ")}` : ""}` : findAssistantAnswer(value),
         data,
       );
     } catch {

@@ -1,0 +1,8 @@
+"use client";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+const thresholds=[25,50,75,100];
+function consent(){try{return Boolean(JSON.parse(localStorage.getItem("absolu-consent")??"{}").analytics)}catch{return false}}
+function session(){let id=sessionStorage.getItem("absolu-analytics-session");if(!id){id=crypto.randomUUID();sessionStorage.setItem("absolu-analytics-session",id)}return id}
+function send(event:string,data:Record<string,unknown>={}){if(!consent())return;const body=JSON.stringify({sessionId:session(),event,path:location.pathname,referrer:document.referrer||undefined,...data}),sent=navigator.sendBeacon?.("/api/analytics/event",new Blob([body],{type:"application/json"}));if(!sent)void fetch("/api/analytics/event",{method:"POST",headers:{"content-type":"application/json"},body,keepalive:true});}
+export function FirstPartyTracker(){const pathname=usePathname();useEffect(()=>{send("page_view");const reached=new Set<number>();function scroll(){const max=document.documentElement.scrollHeight-innerHeight,depth=max<=0?100:Math.round((scrollY/max)*100);for(const threshold of thresholds)if(depth>=threshold&&!reached.has(threshold)){reached.add(threshold);send("scroll",{scrollDepth:threshold});}}function click(event:MouseEvent){if(innerWidth<1||document.documentElement.scrollHeight<1)return;send("click",{x:Math.round((event.clientX/innerWidth)*100),y:Math.min(100,Math.round(((event.clientY+scrollY)/document.documentElement.scrollHeight)*100))});}addEventListener("scroll",scroll,{passive:true});addEventListener("click",click,{passive:true});return()=>{removeEventListener("scroll",scroll);removeEventListener("click",click);};},[pathname]);return null;}

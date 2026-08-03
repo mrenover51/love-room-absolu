@@ -11,6 +11,9 @@ import { Testimonials } from "@/components/home/testimonials";
 import { WhyAbsolu } from "@/components/home/why-absolu";
 import { ReconnectSection } from "@/components/home/reconnect-section";
 import { TantraExperience } from "@/components/amenities/tantra-experience";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata=pageMetadata({title:"Love Room avec balnéo et sauna privatif | Absolu",description:"Découvrez Absolu à Avize, une suite romantique avec baignoire balnéo et sauna infrarouge privatifs près d’Épernay.",path:"/"});
 
 export default function Home() {
   return (

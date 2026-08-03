@@ -40,4 +40,6 @@ export function trackConversion(
   window.dataLayer.push(payload);
   window.gtag?.("event", event, properties);
   window.plausible?.(event, { props: properties });
+  const sessionId=sessionStorage.getItem("absolu-analytics-session");
+  if(sessionId)fetch("/api/analytics/event",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({sessionId,event,path:location.pathname,referrer:document.referrer||undefined,value:typeof properties.value==="number"?properties.value:undefined,metadata:properties}),keepalive:true}).catch(()=>undefined);
 }

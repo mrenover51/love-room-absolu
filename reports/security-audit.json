@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-08-03T03:38:23.519Z",
+  "status": "pass",
+  "checks": [
+    {
+      "area": "security",
+      "name": "En-têtes de sécurité",
+      "status": "pass",
+      "evidence": "CSP, HSTS, nosniff"
+    },
+    {
+      "area": "security",
+      "name": "Secrets ignorés",
+      "status": "pass",
+      "evidence": ".gitignore"
+    },
+    {
+      "area": "errors",
+      "name": "Fallback global",
+      "status": "pass",
+      "evidence": "Error boundaries accessibles"
+    },
+    {
+      "area": "monitoring",
+      "name": "Instrumentation serveur",
+      "status": "pass",
+      "evidence": "onRequestError + health"
+    },
+    {
+      "area": "backup",
+      "name": "Sauvegarde et restauration",
+      "status": "pass",
+      "evidence": "pg_dump/pg_restore"
+    }
+  ],
+  "residualRisks": [
+    "La limitation en mémoire n’est pas distribuée entre les instances Vercel.",
+    "Les politiques RLS doivent être testées après chaque migration.",
+    "Les webhooks Stripe et crons exigent une vérification avec secrets réels en préproduction."
+  ]
+}

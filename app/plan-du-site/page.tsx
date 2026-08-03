@@ -17,6 +17,9 @@ import { resourcePillars } from "@/lib/ai-seo/resources";
 import { getPublishedReviews } from "@/lib/reviews/reviews";
 import { semanticClusters } from "@/lib/seo/internal-links";
 import { getPublishedPartners } from "@/lib/partners/partners";
+import { seasonalEvents } from "@/lib/events/events";
+import { giftThemes } from "@/lib/gifts/catalog";
+import { conversationalAnswers } from "@/lib/ai-seo/conversations";
 
 export const metadata = pageMetadata({
   title: "Plan du site | Absolu",
@@ -43,6 +46,8 @@ const mainPages = [
   { href: "/medias", label: "Médiathèque" },
   { href: "/influenceurs", label: "Collaborations influenceurs" },
   { href: "/communiques-presse", label: "Communiqués de presse" },
+  { href: "/evenements", label: "Calendrier des événements" },
+  { href: "/reponses", label: "Réponses conversationnelles" },
 ];
 
 function LinkSection({
@@ -93,6 +98,18 @@ export default async function SiteMapPage() {
             }))}
           />
           <LinkSection title="Absolu" links={mainPages} />
+          <LinkSection title="Bons cadeaux" links={giftThemes.map((gift) => ({ href: `/bons-cadeaux/${gift.slug}`, label: gift.name }))} />
+          <LinkSection title="Questions naturelles" links={conversationalAnswers.map((item) => ({ href: `/reponses/${item.slug}`, label: item.question }))} />
+          <LinkSection
+            title="Événements et saisons"
+            links={[
+              { href: "/evenements", label: "Calendrier romantique" },
+              ...seasonalEvents.map((event) => ({
+                href: `/evenements/${event.slug}`,
+                label: `${event.name} chez Absolu`,
+              })),
+            ]}
+          />
           <LinkSection
             title="Partenaires vérifiés"
             links={[

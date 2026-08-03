@@ -41,6 +41,9 @@ export function Footer() {
             <Link href="/faq" className="hover:text-white">
               Réservation et FAQ
             </Link>
+            <Link href="/reponses" className="hover:text-white">
+              Réponses aux questions naturelles
+            </Link>
             <Link href="/plan-du-site" className="hover:text-white">
               Plan du site HTML
             </Link>
@@ -49,6 +52,9 @@ export function Footer() {
             </Link>
             <Link href="/presse" className="hover:text-white">
               Presse et médias
+            </Link>
+            <Link href="/evenements" className="hover:text-white">
+              Calendrier romantique
             </Link>
           </nav>
         </div>
