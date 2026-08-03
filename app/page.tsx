@@ -6,6 +6,7 @@ import { BookingCta } from "@/components/home/booking-cta";
 import { ExperienceGrid } from "@/components/home/experience-grid";
 import { GalleryPreview } from "@/components/home/gallery-preview";
 import { Hero } from "@/components/home/hero";
+import { TrustBar } from "@/components/home/trust-bar";
 import { Introduction } from "@/components/home/introduction";
 import { Testimonials } from "@/components/home/testimonials";
 import { WhyAbsolu } from "@/components/home/why-absolu";
@@ -21,6 +22,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <TrustBar />
         <Introduction />
         <ReconnectSection />
         <ExperienceGrid />

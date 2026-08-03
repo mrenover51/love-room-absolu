@@ -8,6 +8,8 @@ import { navigation } from "@/lib/constants";
 import { MobileMenu } from "./mobile-menu";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 
+const headerNavigation = navigation.slice(0, 5);
+
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -20,11 +22,11 @@ export function Header() {
   }, []);
   return (
     <>
-      <header className={`fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow] duration-500 ${scrolled ? "bg-[#090909]/90 shadow-lg shadow-black/10 backdrop-blur-xl" : "bg-transparent"}`}>
-        <div className="page-shell flex h-20 items-center justify-between lg:h-24">
-          <Link href="/" className="font-heading text-xl tracking-[.24em] text-white lg:text-2xl" aria-label="Absolu, accueil">ABSOLU</Link>
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Navigation principale">{navigation.map((item) => {const active=item.href==="/"?pathname==="/":pathname.startsWith(item.href);return <Link key={item.href} href={item.href} aria-current={active?"page":undefined} className={`relative py-2 text-[.68rem] font-semibold uppercase tracking-[.14em] transition-colors ${active?"text-white":"text-white/70 hover:text-white"}`}><span>{item.label}</span><span aria-hidden="true" className={`absolute inset-x-0 -bottom-1 h-px origin-left bg-[#C9A86A] transition-transform duration-500 ${active?"scale-x-100":"scale-x-0"}`}/></Link>})}</nav>
-          <div className="hidden xl:block"><LanguageSelector locale="fr" /></div><Link href="/reservation" className="hidden border border-[#C9A86A]/70 px-5 py-3 text-[.68rem] font-semibold uppercase tracking-[.16em] text-white transition-colors hover:bg-[#C9A86A] hover:text-black sm:block">Réserver</Link>
+      <header className={`fixed inset-x-0 top-0 z-40 border-b transition-all duration-500 ${scrolled ? "border-white/10 bg-[#090909]/88 shadow-[0_12px_45px_rgba(0,0,0,.18)] backdrop-blur-xl" : "border-white/[.06] bg-black/15 backdrop-blur-[6px]"}`}>
+        <div className={`page-shell flex items-center justify-between transition-[height] duration-500 ${scrolled ? "h-18 lg:h-20" : "h-24 lg:h-28"}`}>
+          <Link href="/" className="font-heading text-xl tracking-[.3em] text-white transition-colors hover:text-[#E7D4AD] lg:text-2xl" aria-label="Absolu, accueil">ABSOLU</Link>
+          <nav className="hidden items-center gap-9 xl:flex" aria-label="Navigation principale">{headerNavigation.map((item) => {const active=item.href==="/"?pathname==="/":pathname.startsWith(item.href);return <Link key={item.href} href={item.href} aria-current={active?"page":undefined} className={`group relative py-3 text-[.65rem] font-semibold uppercase tracking-[.18em] transition-colors duration-300 ${active?"text-white":"text-white/65 hover:text-white"}`}><span>{item.label}</span><span aria-hidden="true" className={`absolute inset-x-0 bottom-1 h-px origin-left bg-gradient-to-r from-[#A98245] to-[#E7D4AD] transition-transform duration-500 ease-out ${active?"scale-x-100":"scale-x-0 group-hover:scale-x-100"}`}/></Link>})}</nav>
+          <div className="ml-auto hidden items-center gap-5 sm:flex lg:gap-7"><div className="hidden xl:block"><LanguageSelector locale="fr" /></div><Link href="/reservation" className="premium-action hidden min-h-12 items-center border border-[#C9A86A]/60 bg-[#C9A86A]/[.08] px-7 text-[.65rem] font-semibold uppercase tracking-[.2em] text-white lg:inline-flex">Réserver</Link></div>
           <button type="button" onClick={() => setOpen(true)} className="grid size-12 place-items-center lg:hidden" aria-label="Ouvrir le menu" aria-expanded={open}><Menu aria-hidden="true" /></button>
         </div>
       </header>

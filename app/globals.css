@@ -60,18 +60,26 @@
 
 @layer base {
   * { @apply border-border; }
-  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-  body { @apply bg-background text-foreground font-sans; overflow-x: hidden; }
+  html { scroll-behavior: smooth; scroll-padding-top: 7rem; }
+  body { @apply bg-background text-foreground font-sans; overflow-x: hidden; line-height: 1.65; }
   ::selection { background: rgba(240, 60, 155, .35); color: #fff; }
   :focus-visible { outline: 2px solid #c9a86a; outline-offset: 4px; }
 }
 
 @layer utilities {
-  .page-shell { width: min(100% - 2rem, 76rem); margin-inline: auto; }
-  .eyebrow { letter-spacing: .25em; text-transform: uppercase; font-size: .7rem; font-weight: 600; }
-  .gold-line { width: 3rem; height: 1px; background: #c9a86a; }
+  .page-shell { width: min(100% - 2rem, 82rem); margin-inline: auto; }
+  .eyebrow { letter-spacing: .29em; text-transform: uppercase; font-size: .67rem; font-weight: 600; }
+  .gold-line { width: 3.5rem; height: 1px; background: linear-gradient(90deg, #9f783d, #e6cea0); }
   .text-balance { text-wrap: balance; }
+  .premium-action { position: relative; overflow: hidden; isolation: isolate; transition: color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
+  .premium-action::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.28) 50%, transparent 80%); transform: translateX(-140%); transition: transform .65s cubic-bezier(.22,1,.36,1); }
+  .premium-action:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.24), 0 0 24px rgba(201,168,106,.12); }
+  .premium-action:hover::before { transform: translateX(140%); }
+  .luxury-card { cursor: pointer; transition: transform .5s cubic-bezier(.22,1,.36,1), border-color .5s ease, box-shadow .5s ease; }
+  .luxury-card:hover { transform: translateY(-7px); border-color: rgba(201,168,106,.52); box-shadow: 0 30px 70px rgba(0,0,0,.3); }
 }
+
+@media (min-width: 768px) { .page-shell { width: min(100% - 4rem, 82rem); } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
