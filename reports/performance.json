@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-08-03",
+  "status": "pass",
+  "checks": {
+    "optimizedImageBudget": true,
+    "originalImageBudget": true,
+    "clientBoundaryBudget": true,
+    "modernFormatsPresent": true,
+    "heroPreloadsLimited": true
+  },
+  "inventory": {
+    "sourceFiles": 199,
+    "clientBoundaries": 46,
+    "images": 32,
+    "optimizedImages": 18,
+    "eagerImages": 18,
+    "largestOriginal": {
+      "path": "public/images/champagne-local-hero.png",
+      "bytes": 2371645
+    },
+    "largestOptimized": {
+      "path": "public/images/optimized/lit.webp",
+      "bytes": 152250
+    }
+  },
+  "budgets": {
+    "routes": [
+      "/",
+      "/la-suite",
+      "/reservation",
+      "/love-room/avize",
+      "/blog/meilleures-love-rooms-champagne"
+    ],
+    "scores": {
+      "performance": 1,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    },
+    "metrics": {
+      "largest-contentful-paint": 2500,
+      "cumulative-layout-shift": 0.1,
+      "total-blocking-time": 200,
+      "interactive": 3500
+    },
+    "assets": {
+      "maxOriginalImageBytes": 2500000,
+      "maxOptimizedImageBytes": 180000,
+      "maxClientBoundaries": 80
+    }
+  }
+}

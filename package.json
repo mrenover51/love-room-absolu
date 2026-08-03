@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "npm run validate:schema && npm run validate:mesh",
+    "prebuild": "npm run validate:schema && npm run validate:mesh && npm run performance:audit",
     "validate:schema": "node scripts/validate-structured-data.mjs",
     "validate:mesh": "node scripts/validate-internal-mesh.mjs",
+    "performance:audit": "node scripts/performance-audit.mjs",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",

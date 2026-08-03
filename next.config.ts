@@ -72,12 +72,23 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 90],
+    deviceSizes: [360, 640, 750, 828, 1080, 1200, 1440, 1920],
+    imageSizes: [32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 2678400,
     remotePatterns: [{ protocol: "https", hostname: "**.supabase.co" }],
   },
 
   async headers() {
     return [
+      {
+        source: "/images/optimized/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: securityHeaders,

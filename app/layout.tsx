@@ -8,7 +8,7 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { analyticsConfig } from "@/lib/analytics/providers";
 import { getStaySettings } from "@/lib/stay-settings";
 import { StructuredData } from "@/components/seo/structured-data";
-import { BookingAssistant } from "@/components/assistant/booking-assistant";
+import { DeferredBookingAssistant } from "@/components/performance/deferred-booking-assistant";
 import { CroLayer } from "@/components/cro/cro-layer";
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -103,7 +103,7 @@ export default async function RootLayout({
         <StructuredData staySettings={staySettings} />
         {children}
         <CroLayer />
-        <BookingAssistant />
+        <DeferredBookingAssistant />
         <ConsentManager />
         <ThemeControl />
         <ServiceWorkerRegistration />

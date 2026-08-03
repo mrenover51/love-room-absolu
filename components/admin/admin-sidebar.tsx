@@ -1,4 +1,72 @@
 "use client";
-import Link from "next/link";import {usePathname} from "next/navigation";import {BarChart3,BedDouble,Bell,Bot,CalendarDays,CircleDollarSign,Clock3,CloudCog,CreditCard,Gift,LayoutDashboard,Megaphone,ServerCog,Settings,SlidersHorizontal,Users,UserRound} from "lucide-react";
-const items=[["Dashboard","/admin",LayoutDashboard],["Calendrier","/admin/calendrier",CalendarDays],["Réservations","/admin/reservations",BedDouble],["Clients","/admin/clients",Users],["Tarifs","/admin/tarifs",CircleDollarSign],["Options","/admin/options",SlidersHorizontal],["Bons cadeaux","/admin/bons-cadeaux",Gift],["Paiements","/admin/paiements",CreditCard],["Synchronisation","/admin/synchronisation",CloudCog],["Statistiques","/admin/statistiques",BarChart3],["Automatisations","/admin/notifications",Bell],["Assistant","/admin/assistant",Bot],["Exploitation","/admin/exploitation",ServerCog],["Marketing","/admin/marketing",Megaphone],["Paramètres","/admin/parametres",Settings],["Horaires","/admin/parametres/horaires",Clock3],["Mon compte","/admin/compte",UserRound]] as const;
-export function AdminSidebar(){const pathname=usePathname();return <nav aria-label="Navigation administration" className="flex gap-2 overflow-x-auto border-b border-white/10 p-3 pb-4 lg:min-h-[calc(100svh-76px)] lg:flex-col lg:border-r lg:border-b-0 lg:p-5">{items.map(([label,href,Icon])=>{const active=href==="/admin"?pathname===href:href==="/admin/parametres"?pathname===href:pathname.startsWith(href);return <Link key={href} href={href} aria-current={active?"page":undefined} className={`flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${active?"bg-[#C9A86A]/15 text-[#E5C98E] ring-1 ring-[#C9A86A]/30":"text-white/55 hover:bg-white/5 hover:text-white"}`}><Icon className="size-4" aria-hidden="true"/>{label}</Link>})}</nav>}
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Activity,
+  BarChart3,
+  BedDouble,
+  Bell,
+  Bot,
+  CalendarDays,
+  CircleDollarSign,
+  Clock3,
+  CloudCog,
+  CreditCard,
+  Gift,
+  LayoutDashboard,
+  Megaphone,
+  ServerCog,
+  Settings,
+  SlidersHorizontal,
+  Users,
+  UserRound,
+} from "lucide-react";
+const items = [
+  ["Dashboard", "/admin", LayoutDashboard],
+  ["Calendrier", "/admin/calendrier", CalendarDays],
+  ["Réservations", "/admin/reservations", BedDouble],
+  ["Clients", "/admin/clients", Users],
+  ["Tarifs", "/admin/tarifs", CircleDollarSign],
+  ["Options", "/admin/options", SlidersHorizontal],
+  ["Bons cadeaux", "/admin/bons-cadeaux", Gift],
+  ["Paiements", "/admin/paiements", CreditCard],
+  ["Synchronisation", "/admin/synchronisation", CloudCog],
+  ["Statistiques", "/admin/statistiques", BarChart3],
+  ["Performance", "/admin/performance", Activity],
+  ["Automatisations", "/admin/notifications", Bell],
+  ["Assistant", "/admin/assistant", Bot],
+  ["Exploitation", "/admin/exploitation", ServerCog],
+  ["Marketing", "/admin/marketing", Megaphone],
+  ["Paramètres", "/admin/parametres", Settings],
+  ["Horaires", "/admin/parametres/horaires", Clock3],
+  ["Mon compte", "/admin/compte", UserRound],
+] as const;
+export function AdminSidebar() {
+  const pathname = usePathname();
+  return (
+    <nav
+      aria-label="Navigation administration"
+      className="flex gap-2 overflow-x-auto border-b border-white/10 p-3 pb-4 lg:min-h-[calc(100svh-76px)] lg:flex-col lg:border-r lg:border-b-0 lg:p-5"
+    >
+      {items.map(([label, href, Icon]) => {
+        const active =
+          href === "/admin"
+            ? pathname === href
+            : href === "/admin/parametres"
+              ? pathname === href
+              : pathname.startsWith(href);
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={active ? "page" : undefined}
+            className={`flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${active ? "bg-[#C9A86A]/15 text-[#E5C98E] ring-1 ring-[#C9A86A]/30" : "text-white/55 hover:bg-white/5 hover:text-white"}`}
+          >
+            <Icon className="size-4" aria-hidden="true" />
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
