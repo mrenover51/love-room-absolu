@@ -147,7 +147,7 @@ export default async function ArticlePage({
               {article.excerpt}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-white/40">
-              <span>Par {article.author}</span>
+              <Link href={magazineAuthor.url} className="transition-colors hover:text-[#C9A86A]">Par {article.author}</Link>
               <span>•</span>
               <span className="flex items-center gap-1">
                 <Clock3 className="size-4" />

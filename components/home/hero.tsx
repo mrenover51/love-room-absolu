@@ -47,18 +47,18 @@ export function Hero() {
         <motion.div className="max-w-2xl" initial={reduced ? false : "hidden"} animate="show" variants={{hidden:{opacity:0},show:{opacity:1,transition:{staggerChildren:.12,delayChildren:.15}}}}>
           <motion.div variants={{hidden:{opacity:0,y:18},show:{opacity:1,y:0,transition:{duration:.8,ease:[.22,1,.36,1]}}}}>
           <p className="eyebrow mb-6 text-[#D8C8B6]">Suite & spa privé</p>
-          <h1 className="font-heading text-7xl font-medium uppercase leading-none text-[#F6F2EC] sm:text-8xl lg:text-[9rem]">
+          <h1 className="font-heading text-7xl font-medium uppercase leading-[.86] tracking-[-.025em] text-[#F6F2EC] sm:text-8xl lg:text-[10rem]">
             Absolu
           </h1>
           <p className="mt-3 font-heading text-2xl italic text-[#D8C8B6] sm:text-3xl">
-            La Love Room d’exception.
+            Une nuit à deux, loin du reste.
           </p>
           <p className="mt-6 text-xs font-medium uppercase tracking-[.18em] text-white/70 sm:text-sm">
             Baignoire balnéo <span aria-hidden="true">•</span> Sauna{" "}
             <span aria-hidden="true">•</span> Suite privative
           </p>
           </motion.div>
-          <motion.div variants={{hidden:{opacity:0,y:16},show:{opacity:1,y:0,transition:{duration:.75,ease:[.22,1,.36,1]}}}} className="mt-10 grid max-w-xl gap-3 sm:grid-cols-2">
+          <motion.div variants={{hidden:{opacity:0,y:16},show:{opacity:1,y:0,transition:{duration:.75,ease:[.22,1,.36,1]}}}} className="mt-12 grid max-w-xl gap-4 sm:grid-cols-2">
             <PremiumButton href="/reservation">
               Réserver votre nuit
             </PremiumButton>

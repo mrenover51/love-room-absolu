@@ -14,7 +14,7 @@ export type InternalLink = {
   kind: InternalLinkKind;
 };
 export type InternalLinkGroup = {
-  title: "Lire également" | "Vous aimerez aussi" | "Préparer votre séjour";
+  title: "À découvrir" | "Lire aussi" | "Pages similaires";
   links: InternalLink[];
 };
 export type SemanticCluster = {
@@ -355,11 +355,11 @@ export function getInternalLinkGroups(pathname: string): InternalLinkGroup[] {
     unique.filter((item) => kinds.includes(item.kind)).slice(0, 4);
 
   return [
-    { title: "Lire également", links: pick(["similar", "article"]) },
+    { title: "Lire aussi", links: pick(["similar", "article"]) },
     {
-      title: "Vous aimerez aussi",
+      title: "À découvrir",
       links: pick(["equipment", "restaurant", "activity"]),
     },
-    { title: "Préparer votre séjour", links: pick(["faq", "city", "booking"]) },
+    { title: "Pages similaires", links: pick(["faq", "city", "booking"]) },
   ];
 }

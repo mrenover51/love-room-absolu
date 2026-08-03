@@ -5,9 +5,9 @@ import { Flower2, HeartHandshake, Sparkles } from "lucide-react";
 
 export function ReconnectSection() {
   const reducedMotion = useReducedMotion();
-  return <section className="relative isolate overflow-hidden bg-[#11100E] py-20 text-[#F6F2EC] sm:py-28" aria-labelledby="reconnect-title">
+  return <section className="relative isolate overflow-hidden border-y border-[#C9A86A]/10 bg-[#11100E] py-28 text-[#F6F2EC] sm:py-40" aria-labelledby="reconnect-title">
     <motion.div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C9A86A]/10 blur-[110px]" animate={reducedMotion ? undefined : { scale: [1, 1.08, 1], opacity: [.55, .9, .55] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
-    <div className="page-shell relative grid items-center gap-10 lg:grid-cols-[.42fr_.58fr] lg:gap-20">
+    <div className="page-shell relative grid items-center gap-16 lg:grid-cols-[.42fr_.58fr] lg:gap-24">
       <motion.div initial={reducedMotion ? false : { opacity: 0, scale: .94 }} whileInView={reducedMotion ? undefined : { opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: .8 }} className="relative mx-auto grid size-48 place-items-center rounded-full border border-[#C9A86A]/20 bg-white/[.04] shadow-[0_0_80px_rgba(201,168,106,.12)] backdrop-blur-xl sm:size-64">
         <span className="absolute inset-5 rounded-full border border-dashed border-[#C9A86A]/25" />
         <Flower2 className="size-20 stroke-[1] text-[#DCC18E] sm:size-28" aria-hidden="true" />

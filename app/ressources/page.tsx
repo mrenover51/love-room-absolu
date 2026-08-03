@@ -6,9 +6,9 @@ import { resourcePillars } from "@/lib/ai-seo/resources";
 import { pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 export const metadata = pageMetadata({
-  title: "Centre de ressources Love Room et Champagne",
+  title: "Toutes les ressources Love Room et Champagne",
   description:
-    "Guides, réponses directes, comparatifs et définitions pour préparer un séjour romantique à Avize et en Champagne.",
+    "Retrouvez toutes les ressources Absolu : guides, réponses, comparatifs et définitions pour préparer un séjour romantique à Avize et en Champagne.",
   path: "/ressources",
 });
 export default function Resources() {
@@ -33,10 +33,10 @@ export default function Resources() {
       />
       <Header />
       <main className="page-shell pb-24 pt-36">
-        <Breadcrumb current="Centre de ressources" />
+        <Breadcrumb current="Toutes les ressources" />
         <p className="eyebrow mt-12 text-[#C9A86A]">Réponses vérifiables</p>
         <h1 className="mt-4 max-w-5xl font-heading text-6xl sm:text-8xl">
-          Centre de ressources Absolu
+          Toutes les ressources Absolu
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-white/60">
           Des réponses courtes pour décider, des guides approfondis pour
