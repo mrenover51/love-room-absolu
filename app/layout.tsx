@@ -8,6 +8,7 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { analyticsConfig } from "@/lib/analytics/providers";
 import { getStaySettings } from "@/lib/stay-settings";
 import { StructuredData } from "@/components/seo/structured-data";
+import { BookingAssistant } from "@/components/assistant/booking-assistant";
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -43,8 +44,21 @@ export const metadata: Metadata = {
     "parenthèse romantique",
     "rituel de détente",
   ],
-  alternates: { canonical: provisionalUrl, languages: { "fr-FR": provisionalUrl, "x-default": provisionalUrl } },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  alternates: {
+    canonical: provisionalUrl,
+    languages: { "fr-FR": provisionalUrl, "x-default": provisionalUrl },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -53,7 +67,14 @@ export const metadata: Metadata = {
     title: "Absolu | Love Room avec baignoire balnéo et sauna privatif",
     description:
       "Une Love Room romantique haut de gamme avec baignoire balnéo et sauna, pensée pour le bien-être et la reconnexion du couple.",
-    images: [{ url: `${provisionalUrl}/images/optimized/lit.webp`, width: 1448, height: 1086, alt: "La suite romantique Absolu" }],
+    images: [
+      {
+        url: `${provisionalUrl}/images/optimized/lit.webp`,
+        width: 1448,
+        height: 1086,
+        alt: "La suite romantique Absolu",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -61,43 +82,119 @@ export const metadata: Metadata = {
     description: "Une parenthèse hors du temps, pensée pour deux.",
     images: [`${provisionalUrl}/images/optimized/lit.webp`],
   },
-  verification: analyticsConfig.searchConsoleVerification ? { google: analyticsConfig.searchConsoleVerification } : undefined,
+  verification: analyticsConfig.searchConsoleVerification
+    ? { google: analyticsConfig.searchConsoleVerification }
+    : undefined,
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const staySettings = await getStaySettings();
   const structuredData: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "LodgingBusiness",
     name: "Absolu",
     url: provisionalUrl,
-    description: "Suite romantique avec baignoire balnéo privative, sauna infrarouge et ambiance lumineuse.",
-    image: [`${provisionalUrl}/images/optimized/lit.webp`, `${provisionalUrl}/images/optimized/salledebain.webp`],
+    description:
+      "Suite romantique avec baignoire balnéo privative, sauna infrarouge et ambiance lumineuse.",
+    image: [
+      `${provisionalUrl}/images/optimized/lit.webp`,
+      `${provisionalUrl}/images/optimized/salledebain.webp`,
+    ],
     amenityFeature: [
-      { "@type": "LocationFeatureSpecification", name: "Baignoire balnéo privative", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Sauna infrarouge", value: true },
+      {
+        "@type": "LocationFeatureSpecification",
+        name: "Baignoire balnéo privative",
+        value: true,
+      },
+      {
+        "@type": "LocationFeatureSpecification",
+        name: "Sauna infrarouge",
+        value: true,
+      },
       { "@type": "LocationFeatureSpecification", name: "Wi-Fi", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Coin café", value: true },
+      {
+        "@type": "LocationFeatureSpecification",
+        name: "Coin café",
+        value: true,
+      },
     ],
     floorSize: { "@type": "QuantitativeValue", value: 35, unitCode: "MTK" },
     numberOfRooms: 1,
     checkinTime: staySettings.checkIn,
     checkoutTime: staySettings.checkOut,
   };
-  structuredData.address={"@type":"PostalAddress",streetAddress:"36 rue Pasteur",postalCode:"51190",addressLocality:"Avize",addressRegion:"Grand Est",addressCountry:"FR"};
-  if(siteConfig.phone) structuredData.telephone=siteConfig.phone;
-  if(siteConfig.email) structuredData.email=siteConfig.email;
-  if(siteConfig.latitude!==undefined&&siteConfig.longitude!==undefined) structuredData.geo={"@type":"GeoCoordinates",latitude:siteConfig.latitude,longitude:siteConfig.longitude};
-  if(siteConfig.startingPrice!==undefined) structuredData.priceRange=`À partir de ${siteConfig.startingPrice} EUR`;
-  const graph={"@context":"https://schema.org","@graph":[structuredData,{"@type":"Organization","@id":`${provisionalUrl}/#organization`,name:siteConfig.commercialName,url:provisionalUrl,telephone:siteConfig.phone,email:siteConfig.email,address:structuredData.address},{"@type":"WebSite","@id":`${provisionalUrl}/#website`,name:siteConfig.commercialName,url:provisionalUrl,inLanguage:"fr-FR",publisher:{"@id":`${provisionalUrl}/#organization`},potentialAction:{"@type":"SearchAction",target:{"@type":"EntryPoint",urlTemplate:`${provisionalUrl}/recherche?q={search_term_string}`},"query-input":"required name=search_term_string"}}]};
+  structuredData.address = {
+    "@type": "PostalAddress",
+    streetAddress: "36 rue Pasteur",
+    postalCode: "51190",
+    addressLocality: "Avize",
+    addressRegion: "Grand Est",
+    addressCountry: "FR",
+  };
+  if (siteConfig.phone) structuredData.telephone = siteConfig.phone;
+  if (siteConfig.email) structuredData.email = siteConfig.email;
+  if (siteConfig.latitude !== undefined && siteConfig.longitude !== undefined)
+    structuredData.geo = {
+      "@type": "GeoCoordinates",
+      latitude: siteConfig.latitude,
+      longitude: siteConfig.longitude,
+    };
+  if (siteConfig.startingPrice !== undefined)
+    structuredData.priceRange = `À partir de ${siteConfig.startingPrice} EUR`;
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      structuredData,
+      {
+        "@type": "Organization",
+        "@id": `${provisionalUrl}/#organization`,
+        name: siteConfig.commercialName,
+        url: provisionalUrl,
+        telephone: siteConfig.phone,
+        email: siteConfig.email,
+        address: structuredData.address,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${provisionalUrl}/#website`,
+        name: siteConfig.commercialName,
+        url: provisionalUrl,
+        inLanguage: "fr-FR",
+        publisher: { "@id": `${provisionalUrl}/#organization` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${provisionalUrl}/recherche?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
   return (
     <html
-  lang="fr"
-  data-scroll-behavior="smooth"
-  suppressHydrationWarning
-  className={`${serif.variable} ${sans.variable} dark antialiased`}
->
-      <body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replaceAll("<", "\\u003c") }} /><StructuredData />{children}<ConsentManager/><ThemeControl/><ServiceWorkerRegistration/></body>
+      lang="fr"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${serif.variable} ${sans.variable} dark antialiased`}
+    >
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(graph).replaceAll("<", "\\u003c"),
+          }}
+        />
+        <StructuredData />
+        {children}
+        <BookingAssistant />
+        <ConsentManager />
+        <ThemeControl />
+        <ServiceWorkerRegistration />
+      </body>
     </html>
   );
 }
