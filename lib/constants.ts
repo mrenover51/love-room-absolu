@@ -28,6 +28,7 @@ export const navigation = [
   { label: "Réservation", href: "/reservation" },
   { label: "Contact", href: "/contact" },
   { label: "Autour de nous", href: "/love-room" },
+  { label: "Inspirations", href: "/experiences-romantiques" },
 ] as const;
 
 export const experiences = [
