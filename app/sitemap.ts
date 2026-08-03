@@ -31,6 +31,12 @@ const routes = [
     images: ["entree2.webp", "lit.webp", "salledebain.webp"],
   },
   {
+    path: "/notre-histoire",
+    priority: 0.7,
+    changeFrequency: "monthly" as const,
+    images: ["entree2.webp", "lit.webp"],
+  },
+  {
     path: "/galerie",
     priority: 0.8,
     changeFrequency: "monthly" as const,

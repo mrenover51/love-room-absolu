@@ -34,6 +34,7 @@ const slugify = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-");
 const mainPages = [
+  { href: "/notre-histoire", label: "Notre histoire" },
   { href: "/la-suite", label: "La suite Absolu" },
   { href: "/galerie", label: "Galerie" },
   { href: "/videos", label: "Vidéos immersives" },

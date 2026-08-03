@@ -14,6 +14,7 @@ const exploreColumns = [
     { label: "Carte interactive", detail: "Explorer les alentours", href: "/carte-touristique" },
     { label: "Maisons de Champagne", detail: "L’Avenue de Champagne", href: "/guide-touristique/avenue-de-champagne" },
     { label: "Magazine", detail: "Histoires et art de vivre", href: "/blog" },
+    { label: "Notre histoire", detail: "Les origines d’Absolu", href: "/notre-histoire" },
   ] },
   { title: "Expérience", links: [
     { label: "Équipements", detail: "Le confort en privé", href: "/equipements" },

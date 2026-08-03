@@ -11,6 +11,7 @@ const labels: Record<string, string> = {
   "guide-touristique": "Guide", restaurants: "Restaurants", equipements: "Équipements",
   ressources: "Ressources", "love-room": "Love Room", reservation: "Réservation",
   "bons-cadeaux": "Bons cadeaux", faq: "FAQ", galerie: "Galerie", contact: "Contact",
+  "notre-histoire": "Notre histoire",
 };
 
 const humanize = (segment: string) => labels[segment] ?? decodeURIComponent(segment).replaceAll("-", " ").replace(/^./, letter => letter.toUpperCase());
@@ -28,7 +29,7 @@ export function AutomaticBreadcrumb() {
   const pathname = usePathname();
   if (pathname === "/" || pathname.startsWith("/admin") || pathname.startsWith("/api") || pathname === "/maintenance" || pathname === "/offline") return null;
   const segments = pathname.split("/").filter(Boolean);
-  const embeddedBreadcrumb = pathname === "/galerie" || (["avis", "bons-cadeaux", "evenements", "equipements", "experiences-romantiques", "love-room", "restaurants", "partenaires", "reponses"].includes(segments[0]) && segments.length === 2) || (segments[0] === "guide-touristique" && segments.length === 2) || (segments[0] === "blog" && segments.length === 2 && !["auteur", "categorie", "tag", "recherche"].includes(segments[1]));
+  const embeddedBreadcrumb = pathname === "/galerie" || pathname === "/notre-histoire" || (["avis", "bons-cadeaux", "evenements", "equipements", "experiences-romantiques", "love-room", "restaurants", "partenaires", "reponses"].includes(segments[0]) && segments.length === 2) || (segments[0] === "guide-touristique" && segments.length === 2) || (segments[0] === "blog" && segments.length === 2 && !["auteur", "categorie", "tag", "recherche"].includes(segments[1]));
   if (embeddedBreadcrumb) return null;
   const elements = [{ name: "Accueil", item: siteConfig.url }, ...segments.map((segment, index) => { const href = `/${segments.slice(0, index + 1).join("/")}`; return { name: humanize(segment), ...(index < segments.length - 1 ? { item: `${siteConfig.url}${href}` } : {}) }; })];
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(elements)).replaceAll("<", "\\u003c") }} />;
