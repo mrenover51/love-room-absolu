@@ -6,7 +6,7 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://www.googletagmanager.com https://plausible.io https://connect.facebook.net`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://www.facebook.com",
+  "img-src 'self' data: blob: https://www.facebook.com https://*.supabase.co",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://plausible.io https://www.facebook.com",
   "frame-src https://js.stripe.com https://hooks.stripe.com",
@@ -72,6 +72,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 2678400,
+    remotePatterns: [{ protocol: "https", hostname: "**.supabase.co" }],
   },
 
   async headers() {
@@ -84,8 +85,16 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: "/confidentialite", destination: "/politique-confidentialite", permanent: true },
-      { source: "/conditions-reservation", destination: "/conditions", permanent: true },
+      {
+        source: "/confidentialite",
+        destination: "/politique-confidentialite",
+        permanent: true,
+      },
+      {
+        source: "/conditions-reservation",
+        destination: "/conditions",
+        permanent: true,
+      },
     ];
   },
 };
