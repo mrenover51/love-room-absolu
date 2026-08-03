@@ -31,6 +31,7 @@ const routes = [
     changeFrequency: "monthly" as const,
     images: ["lit.webp", "sauna.webp", "douche.webp"],
   },
+  { path: "/videos", priority: 0.7, changeFrequency: "monthly" as const },
   { path: "/equipements", priority: 0.8, changeFrequency: "monthly" as const },
   { path: "/bons-cadeaux", priority: 0.7, changeFrequency: "monthly" as const },
   { path: "/blog", priority: 0.7, changeFrequency: "weekly" as const },

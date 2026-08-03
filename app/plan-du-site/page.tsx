@@ -31,6 +31,7 @@ const slugify = (value: string) =>
 const mainPages = [
   { href: "/la-suite", label: "La suite Absolu" },
   { href: "/galerie", label: "Galerie" },
+  { href: "/videos", label: "Vidéos immersives" },
   { href: "/reservation", label: "Réserver" },
   { href: "/bons-cadeaux", label: "Bons cadeaux" },
   { href: "/faq", label: "Questions fréquentes" },

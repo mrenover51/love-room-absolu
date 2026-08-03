@@ -9,7 +9,7 @@ const csp = [
   "img-src 'self' data: blob: https://www.facebook.com https://*.supabase.co",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://plausible.io https://www.facebook.com",
-  "frame-src https://js.stripe.com https://hooks.stripe.com",
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube-nocookie.com https://player.vimeo.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "object-src 'none'",

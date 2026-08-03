@@ -28,6 +28,7 @@ export const navigation = [
   { label: "Accueil", href: "/" },
   { label: "La suite", href: "/la-suite" },
   { label: "Galerie", href: "/galerie" },
+  { label: "Vidéos", href: "/videos" },
   { label: "Équipements", href: "/equipements" },
   { label: "Réservation", href: "/reservation" },
   { label: "Contact", href: "/contact" },
