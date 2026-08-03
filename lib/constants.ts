@@ -30,6 +30,7 @@ export const navigation = [
   { label: "Autour de nous", href: "/love-room" },
   { label: "Restaurants", href: "/restaurants" },
   { label: "Guide touristique", href: "/guide-touristique" },
+  { label: "Ressources", href: "/ressources" },
   { label: "Inspirations", href: "/experiences-romantiques" },
 ] as const;
 

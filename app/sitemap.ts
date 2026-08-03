@@ -6,6 +6,7 @@ import { magazineArticles, magazineCategories, magazineTags } from "@/lib/magazi
 import { equipmentItems } from "@/lib/equipment/equipment-data";
 import { restaurants } from "@/lib/restaurants/restaurants";
 import { touristAttractions } from "@/lib/tourism/attractions";
+import { resourcePillars } from "@/lib/ai-seo/resources";
 const routes = [
   { path: "", priority: 1, changeFrequency: "weekly" as const, images: ["lit.webp", "salledebain.webp", "sauna.webp"] },
   { path: "/la-suite", priority: 0.9, changeFrequency: "monthly" as const, images: ["entree2.webp", "lit.webp", "salledebain.webp"] },
@@ -21,6 +22,10 @@ const routes = [
   { path: "/plan-du-site", priority: 0.5, changeFrequency: "weekly" as const },
   { path: "/restaurants", priority: 0.8, changeFrequency: "weekly" as const },
   { path: "/guide-touristique", priority: 0.8, changeFrequency: "weekly" as const },
+  { path: "/ressources", priority: 0.8, changeFrequency: "weekly" as const },
+  { path: "/glossaire", priority: 0.6, changeFrequency: "monthly" as const },
+  { path: "/lexique-love-room", priority: 0.6, changeFrequency: "monthly" as const },
+  { path: "/comparateur-love-room", priority: 0.75, changeFrequency: "monthly" as const },
 ];
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes=routes.map(({ path, images, ...route }) => ({
@@ -40,5 +45,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const restaurantSelections=["top-10-romantiques","top-champagne","top-brunch","top-terrasse"].map(slug=>({url:`${siteConfig.url}/restaurants/selection/${slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65}));
   const attractionRoutes=touristAttractions.map(item=>({url:`${siteConfig.url}/guide-touristique/${item.slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65,alternates:{languages:{fr:`${siteConfig.url}/guide-touristique/${item.slug}`}},images:[`${siteConfig.url}/images/tourism-guide-hero.png`]}));
   const tourismSelections=["top-activites","top-romantique","top-detente"].map(slug=>({url:`${siteConfig.url}/guide-touristique/selection/${slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65}));
-  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes,...equipmentRoutes,...restaurantRoutes,...restaurantSelections,...attractionRoutes,...tourismSelections];
+  const resourceRoutes=resourcePillars.map(item=>({url:`${siteConfig.url}/ressources/${item.slug}`,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.75,alternates:{languages:{fr:`${siteConfig.url}/ressources/${item.slug}`}}}));
+  return [...staticRoutes,...localRoutes,...intentRoutes,...articleRoutes,...archiveRoutes,...equipmentRoutes,...restaurantRoutes,...restaurantSelections,...attractionRoutes,...tourismSelections,...resourceRoutes];
 }

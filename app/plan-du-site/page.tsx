@@ -9,6 +9,7 @@ import { pageMetadata } from "@/lib/seo";
 import { searchIntents } from "@/lib/seo-intents/intents";
 import { restaurants } from "@/lib/restaurants/restaurants";
 import { touristAttractions } from "@/lib/tourism/attractions";
+import { resourcePillars } from "@/lib/ai-seo/resources";
 
 export const metadata = pageMetadata({ title: "Plan du site | Absolu", description: "Retrouvez toutes les pages, destinations, expériences, équipements et guides du magazine Absolu.", path: "/plan-du-site" });
 const slugify = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -26,6 +27,7 @@ export default function SiteMapPage() {
     <LinkSection title="Équipements de la suite" links={[{ href: "/equipements", label: "Tous les équipements" }, ...equipmentItems.map((item) => ({ href: `/equipements/${item.slug}`, label: item.name }))]} />
     <LinkSection title="Restaurants autour d’Absolu" links={[{ href: "/restaurants", label: "Annuaire des restaurants" }, ...restaurants.map((item) => ({ href: `/restaurants/${item.slug}`, label: `${item.name} — ${item.city}` }))]} />
     <LinkSection title="Guide touristique de la Champagne" links={[{ href: "/guide-touristique", label: "Toutes les activités" }, ...touristAttractions.map((item) => ({ href: `/guide-touristique/${item.slug}`, label: item.name }))]} />
+    <LinkSection title="Ressources et comparatifs" links={[{ href: "/ressources", label: "Centre de ressources" }, { href: "/comparateur-love-room", label: "Comparateur Love Room" }, { href: "/glossaire", label: "Glossaire" }, { href: "/lexique-love-room", label: "Lexique Love Room" }, ...resourcePillars.map((item) => ({ href: `/ressources/${item.slug}`, label: item.title }))]} />
     <LinkSection title="Magazine et conseils" links={[{ href: "/blog", label: "Le magazine Absolu" }, { href: "/blog/auteur/redaction-absolu", label: "La rédaction Absolu" }, ...magazineCategories.map((category) => ({ href: `/blog/categorie/${slugify(category)}`, label: `Dossier ${category}` })), ...magazineTags.map((tag) => ({ href: `/blog/tag/${slugify(tag)}`, label: `Conseils ${tag}` })), ...magazineArticles.map((article) => ({ href: `/blog/${article.slug}`, label: article.title }))]} />
   </div></main><Footer /></>;
 }

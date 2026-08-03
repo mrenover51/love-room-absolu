@@ -12,6 +12,8 @@ export const siteConfig = {
   latitude: numberValue("NEXT_PUBLIC_SITE_LATITUDE"), longitude: numberValue("NEXT_PUBLIC_SITE_LONGITUDE"),
   checkInTime: STAY_TIMES.checkIn, checkOutTime: STAY_TIMES.checkOut,
   capacity: numberValue("NEXT_PUBLIC_SITE_CAPACITY"), startingPrice: numberValue("NEXT_PUBLIC_STARTING_PRICE"),
+  reviewRating: numberValue("NEXT_PUBLIC_REVIEW_RATING"), reviewCount: numberValue("NEXT_PUBLIC_REVIEW_COUNT"),
+  featuredReviewBody: value("NEXT_PUBLIC_FEATURED_REVIEW_BODY"), featuredReviewAuthor: value("NEXT_PUBLIC_FEATURED_REVIEW_AUTHOR"),
 } as const;
 
 export const hasLocalSeo = Boolean(siteConfig.city && siteConfig.department);

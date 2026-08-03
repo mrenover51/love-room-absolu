@@ -6,6 +6,7 @@ const discovery: InternalLink[] = [
   { href: "/equipements/baignoire-balneo", label: "Suite avec baignoire balnéo" },
   { href: "/equipements/sauna", label: "Profiter d’un sauna privatif" },
   { href: "/experiences-romantiques/escapade-romantique", label: "Imaginer une escapade romantique" },
+  { href: "/ressources/love-room-champagne", label: "Comprendre la Love Room en Champagne" },
 ];
 
 const advice: InternalLink[] = [
