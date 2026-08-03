@@ -35,6 +35,7 @@ export const navigation = [
   { label: "Autour de nous", href: "/love-room" },
   { label: "Restaurants", href: "/restaurants" },
   { label: "Guide touristique", href: "/guide-touristique" },
+  { label: "Carte", href: "/carte-touristique" },
   { label: "Ressources", href: "/ressources" },
   { label: "Avis clients", href: "/avis" },
   { label: "Inspirations", href: "/experiences-romantiques" },

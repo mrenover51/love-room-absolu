@@ -51,6 +51,11 @@ const routes = [
     priority: 0.8,
     changeFrequency: "weekly" as const,
   },
+  {
+    path: "/carte-touristique",
+    priority: 0.75,
+    changeFrequency: "weekly" as const,
+  },
   { path: "/ressources", priority: 0.8, changeFrequency: "weekly" as const },
   { path: "/avis", priority: 0.8, changeFrequency: "weekly" as const },
   { path: "/glossaire", priority: 0.6, changeFrequency: "monthly" as const },
