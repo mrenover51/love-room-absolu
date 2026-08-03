@@ -15,6 +15,7 @@ import { restaurants } from "@/lib/restaurants/restaurants";
 import { touristAttractions } from "@/lib/tourism/attractions";
 import { resourcePillars } from "@/lib/ai-seo/resources";
 import { getPublishedReviews } from "@/lib/reviews/reviews";
+import { semanticClusters } from "@/lib/seo/internal-links";
 
 export const metadata = pageMetadata({
   title: "Plan du site | Absolu",
@@ -75,6 +76,13 @@ export default async function SiteMapPage() {
           équipements et conseils en Champagne.
         </p>
         <div className="mt-20 space-y-20">
+          <LinkSection
+            title="Clusters sémantiques"
+            links={semanticClusters.map((cluster) => ({
+              href: cluster.links[0].href,
+              label: cluster.label,
+            }))}
+          />
           <LinkSection title="Absolu" links={mainPages} />
           <LinkSection
             title="Avis clients vérifiés"
