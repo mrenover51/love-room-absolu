@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -13,6 +13,7 @@ import { DateRangePicker } from "./date-range-picker";
 import { ExtrasSelector } from "./extras-selector";
 import { GuestDetailsForm } from "./guest-details-form";
 import { BookingSummary } from "./booking-summary";
+import { trackConversion } from "@/lib/analytics/conversion";
 
 const steps = ["Dates", "Options", "Informations", "Confirmation"];
 export function BookingFlow({
@@ -21,6 +22,7 @@ export function BookingFlow({
   pricingConfig: PublicPricingConfig;
 }) {
   const router = useRouter(),
+    searchParams = useSearchParams(),
     headingRef = useRef<HTMLHeadingElement>(null),
     [step, setStep] = useState(0),
     [serverError, setServerError] = useState(""),
@@ -31,8 +33,8 @@ export function BookingFlow({
   const form = useForm<ReservationRequestInput>({
     resolver: zodResolver(reservationRequestSchema),
     defaultValues: {
-      checkIn: "",
-      checkOut: "",
+      checkIn: searchParams.get("arrivee") ?? "",
+      checkOut: searchParams.get("depart") ?? "",
       extraKeys: [],
       promoCode: "",
       firstName: "",
@@ -90,9 +92,16 @@ export function BookingFlow({
     setPromoMessage(
       `Code appliqué : −${data.discountPercent} % sur les nuitées.`,
     );
+    trackConversion("booking_promo_applied", {
+      discount_percent: data.discountPercent,
+    });
   }
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
+    trackConversion("booking_step_view", {
+      step: step + 1,
+      label: steps[step],
+    });
   }, [step]);
   function goTo(nextStep: number) {
     setServerError("");
@@ -122,6 +131,10 @@ export function BookingFlow({
           router.push("/reservation/indisponible");
           return;
         }
+        trackConversion("booking_dates_selected", {
+          nights: pricing.nights,
+          value: pricing.totalAmount / 100,
+        });
       } catch {
         setServerError(
           "Les disponibilités ne peuvent pas être vérifiées pour le moment.",
@@ -148,6 +161,10 @@ export function BookingFlow({
     if (loading) return;
     setLoading(true);
     setServerError("");
+    trackConversion("begin_checkout", {
+      value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
+      currency: "EUR",
+    });
     try {
       const response = await fetch("/api/stripe/create-checkout-session", {
           method: "POST",
@@ -163,6 +180,10 @@ export function BookingFlow({
         throw new Error(result.error);
       }
       if (!result.url) throw new Error("Le paiement n’a pas pu être ouvert.");
+      trackConversion("checkout_redirect", {
+        value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
+        currency: "EUR",
+      });
       window.location.assign(result.url);
     } catch (error) {
       setServerError(

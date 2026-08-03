@@ -9,6 +9,7 @@ import { analyticsConfig } from "@/lib/analytics/providers";
 import { getStaySettings } from "@/lib/stay-settings";
 import { StructuredData } from "@/components/seo/structured-data";
 import { BookingAssistant } from "@/components/assistant/booking-assistant";
+import { CroLayer } from "@/components/cro/cro-layer";
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
   subsets: ["latin"],
@@ -101,6 +102,7 @@ export default async function RootLayout({
       <body>
         <StructuredData staySettings={staySettings} />
         {children}
+        <CroLayer />
         <BookingAssistant />
         <ConsentManager />
         <ThemeControl />
