@@ -13,6 +13,8 @@ import { DirectBookingComparison } from "@/components/cro/direct-booking-compari
 import { getPublishedReviews } from "@/lib/reviews/reviews";
 import { getReservationWorkflowSettings } from "@/lib/booking/workflow-settings";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = pageMetadata({
   title: "Réserver la Suite Absolu au meilleur tarif",
   description:
