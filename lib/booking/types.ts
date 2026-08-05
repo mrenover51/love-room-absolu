@@ -15,6 +15,7 @@ export type PublicPricingConfig = {
     startDate: string;
     endDate: string;
     amount: number;
+    season?: "low" | "medium" | "high";
   }>;
   promotions?: Array<{
     startDate: string;
@@ -26,6 +27,10 @@ export type PublicPricingConfig = {
     lastMinuteDiscount: number;
     longStayNights: number;
     longStayDiscount: number;
+    weekendMarkup?: number;
+    holidayMarkup?: number;
+    holidayEveMarkup?: number;
+    holidayDates?: string[];
   };
   baseNightAmount?: number;
   fridaySupplement?: number;

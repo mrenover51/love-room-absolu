@@ -4,6 +4,7 @@ import { stripeProvider } from "@/lib/stripe/stripe-provider";
 import { StayTimesNotice } from "@/components/shared/stay-times-notice";
 import { getStaySettings } from "@/lib/stay-settings";
 import { PurchaseEvent } from "@/components/cro/purchase-event";
+import { ConfirmationExperience } from "@/components/reservation/confirmation-experience";
 export const dynamic = "force-dynamic";
 export default async function Success({
   searchParams,
@@ -57,6 +58,7 @@ export default async function Success({
             ? "Un email récapitulatif vous sera envoyé après traitement du webhook sécurisé."
             : "Ne renouvelez pas le paiement. Contactez-nous si cet état persiste."}
         </p>
+        {paid && reference && <div className="mt-8"><ConfirmationExperience reference={reference} /></div>}
         {reference && (
           <p className="mt-5 text-sm text-white/50">Référence : {reference}</p>
         )}

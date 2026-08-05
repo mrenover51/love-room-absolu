@@ -11,7 +11,7 @@ export interface BlockedPeriod { id: string; start_date: string; end_date: strin
 export type CalendarState = "available" | "booked" | "arrival" | "departure" | "blocked";
 export interface CalendarDay { date: string; day: number; weekday: string; state: CalendarState; reservationId?: string }
 export interface ChartPoint { label: string; revenue: number; bookings: number; occupancy: number }
-export interface DashboardStats { todayRevenue: number; weekRevenue: number; monthRevenue: number; yearRevenue: number; reservations: number; occupancy: number; averageBasket: number; pendingPayments: number; pendingRequests: number }
+export interface DashboardStats { todayRevenue: number; weekRevenue: number; monthRevenue: number; yearRevenue: number; previousMonthRevenue: number; reservations: number; confirmedReservations: number; cancelledReservations: number; occupancy: number; averageBasket: number; averageStay: number; pendingPayments: number; pendingRequests: number }
 export interface TimelineEvent { id: string; time: string; title: string; detail: string; tone: "gold" | "green" | "blue" | "muted" }
 export interface SyncItem { name: "Booking" | "Airbnb" | "Stripe" | "Emails"; status: "connected" | "error" | "syncing"; lastSync: string }
 export interface AlertItem { id: string; title: string; detail: string; tone: "orange" | "blue" | "red" | "green" | "gold" }

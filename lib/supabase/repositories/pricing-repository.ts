@@ -38,7 +38,7 @@ export class SupabasePricingRepository {
         .order("order"),
       db
         .from("seasonal_prices")
-        .select("start_date,end_date,price")
+        .select("start_date,end_date,price,season")
         .eq("active", true)
         .order("start_date"),
       db
@@ -108,6 +108,7 @@ export class SupabasePricingRepository {
         startDate: row.start_date,
         endDate: row.end_date,
         amount: row.price,
+        season: row.season,
       })),
       promotions: (promotions ?? []).map((row) => ({
         startDate: row.start_date,

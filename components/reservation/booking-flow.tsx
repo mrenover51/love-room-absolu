@@ -17,6 +17,7 @@ import { trackConversion } from "@/lib/analytics/conversion";
 import type { BookingMode } from "@/lib/booking/workflow-settings";
 
 const steps = ["Dates", "Options", "Informations", "Confirmation"];
+const timelineSteps = ["Dates", "Informations", "Options", "Paiement", "Confirmation"];
 export function BookingFlow({
   pricingConfig,
   bookingMode,
@@ -205,19 +206,20 @@ export function BookingFlow({
   return (
     <form onSubmit={form.handleSubmit(submit)} noValidate>
       <ol
-        className="mb-10 grid grid-cols-4 gap-2"
+        className="mb-10 grid grid-cols-5 gap-1 sm:gap-2"
         aria-label="Étapes de réservation"
       >
-        {steps.map((label, index) => (
+        {timelineSteps.map((label, index) => (
           <li
             key={`${label}-${index}`}
             aria-current={index === step ? "step" : undefined}
-            className={`border-t pt-3 text-center text-[.58rem] uppercase tracking-wider sm:text-[.68rem] ${index <= step ? "border-[#C9A86A] text-[#D8C8B6]" : "border-white/10 text-white/30"}`}
+            className={`border-t pt-3 text-center text-[.52rem] uppercase tracking-wider transition-colors duration-500 sm:text-[.68rem] ${index <= (step === 1 ? 2 : step === 2 ? 1 : step) ? "border-[#C9A86A] text-[#D8C8B6]" : "border-white/10 text-white/30"}`}
           >
-            {index + 1}. {label}
+            <span className="mx-auto mb-1 grid size-5 place-items-center rounded-full border border-current text-[9px]">{index + 1}</span>{label}
           </li>
         ))}
       </ol>
+      <div className="-mt-5 mb-8 h-1 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-[#C9A86A] transition-[width] duration-700" style={{ width: `${((step + 1) / 5) * 100}%` }} /></div>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 border border-white/10 bg-black/25 p-5 sm:p-8">
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">

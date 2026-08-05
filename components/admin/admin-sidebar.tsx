@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BedDouble, CalendarDays, CloudCog, CreditCard, Gift, Inbox, LayoutDashboard, Settings, Users } from "lucide-react";
+import { BarChart3, BedDouble, CalendarDays, CloudCog, CreditCard, Gift, Inbox, LayoutDashboard, Settings, TrendingUp, Users } from "lucide-react";
 
 const items=[
   ["Dashboard","/admin",LayoutDashboard],
@@ -10,6 +10,7 @@ const items=[
   ["Calendrier","/admin/calendrier",CalendarDays],
   ["Clients","/admin/clients",Users],
   ["Paiements","/admin/paiements",CreditCard],
+  ["Tarifs","/admin/tarifs",TrendingUp],
   ["Bons cadeaux","/admin/bons-cadeaux",Gift],
   ["Statistiques","/admin/statistiques",BarChart3],
   ["Synchronisation","/admin/synchronisation",CloudCog],

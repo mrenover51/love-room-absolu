@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeClient } from "@/lib/stripe";
 
-const schema=z.object({theme:z.string().max(40),amount:z.number().refine(v=>(giftAmounts as readonly number[]).includes(v)),recipient:z.string().trim().min(1).max(80),sender:z.string().trim().min(1).max(80),purchaserEmail:z.email(),message:z.string().trim().min(10).max(500),color:z.string().regex(/^#[0-9a-f]{6}$/i)});
+const schema=z.object({theme:z.string().max(40),amount:z.number().refine(v=>(giftAmounts as readonly number[]).includes(v)),recipient:z.string().trim().min(1).max(80),sender:z.string().trim().min(1).max(80),purchaserEmail:z.email(),message:z.string().trim().min(10).max(500),color:z.string().regex(/^#[0-9a-f]{6}$/i),eventDate:z.iso.date().optional()});
 const attempts=new Map<string,number[]>();
 export async function POST(request:Request){
   if(rejectCrossSite(request))return NextResponse.json({error:"Origine refusée."},{status:403});

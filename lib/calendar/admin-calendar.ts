@@ -1,6 +1,6 @@
-export type CalendarView = "day" | "week" | "month" | "year";
+export type CalendarView = "day" | "week" | "month" | "agenda" | "year";
 export type CalendarEventKind = "reservation" | "request" | "block";
-export interface CalendarEvent { id:string; start:string; end:string; label:string; source:string; kind:CalendarEventKind; status?:string; guest?:string; total?:number }
+export interface CalendarEvent { id:string; start:string; end:string; label:string; source:string; kind:CalendarEventKind; status?:string; paymentStatus?:string; guest?:string; total?:number }
 export interface CalendarPrice { weekday:number; price:number }
 export interface SeasonalPrice { id:string; name:string; start_date:string; end_date:string; price:number; active:boolean }
 export interface StayRules { minimumNights:number; maximumNights:number }

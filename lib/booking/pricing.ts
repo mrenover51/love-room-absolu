@@ -75,8 +75,9 @@ export function calculatePriceFromConfig(
     );
   const automaticDiscount = Math.max(
     rules && daysBefore <= rules.lastMinuteDays ? rules.lastMinuteDiscount : 0,
-    rules && nights >= rules.longStayNights ? rules.longStayDiscount : 0,
+      rules && nights >= rules.longStayNights ? rules.longStayDiscount : 0,
   );
+  const holidayDates = new Set(rules?.holidayDates ?? []);
   const nightPrices = Array.from({ length: nights }, (_, index) => {
     const date = addDays(checkIn, index),
       weekday = parseIsoDate(date).getUTCDay();
@@ -88,15 +89,17 @@ export function calculatePriceFromConfig(
       config.weekdayAmounts?.[weekday] ??
       BOOKING_CONFIG.weekdayAmounts[weekday];
     if (!Number.isInteger(amount)) throw new Error("PRICING_INCOMPLETE");
+    const holiday = holidayDates.has(date), eve = holidayDates.has(addDays(date, 1)), weekend = weekday === 5 || weekday === 6;
+    const specialMarkup = holiday ? (rules?.holidayMarkup ?? 0) : eve ? (rules?.holidayEveMarkup ?? 0) : weekend ? (rules?.weekendMarkup ?? 0) : 0;
     const promotion =
         config.promotions
           ?.filter((item) => item.startDate <= date && item.endDate > date)
           .reduce((max, item) => Math.max(max, item.discountPercent), 0) ?? 0,
-      discount = Math.max(automaticDiscount, promotion);
+      discount = Math.max(automaticDiscount, promotion), adjustedAmount = Math.round((amount * (100 + specialMarkup)) / 100);
     return {
       date,
       weekday,
-      amount: Math.round((amount * (100 - discount)) / 100),
+      amount: Math.round((adjustedAmount * (100 - discount)) / 100),
     };
   });
   const extras = [...new Set(extraKeys)].map((key) => {

@@ -22,23 +22,17 @@ const emailData = (row: EmailRow) => ({
   totalAmount: row.total,
 });
 export async function POST(request: Request) {
-  console.info("stripe_webhook_received");
   const signature = request.headers.get("stripe-signature");
   if (!signature) return new Response("Signature absente", { status: 400 });
   let event: Stripe.Event;
   try {
     event = stripeProvider.constructWebhook(await request.text(), signature);
-    console.info("stripe_webhook_signature_validated", { eventType: event.type });
-  } catch (error) {
-    console.error("stripe_webhook_signature_invalid", { message: error instanceof Error ? error.message : "UNKNOWN", stack: error instanceof Error ? error.stack : undefined });
+  } catch {
     return new Response("Signature invalide", { status: 400 });
   }
-  console.info("stripe_webhook_event", { eventType: event.type });
   const payments = new PaymentService();
   try {
-    console.info("stripe_webhook_claim_event_enter", { eventId: event.id, eventType: event.type });
     const claimed = await payments.claimEvent(event.id, event.type);
-    console.info("stripe_webhook_claim_event_exit", { eventId: event.id, eventType: event.type, claimed });
     if (!claimed)
       return new Response("OK");
     const db = createAdminClient();
@@ -56,7 +50,6 @@ export async function POST(request: Request) {
       const id = session.metadata?.reservation_id;
       if (!id || session.payment_status !== "paid")
         throw new Error("INVALID_SESSION");
-      console.info("stripe_webhook_confirm_enter", { reservationId: id, sessionId: session.id });
       const changed = await payments.confirm(
         id,
         session.id,
@@ -64,7 +57,6 @@ export async function POST(request: Request) {
           ? session.payment_intent
           : null,
       );
-      console.info("stripe_webhook_confirm_exit", { reservationId: id, sessionId: session.id, changed });
       if (changed) {
         const requestId = session.metadata?.reservation_request_id;
         if(requestId)await db.from("reservation_requests").update({statut:"confirmed",updated_at:new Date().toISOString()}).eq("id",requestId).eq("statut","pending_payment");
@@ -142,8 +134,6 @@ export async function POST(request: Request) {
       eventId: event.id,
       type: event.type,
       code: error instanceof Error ? error.message : "UNKNOWN",
-      message: error instanceof Error ? error.message : "UNKNOWN",
-      stack: error instanceof Error ? error.stack : undefined,
     });
     return new Response("Erreur temporaire", { status: 500 });
   }
