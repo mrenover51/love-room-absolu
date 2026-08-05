@@ -54,7 +54,7 @@ export function EventCountdown({
         <div className="mt-7 grid grid-cols-4 gap-2">
           {values.map(([label, value], index) => (
             <motion.div
-              key={label}
+              key={`${label}-${index}`}
               initial={reduced ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}

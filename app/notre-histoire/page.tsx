@@ -255,9 +255,9 @@ export default function StoryPage() {
                 </p>
               </div>
               <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-                {expectations.map((item) => (
+                {expectations.map((item, keyIndex) => (
                   <li
-                    key={item}
+                    key={`${item}-${keyIndex}`}
                     className="flex items-center gap-3 border-b border-[#8D6637]/15 py-4 text-sm"
                   >
                     <Check
@@ -290,7 +290,7 @@ export default function StoryPage() {
             <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {intentions.map((item, index) => (
                 <Reveal
-                  key={item.title}
+                  key={`${item.title}-${index}`}
                   delay={index * 0.04}
                   className="h-full"
                 >
@@ -328,7 +328,7 @@ export default function StoryPage() {
             <div className="mx-auto mt-14 grid max-w-5xl gap-4 md:grid-cols-2">
               {appreciations.map((item, index) => (
                 <Reveal
-                  key={item}
+                  key={`${item}-${index}`}
                   delay={index * 0.04}
                   className={index === 4 ? "md:col-span-2" : ""}
                 >
@@ -406,7 +406,7 @@ export default function StoryPage() {
             <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {commitments.map((item, index) => (
                 <Reveal
-                  key={item.title}
+                  key={`${item.title}-${index}`}
                   delay={index * 0.04}
                   className="h-full"
                 >
@@ -490,7 +490,7 @@ export default function StoryPage() {
             </Reveal>
             <div className="space-y-3">
               {faqs.map((item, index) => (
-                <Reveal key={item.question} delay={index * 0.04}>
+                <Reveal key={`${item.question}-${index}`} delay={index * 0.04}>
                   <details className="group rounded-[1.25rem] border border-[#8D6637]/15 bg-white/45 p-6">
                     <summary className="cursor-pointer list-none font-heading text-2xl marker:hidden">
                       {item.question}

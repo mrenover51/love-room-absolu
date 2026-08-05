@@ -355,9 +355,9 @@ export function BookingAssistant() {
                   {[
                     ["Arrivée", checkIn, setCheckIn],
                     ["Départ", checkOut, setCheckOut],
-                  ].map(([label, value, setter]) => (
+                  ].map(([label, value, setter], keyIndex) => (
                     <label
-                      key={label as string}
+                      key={`${label as string}-${keyIndex}`}
                       className="text-xs text-white/45"
                     >
                       {label as string}

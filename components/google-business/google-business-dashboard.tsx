@@ -159,9 +159,9 @@ export function GoogleBusinessDashboard({
         role="tablist"
         aria-label="Google Business Profile"
       >
-        {tabs.map((item) => (
+        {tabs.map((item, keyIndex) => (
           <button
-            key={item}
+            key={`${item}-${keyIndex}`}
             type="button"
             role="tab"
             aria-selected={tab === item}
@@ -199,9 +199,9 @@ export function GoogleBusinessDashboard({
           animate={{ opacity: 1, y: 0 }}
         >
           <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {metricCards.map((item) => (
+            {metricCards.map((item, keyIndex) => (
               <article
-                key={item.label}
+                key={`${item.label}-${keyIndex}`}
                 className="rounded-[1.4rem] border border-white/[.08] bg-[#121212] p-5"
               >
                 <item.icon className="size-5 text-[#C9A86A]" />
@@ -311,9 +311,9 @@ export function GoogleBusinessDashboard({
                 "Comment réserver en direct ?",
                 "Où se garer à Avize ?",
                 "Quels sont les horaires d’arrivée ?",
-              ].map((question) => (
+              ].map((question, keyIndex) => (
                 <article
-                  key={question}
+                  key={`${question}-${keyIndex}`}
                   className="rounded-xl bg-white/[.03] p-4 text-sm"
                 >
                   <strong>{question}</strong>
@@ -582,8 +582,8 @@ function MonthlyTable({
                 "Itinéraires",
                 "Clics",
                 "Réservations",
-              ].map((label) => (
-                <th key={label} className="px-5 py-3">
+              ].map((label, keyIndex) => (
+                <th key={`${label}-${keyIndex}`} className="px-5 py-3">
                   {label}
                 </th>
               ))}
@@ -591,8 +591,8 @@ function MonthlyTable({
           </thead>
           <tbody>
             {rows.length ? (
-              rows.map((row) => (
-                <tr key={row.month} className="border-t border-white/[.06]">
+              rows.map((row, keyIndex) => (
+                <tr key={`${row.month}-${keyIndex}`} className="border-t border-white/[.06]">
                   <td className="px-5 py-4 text-[#C9A86A]">{row.month}</td>
                   <td>{row.views}</td>
                   <td>{row.calls}</td>

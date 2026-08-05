@@ -72,9 +72,9 @@ export default function GuidePage() {
               aria-label="Catégories touristiques"
               className="mt-12 flex flex-wrap gap-3"
             >
-              {tourismCategories.map((category) => (
+              {tourismCategories.map((category, keyIndex) => (
                 <a
-                  key={category}
+                  key={`${category}-${keyIndex}`}
                   href={`#${category
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
@@ -90,9 +90,9 @@ export default function GuidePage() {
         </section>
         <section className="bg-[#F3EEE7] py-24 text-[#201B18]">
           <div className="page-shell space-y-20">
-            {tourismCategories.map((category) => (
+            {tourismCategories.map((category, keyIndex) => (
               <section
-                key={category}
+                key={`${category}-${keyIndex}`}
                 id={category
                   .normalize("NFD")
                   .replace(/[\u0300-\u036f]/g, "")

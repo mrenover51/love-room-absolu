@@ -14,8 +14,8 @@ export function SmartContextLinks() {
     >
       <p className="eyebrow mb-8 text-white/35">Navigation contextuelle</p>
       <div className="grid gap-9 sm:grid-cols-3">
-        {groups.map((group) => (
-          <section key={group.title}>
+        {groups.map((group, keyIndex) => (
+          <section key={`${group.title}-${keyIndex}`}>
             <h2 className="eyebrow text-[#C9A86A]">{group.title}</h2>
             <ul className="mt-4 space-y-3 text-sm">
               {group.links.map((link) => (

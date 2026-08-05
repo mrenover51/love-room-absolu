@@ -205,8 +205,8 @@ export default async function ArticlePage({
                 className="scroll-mt-32"
               >
                 <h2>{section.title}</h2>
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                {section.paragraphs.map((paragraph, keyIndex) => (
+                  <p key={`${paragraph}-${keyIndex}`}>{paragraph}</p>
                 ))}
                 {index === 2 && (
                   <figure className="relative mt-10 aspect-[16/9] overflow-hidden rounded-2xl">
@@ -224,8 +224,8 @@ export default async function ArticlePage({
             <section id="faq" className="scroll-mt-32">
               <h2>Questions fréquentes</h2>
               <div className="mt-6 divide-y divide-white/10">
-                {article.faq.map((item) => (
-                  <details key={item.question}>
+                {article.faq.map((item, keyIndex) => (
+                  <details key={`${item.question}-${keyIndex}`}>
                     <summary className="cursor-pointer py-5 font-heading text-2xl">
                       {item.question}
                     </summary>
@@ -241,9 +241,9 @@ export default async function ArticlePage({
               </p>
             </aside>
             <div className="flex flex-wrap gap-2 border-t border-white/10 pt-8">
-              {article.tags.map((tag) => (
+              {article.tags.map((tag, keyIndex) => (
                 <Link
-                  key={tag}
+                  key={`${tag}-${keyIndex}`}
                   href={`/blog/tag/${encodeURIComponent(
                     tag
                       .toLowerCase()

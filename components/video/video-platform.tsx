@@ -49,9 +49,9 @@ export function VideoPlatform({ videos }: { videos: readonly PremiumVideo[] }) {
           </p>
         </section>
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {plannedVideos.map((video) => (
+          {plannedVideos.map((video, keyIndex) => (
             <article
-              key={video.title}
+              key={`${video.title}-${keyIndex}`}
               className="overflow-hidden rounded-3xl border border-white/10 bg-[#111]"
             >
               <div className="relative aspect-video">

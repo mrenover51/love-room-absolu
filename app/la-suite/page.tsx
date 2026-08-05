@@ -24,7 +24,7 @@ export default function SuitePage() {
           image="/images/optimized/entree2.webp"
           title="La suite, rien que pour vous"
           eyebrow="Une expérience pensée pour deux"
-          description="Poussez la porte d’une suite romantique de 35 m² où l’eau chaude, le bois du sauna et la lumière tamisée invitent à oublier l’heure."
+          description="Poussez la porte d’une suite romantique de 35 m² où les bulles du spa, le bois du sauna et la lumière tamisée invitent à ralentir, se retrouver et profiter pleinement de l'instant."
           position="object-[center_55%]"
         />
         <SuiteDetails />

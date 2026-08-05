@@ -137,9 +137,9 @@ export default async function ReviewsPage() {
               <div>
                 <h2 className="font-heading text-5xl">Répartition des notes</h2>
                 <div className="mt-8 space-y-3">
-                  {stats.distribution.map((row) => (
+                  {stats.distribution.map((row, keyIndex) => (
                     <div
-                      key={row.rating}
+                      key={`${row.rating}-${keyIndex}`}
                       className="grid grid-cols-[2rem_1fr_2rem] items-center gap-3 text-sm"
                     >
                       <span>{row.rating}</span>

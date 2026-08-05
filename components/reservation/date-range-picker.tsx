@@ -135,7 +135,7 @@ export function DateRangePicker({
         {[month, new Date(month.getFullYear(), month.getMonth() + 1, 1)].map(
           (displayMonth, monthIndex) => (
             <div
-              key={displayMonth.toISOString()}
+              key={`${displayMonth.toISOString()}-${monthIndex}`}
               className={monthIndex === 1 ? "hidden xl:block" : ""}
             >
               <h4 className="mb-5 text-center font-heading text-2xl capitalize">
@@ -152,10 +152,10 @@ export function DateRangePicker({
                   year: "numeric",
                 }).format(displayMonth)}
               >
-                {labels.map((label) => (
+                {labels.map((label, keyIndex) => (
                   <span
                     role="columnheader"
-                    key={label}
+                    key={`${label}-${keyIndex}`}
                     className="pb-3 text-[.65rem] uppercase tracking-wider text-white/40"
                   >
                     {label}
@@ -180,7 +180,7 @@ export function DateRangePicker({
                         <button
                           role="gridcell"
                           type="button"
-                          key={value}
+                          key={`${value}-${index}`}
                           onClick={() => choose(value)}
                           disabled={blocked || past || loading}
                           aria-disabled={blocked || past || loading}

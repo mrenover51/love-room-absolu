@@ -39,9 +39,9 @@ export default function Influencers() {
               "Liberté de ton",
               "Aucun avis positif imposé et aucun script présenté comme un témoignage spontané.",
             ],
-          ].map(([title, text]) => (
+          ].map(([title, text], keyIndex) => (
             <article
-              key={title}
+              key={`${title}-${keyIndex}`}
               className="rounded-3xl border border-white/10 bg-[#121212] p-6"
             >
               <h2 className="font-heading text-3xl">{title}</h2>

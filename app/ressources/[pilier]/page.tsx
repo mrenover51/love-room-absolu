@@ -161,8 +161,8 @@ export default async function Pillar({
             <article className="mx-auto mt-20 max-w-4xl">
               <h2 className="font-heading text-5xl">Réponse détaillée</h2>
               <div className="mt-7 space-y-6 text-lg leading-8 text-black/60">
-                {item.longAnswer.map((p) => (
-                  <p key={p}>{p}</p>
+                {item.longAnswer.map((p, keyIndex) => (
+                  <p key={`${p}-${keyIndex}`}>{p}</p>
                 ))}
               </div>
               <h2 className="mt-16 font-heading text-5xl">
@@ -171,7 +171,7 @@ export default async function Pillar({
               <ol className="mt-8 space-y-5">
                 {item.steps.map((step, index) => (
                   <li
-                    key={step.name}
+                    key={`${step.name}-${index}`}
                     className="rounded-2xl border border-black/10 bg-white p-6"
                   >
                     <h3 className="font-heading text-3xl">
@@ -194,8 +194,8 @@ export default async function Pillar({
                     </tr>
                   </thead>
                   <tbody>
-                    {item.comparison.map((row) => (
-                      <tr key={row.criterion}>
+                    {item.comparison.map((row, keyIndex) => (
+                      <tr key={`${row.criterion}-${keyIndex}`}>
                         <th className="border-b border-black/10 p-4">
                           {row.criterion}
                         </th>
@@ -214,8 +214,8 @@ export default async function Pillar({
                 Questions fréquentes
               </h2>
               <div className="mt-7 divide-y divide-black/10">
-                {item.faq.map((faq) => (
-                  <details key={faq.question}>
+                {item.faq.map((faq, keyIndex) => (
+                  <details key={`${faq.question}-${keyIndex}`}>
                     <summary className="cursor-pointer py-5 font-heading text-2xl">
                       {faq.question}
                     </summary>

@@ -93,7 +93,6 @@ export const amenities = [
   { label: "Peignoirs", icon: Sparkles },
   { label: "Serviettes", icon: Sparkles },
   { label: "Sèche-cheveux", icon: Wind },
-  { label: "Climatisation", icon: Wind },
   { label: "Chauffage", icon: Thermometer },
   { label: "Penderie", icon: House },
   { label: "Logement indépendant", icon: House },

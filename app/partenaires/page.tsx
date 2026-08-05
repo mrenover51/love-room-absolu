@@ -46,11 +46,11 @@ export default async function Partners() {
             ))}
           </nav>
         </section>
-        {Object.entries(partnerCategories).map(([category, label]) => {
+        {Object.entries(partnerCategories).map(([category, label], keyIndex) => {
           const items = partners.filter((item) => item.category === category);
           return (
             <section
-              key={category}
+              key={`${category}-${keyIndex}`}
               id={category}
               className="page-shell mt-20 scroll-mt-28"
             >

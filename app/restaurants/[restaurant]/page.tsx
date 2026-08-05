@@ -214,8 +214,8 @@ export default async function RestaurantPage({
         <section className="bg-[#111] py-20">
           <div className="page-shell grid gap-4 md:grid-cols-3">
             {["salledebain.webp", "lit.webp", "entree2.webp"].map(
-              (image) => (
-                <figure key={image}>
+              (image, keyIndex) => (
+                <figure key={`${image}-${keyIndex}`}>
                   <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
                     <Image
                       src={`/images/optimized/${image}`}

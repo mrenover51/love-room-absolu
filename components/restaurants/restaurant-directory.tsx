@@ -35,9 +35,9 @@ export function RestaurantDirectory({ items }: { items: RestaurantEntry[] }) {
           />
         </label>
         <div className="flex gap-2 overflow-x-auto">
-          {(["Tous", ...restaurantCategories] as const).map((item) => (
+          {(["Tous", ...restaurantCategories] as const).map((item, keyIndex) => (
             <button
-              key={item}
+              key={`${item}-${keyIndex}`}
               onClick={() => setCategory(item)}
               aria-pressed={category === item}
               className={`shrink-0 rounded-full px-4 py-2 text-xs ${category === item ? "bg-[#201B18] text-white" : "border border-black/15"}`}

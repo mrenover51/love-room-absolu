@@ -306,9 +306,9 @@ export default function ArtOfHostingPage() {
                 </p>
               </div>
               <ul className="mt-10 grid gap-x-8 sm:grid-cols-2">
-                {lessons.map((item) => (
+                {lessons.map((item, keyIndex) => (
                   <li
-                    key={item}
+                    key={`${item}-${keyIndex}`}
                     className="flex items-center gap-3 border-b border-[#8D6637]/15 py-4 text-sm"
                   >
                     <Check
@@ -339,7 +339,7 @@ export default function ArtOfHostingPage() {
             <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {details.map((item, index) => (
                 <Reveal
-                  key={item.title}
+                  key={`${item.title}-${index}`}
                   delay={index * 0.035}
                   className="h-full"
                 >
@@ -378,7 +378,7 @@ export default function ArtOfHostingPage() {
             </Reveal>
             <div className="mx-auto mt-14 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {appreciations.map((item, index) => (
-                <Reveal key={item} delay={index * 0.04}>
+                <Reveal key={`${item}-${index}`} delay={index * 0.04}>
                   <article className="h-full rounded-[1.5rem] border border-[#8D6637]/15 bg-white/55 p-7 text-center shadow-[var(--shadow-light)]">
                     <div
                       className="flex justify-center gap-1 text-[#A77D43]"
@@ -454,7 +454,7 @@ export default function ArtOfHostingPage() {
             <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {commitments.map((item, index) => (
                 <Reveal
-                  key={item.title}
+                  key={`${item.title}-${index}`}
                   delay={index * 0.035}
                   className="h-full"
                 >
@@ -590,7 +590,7 @@ export default function ArtOfHostingPage() {
             </Reveal>
             <div className="space-y-3">
               {faqs.map((item, index) => (
-                <Reveal key={item.question} delay={index * 0.04}>
+                <Reveal key={`${item.question}-${index}`} delay={index * 0.04}>
                   <details className="rounded-[1.25rem] border border-[#8D6637]/15 bg-white/45 p-6">
                     <summary className="cursor-pointer list-none font-heading text-2xl marker:hidden">
                       {item.question}

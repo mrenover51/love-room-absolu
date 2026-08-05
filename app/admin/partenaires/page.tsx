@@ -139,8 +139,8 @@ export default async function PartnersAdmin() {
                           "verified",
                           "published",
                           "declined",
-                        ].map((status) => (
-                          <option key={status}>{status}</option>
+                        ].map((status, keyIndex) => (
+                          <option key={`${status}-${keyIndex}`}>{status}</option>
                         ))}
                       </select>
                       <button className="rounded-xl border border-white/15 px-4 text-xs">

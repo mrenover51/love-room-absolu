@@ -86,9 +86,9 @@ export function TravelMap() {
         aria-label="Catégories"
         className="mt-5 flex gap-2 overflow-x-auto pb-3"
       >
-        {mapCategories.map((item) => (
+        {mapCategories.map((item, keyIndex) => (
           <button
-            key={item}
+            key={`${item}-${keyIndex}`}
             onClick={() => setCategory(item)}
             aria-pressed={category === item}
             className={`shrink-0 rounded-full border px-4 py-2 text-xs ${category === item ? "border-[#C9A86A] bg-[#C9A86A] text-black" : "border-white/10 text-white/55"}`}

@@ -6,7 +6,7 @@
 4. Appliquer la migration Supabase, configurer lâ€™URL du projet et les clÃ©s. La clÃ© service-role reste exclusivement cÃ´tÃ© serveur.
 5. Dans Stripe, crÃ©er le webhook `https://love-room-absolu.fr/api/stripe/webhook` pour `checkout.session.completed`, `checkout.session.expired` et `charge.refunded`, puis enregistrer son secret.
 6. Tester avec les clÃ©s Stripe de test et les cartes de test officielles. VÃ©rifier rÃ©servation, email et blocage des dates avant dâ€™utiliser les clÃ©s live.
-7. VÃ©rifier le domaine dâ€™envoi Resend, configurer `RESEND_FROM_EMAIL`, `RESEND_API_KEY` et `ADMIN_EMAIL`.
+7. VÃ©rifier le domaine dâ€™envoi Resend, configurer `RESEND_FROM`, `RESEND_REPLY_TO`, `RESEND_API_KEY` et `ADMIN_EMAIL`.
 8. Ajouter le domaine final dans Vercel, puis appliquer chez le registrar les enregistrements DNS fournis par Vercel. Mettre Ã  jour `SITE_URL` et `NEXT_PUBLIC_SITE_URL`.
 9. Le fichier `vercel.json` programme `/api/cron/sync-calendars` chaque jour Ã  03:00 UTC, frÃ©quence compatible avec les contraintes habituelles du plan Hobby. VÃ©rifier les limites du plan au moment du dÃ©ploiement ; elles peuvent Ã©voluer.
 10. Ajouter les exports privÃ©s Booking/Airbnb dans `BOOKING_ICAL_URL` et `AIRBNB_ICAL_URL`. Importer `https://love-room-absolu.fr/api/calendar/export` dans les deux extranets.

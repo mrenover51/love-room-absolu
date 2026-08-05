@@ -107,8 +107,8 @@ export function PremiumPlayer({
             Chapitres
           </p>
           <ol className="mt-3 space-y-2">
-            {video.chapters.map((chapter) => (
-              <li key={chapter.startOffset}>
+            {video.chapters.map((chapter, keyIndex) => (
+              <li key={`${chapter.startOffset}-${keyIndex}`}>
                 <button
                   type="button"
                   onClick={() => seek(chapter.startOffset)}

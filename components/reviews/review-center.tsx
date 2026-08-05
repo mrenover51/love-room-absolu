@@ -72,8 +72,8 @@ export function ReviewCenter({ reviews }: { reviews: PublishedReview[] }) {
           className="rounded-full border border-black/15 bg-white px-4"
         >
           <option value="all">Tous les séjours</option>
-          {Object.entries(stayLabels).map(([value, label]) => (
-            <option key={value} value={value}>
+          {Object.entries(stayLabels).map(([value, label], keyIndex) => (
+            <option key={`${value}-${keyIndex}`} value={value}>
               {label}
             </option>
           ))}

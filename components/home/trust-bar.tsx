@@ -12,8 +12,8 @@ export function TrustBar() {
   return (
     <section className="relative z-20 border-y border-[#D0AE72]/15 bg-[#100D0B] shadow-[inset_0_1px_0_rgba(255,244,225,.025)]" aria-label="Les engagements Absolu">
       <div className="page-shell grid divide-y divide-white/[.08] sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-5">
-        {assurances.map(({ icon: Icon, title, detail }) => (
-          <div key={title} className="group flex items-center gap-4 px-3 py-7 sm:px-6 lg:py-8 xl:px-5">
+        {assurances.map(({ icon: Icon, title, detail }, keyIndex) => (
+          <div key={`${title}-${keyIndex}`} className="group flex items-center gap-4 px-3 py-7 sm:px-6 lg:py-8 xl:px-5">
             <span className="grid size-11 shrink-0 place-items-center rounded-full border border-[#D0AE72]/25 bg-[linear-gradient(145deg,rgba(208,174,114,.1),rgba(91,61,46,.04))] shadow-[inset_0_1px_0_rgba(255,244,225,.07)] transition-all duration-500 group-hover:border-[#D0AE72]/60 group-hover:bg-[#D0AE72]/12 group-hover:shadow-[0_10px_28px_rgba(91,61,46,.2)]">
               <Icon className="size-4 text-[#DEC38E]" aria-hidden="true" />
             </span>

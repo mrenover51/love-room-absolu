@@ -39,9 +39,9 @@ export default function Glossary() {
           Glossaire Love Room et Champagne
         </h1>
         <dl className="mt-16 grid gap-5 md:grid-cols-2">
-          {glossaryTerms.map(([term, definition]) => (
+          {glossaryTerms.map(([term, definition], keyIndex) => (
             <div
-              key={term}
+              key={`${term}-${keyIndex}`}
               id={term
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")

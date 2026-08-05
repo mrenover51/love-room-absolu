@@ -51,7 +51,9 @@ const schema = z.object({
   // RESEND
   // ==========================
   RESEND_API_KEY: optionalString,
-  RESEND_FROM_EMAIL: optionalEmail,
+  RESEND_FROM: optionalString,
+  RESEND_REPLY_TO: optionalEmail,
+  RESEND_WEBHOOK_SECRET: optionalString,
 
   // ==========================
   // ADMIN

@@ -63,8 +63,8 @@ export default function Compare() {
               <thead>
                 <tr>
                   {["Critère", "Absolu", "Autre hébergement", "Conseil"].map(
-                    (h) => (
-                      <th key={h} className="border-b border-white/15 p-4">
+                    (h, keyIndex) => (
+                      <th key={`${h}-${keyIndex}`} className="border-b border-white/15 p-4">
                         {h}
                       </th>
                     ),
@@ -72,11 +72,11 @@ export default function Compare() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row) => (
-                  <tr key={row[0]}>
+                {rows.map((row, rowIndex) => (
+                  <tr key={`row-${rowIndex}`}>
                     {row.map((cell, index) => (
                       <td
-                        key={cell}
+                        key={`cell-${rowIndex}-${index}`}
                         className={`border-b border-white/10 p-4 ${index ? "text-white/55" : "font-medium"}`}
                       >
                         {cell}

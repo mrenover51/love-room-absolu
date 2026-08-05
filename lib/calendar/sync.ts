@@ -4,9 +4,9 @@ import { isIP } from "node:net";
 import { lookup } from "node:dns/promises";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseIcal, type CalendarSource } from "@/lib/booking/ical";
+import { getCalendarSourceDefinitions } from "@/lib/calendar/sources";
 
 export type SyncResult={source:CalendarSource;status:"ok"|"failed"|"skipped";events:number;imported:number;updated:number;cancelled:number;conflicts:number;durationMs:number;error?:string};
-const supportedSources:CalendarSource[]=["booking","airbnb"];
 const MAX_ICAL_BYTES=2_000_000;
 const MAX_EVENTS=500;
 
@@ -67,7 +67,7 @@ export async function syncExternalCalendar(source:CalendarSource,url:string):Pro
   }catch(error){const message=error instanceof Error?error.message:"ICAL_UNKNOWN_ERROR",durationMs=Date.now()-started;await db.from("calendar_sources").update({status:"error",last_error:message,updated_at:new Date().toISOString()}).eq("provider",source);await db.from("sync_logs").insert({source,status:"failed",events_count:0,error_code:message.slice(0,80),error_message:message.slice(0,500),duration_ms:durationMs});await recordNotification("error","Synchronisation Ã©chouÃ©e",`${source} : ${message}.`);return{source,status:"failed",events:0,imported:0,updated:0,cancelled:0,conflicts:0,durationMs,error:message}}
 }
 
-export async function syncAllCalendars(){const db=createAdminClient(),{data,error}=await db.from("calendar_sources").select("provider,import_url,enabled").in("provider",supportedSources);if(error)throw new Error("CALENDAR_SOURCES_READ_FAILED");const configured=new Map((data??[]).map(row=>[row.provider,row]));const results:SyncResult[]=[];for(const source of supportedSources){const item=configured.get(source),fallback=source==="booking"?(process.env.BOOKING_ICAL_URL??process.env.BOOKING_ICAL):(process.env.AIRBNB_ICAL_URL??process.env.AIRBNB_ICAL);const url=item?.import_url??fallback;if(!url||(Boolean(item?.import_url)&&item?.enabled===false)){results.push({source,status:"skipped",events:0,imported:0,updated:0,cancelled:0,conflicts:0,durationMs:0});continue}results.push(await syncExternalCalendar(source,url))}return results}
+export async function syncAllCalendars(){const definitions=await getCalendarSourceDefinitions(),results:SyncResult[]=[];for(const{source,url}of definitions){if(!url){results.push({source,status:"skipped",events:0,imported:0,updated:0,cancelled:0,conflicts:0,durationMs:0});continue}results.push(await syncExternalCalendar(source,url))}return results}
 
 export async function testCalendar(source:CalendarSource,url:string){const started=Date.now(),events=await downloadCalendar(url,source);return{source,valid:true,events:events.length,durationMs:Date.now()-started,firstEvent:events[0]??null}}
 

@@ -16,7 +16,7 @@ export function WhyAbsolu() {
         <Reveal><div className="text-center"><p className="eyebrow text-[#C9A86A]">L’essentiel, en privé</p><h2 className="mt-5 font-heading text-5xl leading-tight sm:text-6xl lg:text-7xl">Pourquoi choisir Absolu ?</h2></div></Reveal>
         <div className="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {reasons.map(({ title, text, icon: Icon, href }, index) => (
-            <Reveal key={title} delay={index * .06} className="h-full">
+            <Reveal key={`${title}-${index}`} delay={index * .06} className="h-full">
               <Link href={href} className="luxury-card group relative block h-full min-h-72 border border-white/[.09] bg-[#0E0E0E] p-8 hover:bg-[#15120F]">
                 <Icon className="size-6 stroke-[1.4] text-[#C9A86A] transition-transform duration-500 group-hover:-translate-y-1" aria-hidden="true" />
                 <h3 className="mt-12 font-heading text-2xl">{title}</h3>

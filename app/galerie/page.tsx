@@ -113,9 +113,9 @@ export default function GalleryPage() {
               deux mises en lumière du même espace.
             </p>
             <div className="mt-10 grid gap-6 lg:grid-cols-2">
-              {atmospherePairs.map((pair) => (
+              {atmospherePairs.map((pair, keyIndex) => (
                 <BeforeAfter
-                  key={pair.label}
+                  key={`${pair.label}-${keyIndex}`}
                   before={luxuryGalleryImages[pair.after]}
                   after={luxuryGalleryImages[pair.before]}
                   label={pair.label}

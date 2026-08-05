@@ -33,9 +33,9 @@ export default function Media() {
           utilisation pour un autre établissement interdites.
         </p>
         <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {photos.map(([file, alt]) => (
+          {photos.map(([file, alt], keyIndex) => (
             <figure
-              key={file}
+              key={`${file}-${keyIndex}`}
               className="overflow-hidden rounded-2xl border border-white/10"
             >
               <div className="relative aspect-[4/3]">

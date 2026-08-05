@@ -246,7 +246,7 @@ export default async function EventPage({
             <div className="mt-10 grid gap-4 md:grid-cols-3">
               {event.gallery.map((image, index) => (
                 <figure
-                  key={image}
+                  key={`${image}-${index}`}
                   className={`relative overflow-hidden rounded-2xl ${index === 0 ? "aspect-[4/3] md:col-span-2" : "aspect-[4/3]"}`}
                 >
                   <Image
@@ -273,8 +273,8 @@ export default async function EventPage({
                 Construire un moment fluide
               </h2>
               <ul className="mt-8 space-y-4">
-                {event.tips.map((tip) => (
-                  <li key={tip} className="flex gap-3 text-black/60">
+                {event.tips.map((tip, keyIndex) => (
+                  <li key={`${tip}-${keyIndex}`} className="flex gap-3 text-black/60">
                     <Check className="mt-1 size-4 shrink-0 text-[#8B6B36]" />
                     {tip}
                   </li>
@@ -312,8 +312,8 @@ export default async function EventPage({
             <p className="eyebrow text-[#8B6B36]">Questions fréquentes</p>
             <h2 className="mt-4 font-heading text-5xl">FAQ — {event.name}</h2>
             <div className="mt-10 divide-y divide-black/10">
-              {event.faq.map(([question, answer]) => (
-                <details key={question}>
+              {event.faq.map(([question, answer], keyIndex) => (
+                <details key={`${question}-${keyIndex}`}>
                   <summary className="cursor-pointer py-5 font-heading text-2xl">
                     {question}
                   </summary>

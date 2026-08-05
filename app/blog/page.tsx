@@ -65,9 +65,9 @@ export default function Magazine() {
           className="border-b border-white/10 bg-[#090909]"
         >
           <div className="page-shell flex gap-6 overflow-x-auto py-5">
-            {magazineCategories.map((category) => (
+            {magazineCategories.map((category, keyIndex) => (
               <Link
-                key={category}
+                key={`${category}-${keyIndex}`}
                 href={`/blog/categorie/${encodeURIComponent(
                   category
                     .toLowerCase()

@@ -99,8 +99,8 @@ export default function GiftCardsPublic() {
                 "Confiez-leur la parenthèse",
                 "Stripe valide le paiement, puis le bon unique est envoyé par email.",
               ],
-            ].map(([Icon, title, text]) => (
-              <article key={String(title)}>
+            ].map(([Icon, title, text], keyIndex) => (
+              <article key={`${String(title)}-${keyIndex}`}>
                 <Icon className="size-7 text-[#C9A86A]" />
                 <h2 className="mt-5 font-heading text-3xl">{String(title)}</h2>
                 <p className="mt-3 text-sm leading-7 text-white/45">

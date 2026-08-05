@@ -25,13 +25,13 @@ export default function Lexicon() {
         <p className="eyebrow mt-12 text-[#C9A86A]">Vocabulaire thématique</p>
         <h1 className="mt-4 font-heading text-7xl">Lexique de la Love Room</h1>
         <div className="mt-16 space-y-16">
-          {groups.map((group) => (
-            <section key={group.title}>
+          {groups.map((group, keyIndex) => (
+            <section key={`${group.title}-${keyIndex}`}>
               <h2 className="font-heading text-5xl">{group.title}</h2>
               <div className="mt-7 grid gap-4 md:grid-cols-2">
-                {group.terms.map(([term, definition]) => (
+                {group.terms.map(([term, definition], keyIndex) => (
                   <article
-                    key={term}
+                    key={`${term}-${keyIndex}`}
                     className="border-l border-[#C9A86A]/40 pl-5"
                   >
                     <h3 className="font-heading text-2xl">{term}</h3>

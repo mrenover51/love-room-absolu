@@ -56,11 +56,11 @@ export function DirectBookingComparison() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {rows.map((row) => (
-              <tr key={row[0]}>
+            {rows.map((row, rowIndex) => (
+              <tr key={`row-${rowIndex}`}>
                 {row.map((cell, index) => (
                   <td
-                    key={cell}
+                    key={`cell-${rowIndex}-${index}`}
                     className={`p-5 ${index === 1 ? "text-white" : "text-white/50"}`}
                   >
                     {index === 1 ? (

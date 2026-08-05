@@ -1,6 +1,7 @@
 import "server-only";
 import ICAL from "ical.js";
 import type { DateRange } from "./types";
+import { getCalendarSourceDefinitions } from "@/lib/calendar/sources";
 
 export type CalendarSource = "booking" | "airbnb";
 export type ExternalCalendarEvent = DateRange & {
@@ -82,12 +83,9 @@ async function fetchCalendar(source: CalendarSource, url: string) {
 }
 
 export async function getExternalCalendarData() {
-  const definitions: Array<[CalendarSource, string | undefined]> = [
-    ["booking", process.env.BOOKING_ICAL_URL ?? process.env.BOOKING_ICAL],
-    ["airbnb", process.env.AIRBNB_ICAL_URL ?? process.env.AIRBNB_ICAL],
-  ];
+  const definitions = await getCalendarSourceDefinitions();
   const results = await Promise.all(
-    definitions.map(async ([source, url]) =>
+    definitions.map(async ({ source, url }) =>
       url
         ? fetchCalendar(source, url)
         : { events: [], status: "not_configured" as const },

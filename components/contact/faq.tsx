@@ -15,7 +15,7 @@ export function Faq({ items, includeSchema = false }: { items: readonly FaqItem[
 
   return <>
     {includeSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(json).replaceAll("<", "\\u003c") }} />}
-    <div className="divide-y divide-black/10">{items.map((item) => <details key={item.question} className="group">
+    <div className="divide-y divide-black/10">{items.map((item, keyIndex) => <details key={`${item.question}-${keyIndex}`} className="group">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-heading text-2xl">
         <span>{item.question}</span><Plus aria-hidden="true" className="size-5 shrink-0 transition-transform group-open:rotate-45" />
       </summary>

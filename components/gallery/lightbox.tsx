@@ -126,7 +126,7 @@ export function Lightbox({
         aria-label="Catégories de la galerie"
         className="flex gap-2 overflow-x-auto pb-3"
       >
-        {galleryCategories.map((item) => {
+        {galleryCategories.map((item, keyIndex) => {
           const count =
             item === "Tout"
               ? images.length
@@ -137,7 +137,7 @@ export function Lightbox({
                 ).length;
           return (
             <button
-              key={item}
+              key={`${item}-${keyIndex}`}
               type="button"
               onClick={() => setCategory(item)}
               aria-pressed={category === item}
@@ -153,7 +153,7 @@ export function Lightbox({
         <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3">
           {filtered.map((image, index) => (
             <motion.button
-              key={image.src}
+              key={`${image.src}-${index}`}
               type="button"
               onClick={(event) => open(image, event.currentTarget)}
               initial={reduced ? false : { opacity: 0, y: 20 }}
@@ -219,9 +219,9 @@ export function Lightbox({
           </p>
         </div>
         <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5">
-          {recent.map((image) => (
+          {recent.map((image, keyIndex) => (
             <button
-              key={image.src}
+              key={`${image.src}-${keyIndex}`}
               type="button"
               onClick={(event) => open(image, event.currentTarget)}
               className="group relative aspect-[4/5] w-[78vw] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-72"
@@ -247,9 +247,9 @@ export function Lightbox({
         <h2 className="mt-4 font-heading text-4xl">Photos populaires</h2>
         {popular.length ? (
           <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {popular.map((image) => (
+            {popular.map((image, keyIndex) => (
               <button
-                key={image.src}
+                key={`${image.src}-${keyIndex}`}
                 type="button"
                 onClick={(event) => open(image, event.currentTarget)}
                 className="relative aspect-square overflow-hidden rounded-xl"
@@ -355,9 +355,9 @@ export function Lightbox({
             <div className="pt-4 text-center">
               <p className="text-sm text-white/70">{current.caption}</p>
               <div className="mx-auto mt-3 flex max-w-xl justify-center gap-2 overflow-x-auto">
-                {similar.map((image) => (
+                {similar.map((image, keyIndex) => (
                   <button
-                    key={image.src}
+                    key={`${image.src}-${keyIndex}`}
                     type="button"
                     onClick={(event) => open(image, event.currentTarget)}
                     className="relative size-12 shrink-0 overflow-hidden rounded-md opacity-60 hover:opacity-100"

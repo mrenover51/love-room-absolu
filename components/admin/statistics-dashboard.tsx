@@ -55,9 +55,11 @@ const colors = ["#C9A86A", "#8E48FF", "#F03C9B", "#4ADE80"];
 export function StatisticsDashboard({
   rows,
   year,
+  customerOrigins,
 }: {
   rows: Reservation[];
   year: number;
+  customerOrigins: Array<{city:string|null;country:string|null}>;
 }) {
   const paid = rows.filter((row) => row.payment_status === "paid");
   const funnel = rows.filter(
@@ -102,6 +104,10 @@ export function StatisticsDashboard({
   const revenue = current.reduce((sum, row) => sum + row.total, 0);
   const nights = current.reduce((sum, row) => sum + row.nights, 0);
   const average = current.length ? revenue / current.length : 0;
+  const averageNight= nights ? revenue/nights : 0;
+  const averageDuration=current.length?nights/current.length:0;
+  const bestMonth=monthly.reduce((best,item)=>item.revenue>best.revenue?item:best,monthly[0]);
+  const geography=Object.entries(customerOrigins.reduce<Record<string,number>>((result,item)=>{const name=[item.city,item.country].filter(Boolean).join(", ")||"Non renseignée";result[name]=(result[name]??0)+1;return result},{})).map(([name,value])=>({name,value}));
   const forecast =
     (monthly
       .slice(0, new Date().getUTCMonth() + 1)
@@ -146,6 +152,7 @@ export function StatisticsDashboard({
           detail="Rythme actuel"
         />
       </section>
+      <section className="mt-3 grid gap-3 sm:grid-cols-3"><Metric icon={CircleDollarSign} label="Prix moyen / nuit" value={euro(averageNight)} detail="Revenu par nuit occupée"/><Metric icon={Moon} label="Durée moyenne" value={`${averageDuration.toFixed(1)} nuits`} detail="Par séjour confirmé"/><Metric icon={TrendingUp} label="Mois le plus rentable" value={bestMonth?.month??"—"} detail={bestMonth?euro(bestMonth.revenue*100):"Aucune donnée"}/></section>
       <section
         className="mt-3 grid gap-3 sm:grid-cols-3"
         aria-label="Statistiques de conversion"
@@ -241,7 +248,7 @@ export function StatisticsDashboard({
                   : [{ name: "Aucune donnée", value: 1 }]
                 ).map((entry, index) => (
                   <Cell
-                    key={entry.name}
+                    key={`${entry.name}-${index}`}
                     fill={
                       channels.length
                         ? colors[index % colors.length]
@@ -262,7 +269,7 @@ export function StatisticsDashboard({
           <div className="flex flex-wrap justify-center gap-3">
             {channels.map((channel, index) => (
               <span
-                key={channel.name}
+                key={`${channel.name}-${index}`}
                 className="flex items-center gap-1.5 text-[10px] text-white/45"
               >
                 <i
@@ -307,6 +314,7 @@ export function StatisticsDashboard({
           </ResponsiveContainer>
         </ChartCard>
       </section>
+      <section className="mt-5"><ChartCard title="Origine géographique" subtitle="Répartition renseignée dans les fiches clients"><ResponsiveContainer width="100%" height={280}><PieChart><Pie data={geography.length?geography:[{name:"Non renseignée",value:1}]} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100}>{(geography.length?geography:[{name:"Non renseignée",value:1}]).map((entry,index)=><Cell key={`${entry.name}-${index}`} fill={geography.length?colors[index%colors.length]:"#252525"}/>)}</Pie><Tooltip contentStyle={{background:"#171717",border:"1px solid rgba(255,255,255,.1)",borderRadius:12}}/></PieChart></ResponsiveContainer><div className="flex flex-wrap justify-center gap-3">{geography.map((item,index)=><span key={`${item.name}-${index}`} className="text-[10px] text-white/45"><i className="mr-1.5 inline-block size-2 rounded-full" style={{background:colors[index%colors.length]}}/>{item.name} · {item.value}</span>)}</div></ChartCard></section>
     </>
   );
 }

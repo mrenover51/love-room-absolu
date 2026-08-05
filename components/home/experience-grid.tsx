@@ -14,7 +14,7 @@ export function ExperienceGrid() {
         <Reveal><SectionHeading light eyebrow="Expériences privées" title="Tout ce qu’il faut pour oublier le reste." description="Trois espaces, une même intention : offrir à votre couple un rituel de détente et le luxe rare de ne penser à rien." /></Reveal>
         <div className="mt-16 grid gap-7 lg:grid-cols-3">
           {experiences.map((item, i) => (
-            <Reveal key={item.title} delay={i * .08} className="h-full">
+            <Reveal key={`${item.title}-${i}`} delay={i * .08} className="h-full">
               <Link href={experienceLinks[i]} className="luxury-card group relative block min-h-[36rem] overflow-hidden border border-white/[.08] bg-[#151515] focus-visible:ring-1 focus-visible:ring-[#C9A86A]" aria-label={`${item.title} — découvrir`}>
                 <Image src={item.natural} alt={`${item.title} de la suite Absolu`} fill sizes="(min-width: 1024px) 33vw, 100vw" className={`object-cover transition-[transform,opacity] duration-1000 group-hover:scale-[1.035] ${item.position}`} />
                 <Image src={item.ambient} alt="" aria-hidden="true" fill sizes="(min-width: 1024px) 33vw, 100vw" className={`hidden object-cover opacity-0 transition-[transform,opacity] duration-1000 group-hover:scale-[1.035] group-hover:opacity-100 group-focus-visible:opacity-100 md:block ${item.position}`} />
