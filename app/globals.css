@@ -120,6 +120,9 @@
 }
 
 @keyframes luxury-shimmer { to { transform: translateX(110%); } }
+@keyframes gift-card-ken-burns { from { transform: scale(1); } to { transform: scale(1.06); } }
+
+.gift-card-background { animation: gift-card-ken-burns 28s ease-in-out infinite alternate; }
 
 @media (min-width: 768px) { .page-shell { width: min(100% - 4rem, 82rem); } }
 
@@ -127,6 +130,7 @@
   body { background-attachment: scroll; }
   .section-space { padding-block: 5rem; }
   .luxury-card:hover { transform: translateY(-3px); }
+  .gift-card-background { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
