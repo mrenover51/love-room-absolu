@@ -28,6 +28,7 @@ const items = [
   ["Dashboard", "/admin", LayoutDashboard],
   ["Calendrier", "/admin/calendrier", CalendarDays],
   ["Réservations", "/admin/reservations", BedDouble],
+  ["Demandes", "/admin/demandes-reservation", Bell],
   ["Clients", "/admin/clients", Users],
   ["Tarifs", "/admin/tarifs", CircleDollarSign],
   ["Options", "/admin/options", SlidersHorizontal],
@@ -45,6 +46,7 @@ const items = [
   ["Autorité", "/admin/partenaires", Network],
   ["Paramètres", "/admin/parametres", Settings],
   ["Horaires", "/admin/parametres/horaires", Clock3],
+  ["Mode de réservation", "/admin/parametres/reservations", SlidersHorizontal],
   ["Mon compte", "/admin/compte", UserRound],
 ] as const;
 export function AdminSidebar() {

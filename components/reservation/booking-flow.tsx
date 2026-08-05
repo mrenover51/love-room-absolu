@@ -14,12 +14,15 @@ import { ExtrasSelector } from "./extras-selector";
 import { GuestDetailsForm } from "./guest-details-form";
 import { BookingSummary } from "./booking-summary";
 import { trackConversion } from "@/lib/analytics/conversion";
+import type { BookingMode } from "@/lib/booking/workflow-settings";
 
 const steps = ["Dates", "Options", "Informations", "Confirmation"];
 export function BookingFlow({
   pricingConfig,
+  bookingMode,
 }: {
   pricingConfig: PublicPricingConfig;
+  bookingMode: BookingMode;
 }) {
   const router = useRouter(),
     searchParams = useSearchParams(),
@@ -29,7 +32,8 @@ export function BookingFlow({
     [loading, setLoading] = useState(false),
     [promoInput, setPromoInput] = useState(""),
     [promoPercent, setPromoPercent] = useState(0),
-    [promoMessage, setPromoMessage] = useState("");
+    [promoMessage, setPromoMessage] = useState(""),
+    [requestSent, setRequestSent] = useState(false);
   const form = useForm<ReservationRequestInput>({
     resolver: zodResolver(reservationRequestSchema),
     defaultValues: {
@@ -161,12 +165,12 @@ export function BookingFlow({
     if (loading) return;
     setLoading(true);
     setServerError("");
-    trackConversion("begin_checkout", {
+    trackConversion(bookingMode === "manual" ? "booking_request_started" : "begin_checkout", {
       value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
       currency: "EUR",
     });
     try {
-      const response = await fetch("/api/stripe/create-checkout-session", {
+      const response = await fetch(bookingMode === "manual" ? "/api/reservation-request" : "/api/stripe/create-checkout-session", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(data),
@@ -178,6 +182,11 @@ export function BookingFlow({
           return;
         }
         throw new Error(result.error);
+      }
+      if(bookingMode === "manual"){
+        setRequestSent(true);
+        trackConversion("booking_request_submitted",{value:pricing?.totalAmount?pricing.totalAmount/100:0,currency:"EUR"});
+        return;
       }
       if (!result.url) throw new Error("Le paiement n’a pas pu être ouvert.");
       trackConversion("checkout_redirect", {
@@ -192,6 +201,7 @@ export function BookingFlow({
       setLoading(false);
     }
   }
+  if(requestSent)return <section className="rounded-[1.75rem] border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-8 text-center sm:p-12"><p className="eyebrow text-[#C9A86A]">Demande reçue</p><h2 className="mt-4 font-heading text-4xl">Votre parenthèse est entre de bonnes mains.</h2><p className="mx-auto mt-5 max-w-2xl leading-8 text-white/65">Nous vérifions personnellement la disponibilité de la suite. Vous recevrez notre réponse par email avant toute demande de paiement.</p></section>;
   return (
     <form onSubmit={form.handleSubmit(submit)} noValidate>
       <ol
@@ -200,7 +210,7 @@ export function BookingFlow({
       >
         {steps.map((label, index) => (
           <li
-            key={label}
+            key={`${label}-${index}`}
             aria-current={index === step ? "step" : undefined}
             className={`border-t pt-3 text-center text-[.58rem] uppercase tracking-wider sm:text-[.68rem] ${index <= step ? "border-[#C9A86A] text-[#D8C8B6]" : "border-white/10 text-white/30"}`}
           >
@@ -273,7 +283,7 @@ export function BookingFlow({
           {step === 3 && pricing && (
             <section aria-labelledby="review-title">
               <h3 id="review-title" className="font-heading text-3xl">
-                Vérifiez avant paiement
+                {bookingMode === "manual" ? "Vérifiez votre demande" : "Vérifiez avant paiement"}
               </h3>
               <p className="mt-4 leading-7 text-white/60">
                 {values.firstName} {values.lastName} · {values.guestCount}{" "}
@@ -308,8 +318,7 @@ export function BookingFlow({
                 </button>
               </nav>
               <p className="mt-8 border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-4 text-sm">
-                Les dates et le montant seront revérifiés côté serveur avant
-                l’ouverture du paiement sécurisé Stripe.
+                {bookingMode === "manual" ? "Les dates et le montant seront revérifiés côté serveur. Aucun paiement ne sera demandé avant la validation de votre séjour." : "Les dates et le montant seront revérifiés côté serveur avant l’ouverture du paiement sécurisé Stripe."}
               </p>
             </section>
           )}
@@ -351,7 +360,7 @@ export function BookingFlow({
                 aria-busy={loading}
                 className="min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:opacity-50"
               >
-                {loading ? "Préparation du paiement…" : "Payer et réserver"}
+                {loading ? (bookingMode === "manual" ? "Envoi de la demande…" : "Préparation du paiement…") : (bookingMode === "manual" ? "Demander cette parenthèse" : "Payer et réserver")}
               </button>
             )}
           </div>

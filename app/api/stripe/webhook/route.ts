@@ -2,7 +2,7 @@ import type Stripe from "stripe";
 import { stripeProvider } from "@/lib/stripe/stripe-provider";
 import { PaymentService } from "@/lib/stripe/payment-service";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendConfirmation, sendStatusEmail } from "@/lib/email";
+import { sendConfirmation, sendReservationRequestEmail, sendStatusEmail } from "@/lib/email";
 import { sendGiftCard } from "@/lib/gifts/email";
 export const runtime = "nodejs";
 type EmailRow = {
@@ -57,6 +57,8 @@ export async function POST(request: Request) {
           : null,
       );
       if (changed) {
+        const requestId = session.metadata?.reservation_request_id;
+        if(requestId)await db.from("reservation_requests").update({statut:"confirmed",updated_at:new Date().toISOString()}).eq("id",requestId).eq("statut","pending_payment");
         const promoCode = session.metadata?.promo_code;
         if (promoCode) {
           const { data: promo } = await db
@@ -97,7 +99,9 @@ export async function POST(request: Request) {
             "reference,guest_first_name,guest_email,check_in,check_out,total",
           )
           .maybeSingle();
-        if (data) await sendStatusEmail("failed", emailData(data));
+        const requestId=event.data.object.metadata?.reservation_request_id;
+        if(data&&!requestId)await sendStatusEmail("failed",emailData(data));
+        if(requestId){const{data:requestRow}=await db.from("reservation_requests").update({statut:"expired",updated_at:new Date().toISOString()}).eq("id",requestId).eq("statut","pending_payment").select("prenom,email,date_arrivee,date_depart,prix_calcule").maybeSingle();if(requestRow)await sendReservationRequestEmail("expired",{firstName:requestRow.prenom,email:requestRow.email,checkIn:requestRow.date_arrivee,checkOut:requestRow.date_depart,totalAmount:requestRow.prix_calcule})}
       }
     } else if (event.type === "charge.refunded") {
       const charge = event.data.object,

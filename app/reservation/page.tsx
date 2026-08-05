@@ -11,6 +11,7 @@ import { getStaySettings } from "@/lib/stay-settings";
 import Image from "next/image";
 import { DirectBookingComparison } from "@/components/cro/direct-booking-comparison";
 import { getPublishedReviews } from "@/lib/reviews/reviews";
+import { getReservationWorkflowSettings } from "@/lib/booking/workflow-settings";
 
 export const metadata: Metadata = pageMetadata({
   title: "Réserver la Suite Absolu au meilleur tarif",
@@ -20,8 +21,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 async function ReservationEngine() {
-  const pricingConfig = await getPublicPricingConfig();
-  return <BookingFlow pricingConfig={pricingConfig} />;
+  const [pricingConfig,workflow]=await Promise.all([getPublicPricingConfig(),getReservationWorkflowSettings()]);
+  return <BookingFlow pricingConfig={pricingConfig} bookingMode={workflow.mode} />;
 }
 
 export default async function ReservationPage() {
@@ -110,9 +111,9 @@ export default async function ReservationPage() {
                 La suite vue par nos voyageurs
               </h2>
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {customerPhotos.map((src) => (
+                {customerPhotos.map((src, keyIndex) => (
                   <figure
-                    key={src}
+                    key={`${src}-${keyIndex}`}
                     className="relative aspect-[4/3] overflow-hidden rounded-2xl"
                   >
                     <Image

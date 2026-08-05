@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { reservationRequestSchema } from "@/lib/booking/validation";
-import { createReservationRequest } from "@/lib/booking/reservation-service";
+import { createManualReservationRequest } from "@/lib/booking/manual-request-service";
 import { rejectCrossSite } from "@/lib/security/request";
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (typeof body === "object" && body !== null && "website" in body && body.website) return NextResponse.json({ ok: true }, { status: 202 });
     const parsed = reservationRequestSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Certains champs sont invalides.", issues: parsed.error.flatten().fieldErrors }, { status: 400 });
-    return NextResponse.json(await createReservationRequest(parsed.data), { status: 201 });
+    return NextResponse.json(await createManualReservationRequest(parsed.data), { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : "UNKNOWN";
     if (code === "DATES_UNAVAILABLE") return NextResponse.json({ error: "Ces dates ne sont plus disponibles.", code }, { status: 409 });

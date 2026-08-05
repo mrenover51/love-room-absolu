@@ -6,6 +6,8 @@ export type ConversionEvent =
   | "booking_dates_selected"
   | "booking_step_view"
   | "booking_promo_applied"
+  | "booking_request_started"
+  | "booking_request_submitted"
   | "begin_checkout"
   | "checkout_redirect"
   | "purchase";
