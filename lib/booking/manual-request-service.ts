@@ -5,7 +5,7 @@ import { ReservationService } from "@/lib/supabase/services/reservation-service"
 import { SupabaseReservationRepository } from "@/lib/supabase/repositories/reservation-repository";
 import { CheckoutService } from "@/lib/stripe/checkout-service";
 import { getReservationWorkflowSettings } from "./workflow-settings";
-import { sendReservationRequestEmail } from "@/lib/email";
+import { sendReservationRequestAdminEmail, sendReservationRequestEmail } from "@/lib/email";
 import { stripeProvider } from "@/lib/stripe/stripe-provider";
 import type { PriceBreakdown } from "./types";
 import type { ReservationRequestInput } from "./validation";
@@ -16,6 +16,7 @@ type RequestRow = {
 const reference=()=>`ABS-${new Date().getUTCFullYear()}-${randomBytes(5).toString("base64url").slice(0,6).toUpperCase()}`;
 const emailData=(row:RequestRow)=>({firstName:row.prenom,email:row.email,checkIn:row.date_arrivee,checkOut:row.date_depart,totalAmount:row.prix_calcule});
 async function safelyEmail(kind:Parameters<typeof sendReservationRequestEmail>[0],row:RequestRow,checkoutUrl?:string){try{await sendReservationRequestEmail(kind,{...emailData(row),checkoutUrl})}catch(error){console.error("reservation_request_email_failed",{kind,requestId:row.id,code:error instanceof Error?error.message:"UNKNOWN"})}}
+async function safelyAdminEmail(row:RequestRow){try{await sendReservationRequestAdminEmail({requestId:row.id,firstName:row.prenom,lastName:row.nom,email:row.email,phone:row.telephone,checkIn:row.date_arrivee,checkOut:row.date_depart,totalAmount:row.prix_calcule,message:row.message})}catch(error){console.error("reservation_request_admin_email_failed",{requestId:row.id,code:error instanceof Error?error.message:"UNKNOWN"})}}
 
 export async function createManualReservationRequest(input:ReservationRequestInput){
   if((await getReservationWorkflowSettings()).mode!=="manual")throw new Error("MANUAL_BOOKING_DISABLED");
@@ -28,7 +29,7 @@ export async function createManualReservationRequest(input:ReservationRequestInp
   const{data,error}=await db.from("reservation_requests").insert({nom:input.lastName,prenom:input.firstName,email:input.email,telephone:input.phone,date_arrivee:input.checkIn,date_depart:input.checkOut,adultes:input.guestCount,options:{extraKeys:input.extraKeys,promoCode:pricing.promoCode,pricing},prix_calcule:pricing.totalAmount,message:input.message||null,statut:"new",provider:"site",source:"direct"}).select("id,nom,prenom,email,telephone,date_arrivee,date_depart,adultes,options,prix_calcule,message,statut,reservation_id,stripe_checkout_url").single();
   if(error||!data)throw new Error("RESERVATION_REQUEST_CREATE_FAILED");
   await db.from("notifications").insert({kind:"reservation_request",title:"Nouvelle demande",message:`${data.prenom} ${data.nom} · ${data.date_arrivee} au ${data.date_depart}.`});
-  await safelyEmail("received",data as RequestRow);
+  await Promise.all([safelyEmail("received",data as RequestRow),safelyAdminEmail(data as RequestRow)]);
   return{id:data.id,status:"new",totalAmount:pricing.totalAmount};
 }
 
