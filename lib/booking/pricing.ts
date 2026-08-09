@@ -2,6 +2,7 @@ import { BOOKING_CONFIG } from "./constants";
 import { addDays, nightsBetween } from "./date-utils";
 import { parseIsoDate } from "./date-utils";
 import { calculateBookingTotal, calculateTouristTax } from "./tourist-tax";
+import { DEFAULT_MINIMUM_ADVANCE_DAYS } from "./minimum-advance-days";
 import type {
   ExtraBillingType,
   PriceBreakdown,
@@ -13,6 +14,7 @@ export { nightsBetween } from "./date-utils";
 
 export const defaultPricingConfig: PublicPricingConfig = {
   touristTaxRateAmount: 0,
+  minimumAdvanceDays: DEFAULT_MINIMUM_ADVANCE_DAYS,
   minimumNights: BOOKING_CONFIG.minimumNights,
   maximumNights: BOOKING_CONFIG.maximumNights,
   currency: BOOKING_CONFIG.currency,

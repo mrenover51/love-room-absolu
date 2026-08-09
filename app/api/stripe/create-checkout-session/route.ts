@@ -50,6 +50,14 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const code = error instanceof Error ? error.message : "UNKNOWN";
+    if (code.includes("MINIMUM_ADVANCE_DAYS"))
+      return NextResponse.json(
+        {
+          error: "La date d’arrivée ne respecte plus le délai minimum de réservation.",
+          code: "MINIMUM_ADVANCE_DAYS",
+        },
+        { status: 409 },
+      );
     if (code.includes("DATES_UNAVAILABLE"))
       return NextResponse.json(
         {

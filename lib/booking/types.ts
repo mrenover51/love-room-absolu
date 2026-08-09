@@ -23,6 +23,7 @@ export type PublicExtra = SelectedExtra & {
 };
 export type PublicPricingConfig = {
   touristTaxRateAmount: number;
+  minimumAdvanceDays: number;
   weekdayAmounts?: Record<number, number>;
   seasonalPrices?: Array<{
     startDate: string;

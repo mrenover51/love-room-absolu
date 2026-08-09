@@ -3,11 +3,13 @@ import { BOOKING_CONFIG, reservationHoldMinutes } from "./constants";
 import { getStaySettings } from "@/lib/stay-settings";
 import { SupabasePricingRepository } from "@/lib/supabase/repositories/pricing-repository";
 import { ReservationService } from "@/lib/supabase/services/reservation-service";
+import { DEFAULT_MINIMUM_ADVANCE_DAYS } from "./minimum-advance-days";
 export async function getPublicPricingConfig() {
   const times = await getStaySettings(),
     fallback = {
       ...BOOKING_CONFIG,
       touristTaxRateAmount: 0,
+      minimumAdvanceDays: DEFAULT_MINIMUM_ADVANCE_DAYS,
       extras: BOOKING_CONFIG.extras
         .filter(
           (item) =>

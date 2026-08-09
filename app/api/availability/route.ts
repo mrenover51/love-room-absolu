@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAvailabilityData } from "@/lib/booking/availability";
-import { BOOKING_CONFIG } from "@/lib/booking/constants";
+import { getPublicPricingConfig } from "@/lib/booking/server-pricing";
 
 const querySchema = z.object({ from: z.iso.date(), to: z.iso.date() });
 export async function GET(request: Request) {
@@ -12,7 +12,10 @@ export async function GET(request: Request) {
   });
   if (!parsed.success || parsed.data.to <= parsed.data.from)
     return NextResponse.json({ error: "Période invalide." }, { status: 400 });
-  const availability = await getAvailabilityData();
+  const [availability, pricingConfig] = await Promise.all([
+    getAvailabilityData(),
+    getPublicPricingConfig(),
+  ]);
   const blockedDates = availability.ranges
     .filter(
       (range) => range.start < parsed.data.to && range.end > parsed.data.from,
@@ -37,8 +40,9 @@ export async function GET(request: Request) {
       blockedDates,
       ranges: blockedDates.map(({ start, end }) => ({ start, end })),
       availableNightsNext30,
-      minimumNights: BOOKING_CONFIG.minimumNights,
-      maximumNights: BOOKING_CONFIG.maximumNights,
+      minimumAdvanceDays: pricingConfig.minimumAdvanceDays,
+      minimumNights: pricingConfig.minimumNights,
+      maximumNights: pricingConfig.maximumNights,
       lastSynchronization: availability.synchronizedAt,
       externalCalendarWarning,
     },

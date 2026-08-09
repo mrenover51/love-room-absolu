@@ -1,6 +1,7 @@
 ﻿import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import type { PublicPricingConfig } from "@/lib/booking/types";
 import { touristTaxRateToAmount } from "@/lib/booking/tourist-tax";
+import { normalizeMinimumAdvanceDays } from "@/lib/booking/minimum-advance-days";
 import { createAdminClient } from "@/lib/supabase/admin";
 export class SupabasePricingRepository {
   async validatePromoCode(code: string) {
@@ -55,6 +56,7 @@ export class SupabasePricingRepository {
           "maximum_nights",
           "revenue_rules",
           "taxes",
+          "reservation_workflow",
         ]),
     ]);
     if (pe || oe || se || pre || ste) throw new Error("PRICING_READ_FAILED");
@@ -69,6 +71,12 @@ export class SupabasePricingRepository {
           ? item.value
           : fallback;
       },
+      rawWorkflow = value("reservation_workflow"),
+      minimumAdvanceDays = normalizeMinimumAdvanceDays(
+        typeof rawWorkflow === "object" && rawWorkflow !== null
+          ? (rawWorkflow as Record<string, unknown>).minimumAdvanceDays
+          : undefined,
+      ),
       rawTaxes = value("taxes"),
       touristTaxRate =
         typeof rawTaxes === "object" &&
@@ -101,6 +109,7 @@ export class SupabasePricingRepository {
       }));
     return {
       touristTaxRateAmount: touristTaxRateToAmount(touristTaxRate),
+      minimumAdvanceDays,
       weekdayAmounts: Object.fromEntries(
         (prices ?? []).map((row) => [row.weekday, row.price]),
       ) as Record<number, number>,

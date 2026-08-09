@@ -159,6 +159,7 @@ export async function acceptManualReservationRequest(id: string) {
   const stored = row.options as { pricing?: PriceBreakdown };
   if (!stored.pricing || stored.pricing.totalAmount !== row.prix_calcule)
     throw new Error("RESERVATION_REQUEST_PRICE_INVALID");
+  await new ReservationService().validateMinimumAdvanceDays(row.date_arrivee);
   const { data: claimed } = await db
     .from("reservation_requests")
     .update({ statut: "accepted", updated_at: new Date().toISOString() })

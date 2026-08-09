@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json(await createManualReservationRequest(parsed.data), { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : "UNKNOWN";
+    if (code === "MINIMUM_ADVANCE_DAYS") return NextResponse.json({ error: "La date d’arrivée ne respecte plus le délai minimum de réservation.", code }, { status: 409 });
     if (code === "DATES_UNAVAILABLE") return NextResponse.json({ error: "Ces dates ne sont plus disponibles.", code }, { status: 409 });
     if (code === "DUPLICATE_REQUEST") return NextResponse.json({ error: "Une demande identique vient déjà d’être enregistrée.", code }, { status: 409 });
     console.error("reservation_request_failed", { code: code.slice(0, 80) });

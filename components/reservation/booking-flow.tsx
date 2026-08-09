@@ -271,6 +271,7 @@ export function BookingFlow({
             <DateRangePicker
               checkIn={values.checkIn}
               checkOut={values.checkOut}
+              minimumAdvanceDays={pricingConfig.minimumAdvanceDays}
               minimumNights={pricingConfig.minimumNights}
               maximumNights={pricingConfig.maximumNights}
               onChange={(checkIn, checkOut) => {

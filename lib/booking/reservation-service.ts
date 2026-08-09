@@ -5,12 +5,16 @@ import { isAvailable } from "./availability";
 import { calculateStayPrice } from "./pricing";
 import { reservationHoldMinutes } from "./constants";
 import { generateReservationReference } from "./reference";
+import { assertMinimumAdvanceDays } from "./minimum-advance-days";
+import { getReservationWorkflowSettings } from "./workflow-settings";
 import type { BookingRequest, PublicBookingSummary } from "./types";
 import type { ReservationRequestInput } from "./validation";
 
 export async function createReservationRequest(
   input: ReservationRequestInput,
 ): Promise<PublicBookingSummary> {
+  const { minimumAdvanceDays } = await getReservationWorkflowSettings();
+  assertMinimumAdvanceDays(input.checkIn, minimumAdvanceDays);
   if (!(await isAvailable(input.checkIn, input.checkOut)))
     throw new Error("DATES_UNAVAILABLE");
   const pricing = calculateStayPrice(

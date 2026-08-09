@@ -1,6 +1,7 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { calculatePriceFromConfig } from "@/lib/booking/pricing";
+import { assertMinimumAdvanceDays } from "@/lib/booking/minimum-advance-days";
 import type { PriceBreakdown } from "@/lib/booking/types";
 import type { CreateReservationDto } from "../validators/reservation";
 import { SupabasePricingRepository } from "../repositories/pricing-repository";
@@ -22,15 +23,21 @@ export class ReservationService {
       ? await this.pricing.validatePromoCode(promoCode)
       : null;
     if (promoCode && !promo) throw new Error("PROMO_INVALID");
+    const config = await this.pricing.getConfig();
+    assertMinimumAdvanceDays(checkIn, config.minimumAdvanceDays);
     return calculatePriceFromConfig(
       checkIn,
       checkOut,
       extraKeys,
-      await this.pricing.getConfig(),
+      config,
       promo?.discountPercent ?? 0,
       promo?.code,
       guestCount,
     );
+  }
+  async validateMinimumAdvanceDays(checkIn: string) {
+    const config = await this.pricing.getConfig();
+    assertMinimumAdvanceDays(checkIn, config.minimumAdvanceDays);
   }
   async createReservation(input: CreateReservationDto) {
     if (!(await this.isAvailable(input.checkIn, input.checkOut)))

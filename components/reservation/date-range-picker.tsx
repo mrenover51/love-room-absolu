@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import { dateRangesOverlap, nightsBetween } from "@/lib/booking/date-utils";
+import { minimumArrivalDate } from "@/lib/booking/minimum-advance-days";
 import type { DateRange } from "@/lib/booking/types";
 import { AvailabilityLegend } from "./availability-legend";
 const labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -11,12 +12,14 @@ const localIso = (date: Date) =>
 export function DateRangePicker({
   checkIn,
   checkOut,
+  minimumAdvanceDays,
   minimumNights,
   maximumNights,
   onChange,
 }: {
   checkIn: string;
   checkOut: string;
+  minimumAdvanceDays: number;
   minimumNights: number;
   maximumNights: number;
   onChange: (start: string, end: string) => void;
@@ -101,7 +104,8 @@ export function DateRangePicker({
     }
     onChange(checkIn, value);
   }
-  const today = localIso(new Date());
+  const today = localIso(new Date()),
+    firstArrival = minimumArrivalDate(minimumAdvanceDays, today);
   return (
     <section aria-labelledby="calendar-title" aria-busy={loading}>
       <div className="mb-6 flex items-center justify-between">
@@ -179,18 +183,18 @@ export function DateRangePicker({
                           value > checkIn &&
                           value < checkOut,
                         ),
-                        past = value < today;
+                        tooSoon = value < firstArrival;
                       return (
                         <button
                           role="gridcell"
                           type="button"
                           key={`${value}-${index}`}
                           onClick={() => choose(value)}
-                          disabled={blocked || past || loading}
-                          aria-disabled={blocked || past || loading}
+                          disabled={blocked || tooSoon || loading}
+                          aria-disabled={blocked || tooSoon || loading}
                           aria-label={`${date.toLocaleDateString("fr-FR", { dateStyle: "full" })}${blocked ? ", indisponible" : selected ? ", sélectionnée" : inRange ? ", dans la plage sélectionnée" : ""}`}
                           aria-selected={selected || inRange}
-                          className={`min-h-11 w-full border border-transparent text-sm transition-colors disabled:cursor-not-allowed sm:aspect-square ${blocked || past ? "bg-white/[.035] text-white/20" : selected ? "bg-[#C9A86A] text-black" : inRange ? "bg-[#C9A86A]/15 text-white" : value === today ? "border-[#C9A86A]/45 text-[#E8CC91]" : "hover:border-[#C9A86A]/50"}`}
+                          className={`min-h-11 w-full border border-transparent text-sm transition-colors disabled:cursor-not-allowed sm:aspect-square ${blocked || tooSoon ? "bg-white/[.035] text-white/20" : selected ? "bg-[#C9A86A] text-black" : inRange ? "bg-[#C9A86A]/15 text-white" : value === today ? "border-[#C9A86A]/45 text-[#E8CC91]" : "hover:border-[#C9A86A]/50"}`}
                         >
                           {date.getDate()}
                           <span className="sr-only">
