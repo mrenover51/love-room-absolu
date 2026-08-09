@@ -5,7 +5,13 @@ import {
   assertMinimumAdvanceDays,
   minimumArrivalDate,
   normalizeMinimumAdvanceDays,
+  parisTodayIso,
 } from "../lib/booking/minimum-advance-days.ts";
+
+test("la date de référence suit Europe/Paris aux frontières UTC", () => {
+  assert.equal(parisTodayIso(new Date("2026-01-31T23:30:00Z")), "2026-02-01");
+  assert.equal(parisTodayIso(new Date("2026-07-31T22:30:00Z")), "2026-08-01");
+});
 
 test("0 jour autorise une arrivée le jour même", () => {
   assert.equal(minimumArrivalDate(0, "2026-08-09"), "2026-08-09");

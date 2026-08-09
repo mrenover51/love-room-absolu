@@ -1,4 +1,17 @@
 export const DEFAULT_MINIMUM_ADVANCE_DAYS = 1;
+export const BOOKING_TIME_ZONE = "Europe/Paris";
+
+export function parisTodayIso(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: BOOKING_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value;
+  return `${value("year")}-${value("month")}-${value("day")}`;
+}
 
 export function normalizeMinimumAdvanceDays(value: unknown) {
   return typeof value === "number" &&
@@ -11,7 +24,7 @@ export function normalizeMinimumAdvanceDays(value: unknown) {
 
 export function minimumArrivalDate(
   minimumAdvanceDays: number,
-  today = new Date().toISOString().slice(0, 10),
+  today = parisTodayIso(),
 ) {
   const date = new Date(`${today}T00:00:00Z`);
   date.setUTCDate(

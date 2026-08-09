@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import { dateRangesOverlap, nightsBetween } from "@/lib/booking/date-utils";
-import { minimumArrivalDate } from "@/lib/booking/minimum-advance-days";
+import {
+  minimumArrivalDate,
+  parisTodayIso,
+} from "@/lib/booking/minimum-advance-days";
 import type { DateRange } from "@/lib/booking/types";
 import { AvailabilityLegend } from "./availability-legend";
 const labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -24,11 +27,12 @@ export function DateRangePicker({
   maximumNights: number;
   onChange: (start: string, end: string) => void;
 }) {
-  const now = new Date(),
-    firstAllowedMonth = new Date(now.getFullYear(), now.getMonth(), 1),
+  const today = parisTodayIso(),
+    [parisYear, parisMonth] = today.split("-").map(Number),
+    firstAllowedMonth = new Date(parisYear, parisMonth - 1, 1),
     lastAllowedMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + BOOKING_CONFIG.availabilityMonths,
+      parisYear,
+      parisMonth - 1 + BOOKING_CONFIG.availabilityMonths,
       1,
     );
   const [month, setMonth] = useState(firstAllowedMonth),
@@ -36,11 +40,11 @@ export function DateRangePicker({
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
   useEffect(() => {
-    const from = localIso(new Date()),
+    const from = parisTodayIso(),
       to = localIso(
         new Date(
-          new Date().getFullYear(),
-          new Date().getMonth() + BOOKING_CONFIG.availabilityMonths + 1,
+          parisYear,
+          parisMonth - 1 + BOOKING_CONFIG.availabilityMonths + 1,
           0,
         ),
       );
@@ -49,7 +53,7 @@ export function DateRangePicker({
       .then((data) => setRanges(data.ranges))
       .catch(() => setError("Les disponibilités n’ont pas pu être chargées."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [parisMonth, parisYear]);
   const monthDays = (displayMonth: Date) => {
     const first = new Date(
         displayMonth.getFullYear(),
@@ -104,8 +108,7 @@ export function DateRangePicker({
     }
     onChange(checkIn, value);
   }
-  const today = localIso(new Date()),
-    firstArrival = minimumArrivalDate(minimumAdvanceDays, today);
+  const firstArrival = minimumArrivalDate(minimumAdvanceDays, today);
   return (
     <section aria-labelledby="calendar-title" aria-busy={loading}>
       <div className="mb-6 flex items-center justify-between">
