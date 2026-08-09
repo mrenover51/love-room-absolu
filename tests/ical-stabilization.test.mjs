@@ -3,143 +3,148 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const read = (file) => readFileSync(file, "utf8");
-const sql = read("supabase/migrations/202608090037_safe_ical_sync.sql");
+const migration = read(
+  "supabase/migrations/202608090039_fail_closed_ical_availability.sql",
+);
+const syncCode = read("lib/calendar/sync.ts");
+const repository = read(
+  "lib/supabase/repositories/reservation-repository.ts",
+);
 
-function synchronize(existing, provider, incoming) {
-  const isoDate = /^\d{4}-\d{2}-\d{2}$/;
-  if (
-    incoming.some(
-      (event) =>
-        event.provider !== provider ||
-        !event.uid ||
-        !event.reference ||
-        !event.email ||
-        !isoDate.test(event.start) ||
-        !isoDate.test(event.end) ||
-        event.end <= event.start,
-    )
-  )
-    throw new Error("ICAL_EVENT_INVALID");
-  if (!incoming.length) return structuredClone(existing);
-  const incomingIds = new Set(incoming.map((event) => event.uid));
-  const reconciled = existing.map((event) =>
-    event.provider === provider && !incomingIds.has(event.uid)
-      ? { ...event, active: false }
-      : event,
-  );
-  for (const event of incoming) {
-    const index = reconciled.findIndex(
-      (current) =>
-        current.provider === provider && current.uid === event.uid,
+const event = (uid, provider = "booking") => ({ uid, provider, active: true });
+const state = (uids, provider = "booking") => ({
+  events: uids.map((uid) => event(uid, provider)),
+  observations: new Map(),
+});
+
+function synchronize(current, provider, incoming) {
+  if (incoming === null) throw new Error("DOWNLOAD_OR_PARSE_FAILED");
+  const next = structuredClone(current);
+  const active = next.events.filter((item) => item.provider === provider && item.active);
+  if (!incoming.length)
+    return { ...next, suspicious: true, decision: "empty_snapshot_protected" };
+  const received = new Set(incoming.map((item) => item.uid));
+  const missing = active.filter((item) => !received.has(item.uid));
+  const suspicious =
+    missing.length > 1 ||
+    (missing.length > 0 && missing.length * 2 >= active.length);
+  for (const item of incoming) {
+    const existing = next.events.find(
+      (candidate) => candidate.provider === provider && candidate.uid === item.uid,
     );
-    if (index >= 0) reconciled[index] = { ...event, active: true };
-    else reconciled.push({ ...event, active: true });
+    if (existing) existing.active = true;
+    else next.events.push(event(item.uid, provider));
+    next.observations.delete(`${provider}:${item.uid}`);
   }
-  return reconciled;
+  for (const item of missing) {
+    const key = `${provider}:${item.uid}`;
+    const count = next.observations.get(key) ?? 0;
+    next.observations.set(key, suspicious ? count : count + 1);
+    if (!suspicious && count + 1 >= 2) item.active = false;
+  }
+  return {
+    ...next,
+    suspicious,
+    decision: suspicious
+      ? "suspicious_snapshot_protected"
+      : missing.length
+        ? "absence_confirmation_pending"
+        : "no_changes",
+  };
 }
 
-const bookingEvent = (uid) => ({
-  provider: "booking",
-  uid,
-  reference: `EXT-${uid}`,
-  email: `${uid.toLowerCase()}@invalid.local`,
-  start: "2026-09-10",
-  end: "2026-09-12",
-  active: true,
+test("A — une chute Booking de 10 à 3 conserve les sept UID absents", () => {
+  const initial = state(Array.from({ length: 10 }, (_, index) => `B${index}`));
+  const result = synchronize(initial, "booking", initial.events.slice(0, 3));
+  assert.equal(result.suspicious, true);
+  assert.equal(result.events.filter((item) => item.active).length, 10);
+  assert.match(migration, /v_missing > 1/);
+  assert.match(migration, /suspicious_snapshot_protected/);
 });
 
-test("test 1 — un flux Booking valide est importé normalement", () => {
-  const result = synchronize([], "booking", [bookingEvent("A")]);
-  assert.deepEqual(result.map((event) => event.uid), ["A"]);
-  assert.equal(result[0].active, true);
+test("B — une absence unique sûre exige deux snapshots cohérents", () => {
+  const initial = state(["A", "B", "C"]);
+  const first = synchronize(initial, "booking", [event("A"), event("C")]);
+  assert.equal(first.events.find((item) => item.uid === "B")?.active, true);
+  const second = synchronize(first, "booking", [event("A"), event("C")]);
+  assert.equal(second.events.find((item) => item.uid === "B")?.active, false);
+  assert.match(migration, /consecutive_count >= 2/);
 });
 
-test("test 2 — deux synchronisations identiques ne créent aucun doublon", () => {
-  const first = synchronize([], "booking", [bookingEvent("A")]);
-  const second = synchronize(first, "booking", [bookingEvent("A")]);
-  assert.equal(second.length, 1);
-  assert.match(sql, /on conflict \(provider, ical_uid\)/i);
+test("C — un snapshot vide ne libère aucune date", () => {
+  const result = synchronize(state(["A", "B", "C"]), "booking", []);
+  assert.equal(result.events.every((item) => item.active), true);
+  assert.equal(result.decision, "empty_snapshot_protected");
 });
 
-test("test 3 — un UID absent d’un flux complet non vide est annulé", () => {
-  const existing = ["A", "B", "C"].map(bookingEvent);
-  const result = synchronize(existing, "booking", [
-    bookingEvent("A"),
-    bookingEvent("C"),
-  ]);
-  assert.equal(result.find((event) => event.uid === "A")?.active, true);
-  assert.equal(result.find((event) => event.uid === "B")?.active, false);
-  assert.equal(result.find((event) => event.uid === "C")?.active, true);
-  assert.match(sql, /not exists \([\s\S]*jsonb_array_elements\(p_events\)/);
+test("D/E — une erreur HTTP ou de parsing n'altère pas l'état", () => {
+  const initial = state(["A", "B"]);
+  assert.throws(() => synchronize(initial, "booking", null));
+  assert.equal(initial.events.every((item) => item.active), true);
+  assert.match(syncCode, /download_or_validation_failed_protected/);
+  assert.ok(syncCode.indexOf("downloadCalendar") < syncCode.indexOf("db.rpc"));
 });
 
-test("test 4 critique — un flux vide conserve réservations et blocs", () => {
-  const existing = ["A", "B", "C"].map(bookingEvent);
-  assert.deepEqual(synchronize(existing, "booking", []), existing);
-  const guard = sql.indexOf("if jsonb_array_length(p_events) = 0 then");
-  const reconciliation = sql.indexOf("with cancelled as");
-  assert.ok(guard > 0 && guard < reconciliation);
-  const emptyBranch = sql.slice(guard, sql.indexOf("end if;", guard));
-  assert.match(emptyBranch, /'cancelled', 0/);
-  assert.doesNotMatch(emptyBranch, /public\.reservations|public\.calendar_blocks/);
+test("F — un calendar_block Booking actif participe à la disponibilité", () => {
+  assert.match(repository, /from\("calendar_blocks"\)/);
+  assert.match(repository, /\.in\("status", \["confirmed", "blocked"\]\)/);
 });
 
-test("test 5 — tout le flux est validé avant la première écriture", () => {
-  const existing = [bookingEvent("A")];
-  assert.throws(
-    () =>
-      synchronize(existing, "booking", [
-        bookingEvent("B"),
-        { ...bookingEvent("C"), end: "date-invalide" },
-      ]),
-    /ICAL_EVENT_INVALID/,
+test("G — Checkout refuse atomiquement un bloc Airbnb actif", () => {
+  assert.match(
+    migration,
+    /create or replace function public\.create_checkout_reservation[\s\S]*calendar_blocks[\s\S]*provider in \('booking','airbnb'\)[\s\S]*DATES_UNAVAILABLE/i,
   );
-  assert.equal(existing.length, 1);
-  assert.equal(existing[0].uid, "A");
-  const validationLoop = sql.indexOf(
-    "-- Valider le flux complet avant la moindre écriture",
-  );
-  const firstSourceUpdate = sql.indexOf("update public.calendar_sources");
-  const firstReservationInsert = sql.indexOf("insert into public.reservations");
-  assert.ok(validationLoop > 0);
-  assert.ok(firstSourceUpdate > validationLoop);
-  assert.ok(firstReservationInsert > firstSourceUpdate);
-  for (const validation of [
-    "ICAL_EVENT_REQUIRED_FIELD_MISSING",
-    "ICAL_EVENT_DATE_INVALID",
-    "ICAL_EVENT_CANCELLED_INVALID",
-    "ICAL_EVENT_UID_DUPLICATE",
-  ])
-    assert.ok(sql.includes(validation), validation);
+  assert.match(migration, /pg_advisory_xact_lock\(hashtext\('absolu_reservations'\)\)/);
 });
 
-test("test 6 — Booking en échec n’empêche pas Airbnb de réussir", () => {
-  const existing = [bookingEvent("A")];
-  assert.throws(
-    () =>
-      synchronize(existing, "booking", [
-        { ...bookingEvent("B"), uid: "" },
-      ]),
-    /ICAL_EVENT_INVALID/,
-  );
-  const airbnb = {
-    ...bookingEvent("AIR-1"),
-    provider: "airbnb",
+test("H — demandes manuelles et validation utilisent les mêmes gardes", () => {
+  const manual = read("lib/booking/manual-request-service.ts");
+  assert.match(manual, /reservations\.isAvailable/);
+  assert.match(manual, /repository\.create/);
+  assert.match(repository, /calendar_blocks/);
+  assert.match(migration, /create_checkout_reservation/);
+});
+
+test("I — une synchronisation répétée reste idempotente", () => {
+  const first = synchronize(state([]), "booking", [event("A")]);
+  const second = synchronize(first, "booking", [event("A")]);
+  assert.equal(second.events.length, 1);
+  assert.match(migration, /on conflict \(provider, ical_uid\)/i);
+});
+
+test("J — Booking suspect n'empêche pas Airbnb de progresser", () => {
+  const initial = {
+    events: [
+      ...state(Array.from({ length: 10 }, (_, index) => `B${index}`)).events,
+      event("AIR-1", "airbnb"),
+    ],
+    observations: new Map(),
   };
-  const result = synchronize(existing, "airbnb", [airbnb]);
-  assert.equal(result.find((event) => event.uid === "A")?.active, true);
-  assert.equal(result.find((event) => event.uid === "AIR-1")?.active, true);
-  const sync = read("lib/calendar/sync.ts");
-  assert.match(sync, /for \(const \{ source, url \} of definitions\)/);
+  const booking = synchronize(initial, "booking", initial.events.slice(0, 3));
+  const airbnb = synchronize(booking, "airbnb", [
+    event("AIR-1", "airbnb"),
+    event("AIR-2", "airbnb"),
+  ]);
+  assert.equal(airbnb.events.filter((item) => item.provider === "booking" && item.active).length, 10);
+  assert.equal(airbnb.events.filter((item) => item.provider === "airbnb" && item.active).length, 2);
+  assert.match(syncCode, /for \(const \{ source, url \} of definitions\)/);
 });
 
-test("les URLs, l’activation et les droits restent protégés", () => {
-  assert.doesNotMatch(sql, /delete\s+from\s+public\.calendar_sources/i);
-  assert.doesNotMatch(sql, /enabled\s*=\s*false/i);
-  assert.doesNotMatch(sql, /import_url\s*=/i);
-  assert.match(sql, /security definer/i);
-  assert.match(sql, /set search_path = ''/i);
-  assert.match(sql, /pg_advisory_xact_lock/);
-  assert.match(sql, /grant execute[\s\S]*to service_role/i);
-  assert.match(sql, /revoke all[\s\S]*from public, anon, authenticated/i);
+test("journalisation sans URL complète et droits RPC minimaux", () => {
+  for (const column of [
+    "sync_trigger",
+    "downloaded_count",
+    "validated_count",
+    "previous_active_count",
+    "missing_count",
+    "missing_percentage",
+    "reconciliation_decision",
+    "suspicious_snapshot",
+    "provider",
+  ]) assert.ok(migration.includes(column), column);
+  assert.match(syncCode, /createHash\("sha256"\)\.update\(url\)/);
+  assert.doesNotMatch(syncCode, /import_url:\s*url/);
+  assert.match(migration, /revoke all on function public\.sync_external_calendar[\s\S]*from public, anon, authenticated/i);
+  assert.match(migration, /grant execute[\s\S]*to service_role/i);
 });

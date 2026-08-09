@@ -22,8 +22,12 @@ type SourceRow = {
   enabled: boolean;
   status: string;
   last_sync: string | null;
+  last_successful_sync: string | null;
   last_error: string | null;
   imported_count: number;
+  suspicious_snapshot: boolean;
+  reconciliation_blocked: boolean;
+  protected_count: number;
 };
 export default async function Synchronisation() {
   await requireAdmin();
@@ -39,13 +43,13 @@ export default async function Synchronisation() {
     db
       .from("calendar_sources")
       .select(
-        "provider,import_url,enabled,status,last_sync,last_error,imported_count",
+        "provider,import_url,enabled,status,last_sync,last_successful_sync,last_error,imported_count,suspicious_snapshot,reconciliation_blocked,protected_count",
       )
       .in("provider", ["booking", "airbnb"]),
     db
       .from("sync_logs")
       .select(
-        "id,source,status,events_count,imported_count,updated_count,cancelled_count,conflict_count,duration_ms,error_message,created_at",
+        "id,source,status,events_count,imported_count,updated_count,cancelled_count,conflict_count,duration_ms,error_message,created_at,sync_trigger,downloaded_count,validated_count,previous_active_count,missing_count,missing_percentage,reconciliation_decision,suspicious_snapshot",
       )
       .order("created_at", { ascending: false })
       .limit(50),
@@ -69,8 +73,12 @@ export default async function Synchronisation() {
       enabled: false,
       status: "not_configured",
       last_sync: null,
+      last_successful_sync: null,
       last_error: null,
       imported_count: 0,
+      suspicious_snapshot: false,
+      reconciliation_blocked: false,
+      protected_count: 0,
     };
   const booking = source("booking"),
     airbnb = source("airbnb");
@@ -153,10 +161,13 @@ export default async function Synchronisation() {
           initialUrl={booking.import_url ?? ""}
           enabled={booking.enabled}
           lastAttempt={lastAttempt("booking")}
-          lastSync={booking.last_sync}
+          lastSync={booking.last_successful_sync}
           count={booking.imported_count}
           status={booking.status}
           lastError={booking.last_error}
+          suspiciousSnapshot={booking.suspicious_snapshot}
+          reconciliationBlocked={booking.reconciliation_blocked}
+          protectedCount={booking.protected_count}
         />
         <IcalSourceCard
           provider="airbnb"
@@ -164,10 +175,13 @@ export default async function Synchronisation() {
           initialUrl={airbnb.import_url ?? ""}
           enabled={airbnb.enabled}
           lastAttempt={lastAttempt("airbnb")}
-          lastSync={airbnb.last_sync}
+          lastSync={airbnb.last_successful_sync}
           count={airbnb.imported_count}
           status={airbnb.status}
           lastError={airbnb.last_error}
+          suspiciousSnapshot={airbnb.suspicious_snapshot}
+          reconciliationBlocked={airbnb.reconciliation_blocked}
+          protectedCount={airbnb.protected_count}
         />
       </section>
       <section className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -263,7 +277,7 @@ export default async function Synchronisation() {
               <tr>
                 {[
                   "Date",
-                  "Plateforme",
+                  "Plateforme / origine",
                   "État",
                   "Durée",
                   "Réservations",
@@ -285,7 +299,7 @@ export default async function Synchronisation() {
                       {new Date(log.created_at).toLocaleString("fr-FR")}
                     </time>
                   </td>
-                  <td className="capitalize">{log.source}</td>
+                  <td className="capitalize">{log.source} · {log.sync_trigger}</td>
                   <td
                     className={
                       log.status === "success"
@@ -297,11 +311,13 @@ export default async function Synchronisation() {
                   </td>
                   <td>{log.duration_ms ?? 0} ms</td>
                   <td>
-                    {log.events_count} ({log.imported_count ?? 0} nouvelles)
+                    {log.validated_count ?? log.events_count} validé(s) · {log.missing_count ?? 0} absent(s)
                   </td>
                   <td>{log.conflict_count ?? 0}</td>
                   <td className="max-w-56 truncate text-rose-200/70">
-                    {log.error_message ?? "—"}
+                    {log.suspicious_snapshot
+                      ? `Réconciliation bloquée · ${log.missing_percentage ?? 0}% absent · ${log.reconciliation_decision}`
+                      : log.error_message ?? "—"}
                   </td>
                 </tr>
               ))}

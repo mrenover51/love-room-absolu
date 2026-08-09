@@ -85,7 +85,11 @@ export class SupabaseReservationRepository {
   }
   async isAvailable(checkIn: string, checkOut: string) {
     const now = new Date().toISOString();
-    const [{ data: r, error: re }, { data: b, error: be }] = await Promise.all([
+    const [
+      { data: r, error: re },
+      { data: b, error: be },
+      { data: external, error: externalError },
+    ] = await Promise.all([
       this.db
         .from("reservations")
         .select("id")
@@ -101,13 +105,25 @@ export class SupabaseReservationRepository {
         .lt("start_date", checkOut)
         .gt("end_date", checkIn)
         .limit(1),
+      this.db
+        .from("calendar_blocks")
+        .select("id")
+        .in("provider", ["booking", "airbnb"])
+        .in("status", ["confirmed", "blocked"])
+        .lt("start_date", checkOut)
+        .gt("end_date", checkIn)
+        .limit(1),
     ]);
-    if (re || be) throw new Error("AVAILABILITY_READ_FAILED");
-    return !(r?.length || b?.length);
+    if (re || be || externalError) throw new Error("AVAILABILITY_READ_FAILED");
+    return !(r?.length || b?.length || external?.length);
   }
   async occupiedRanges() {
     const now = new Date().toISOString();
-    const [{ data: r, error: re }, { data: b, error: be }] = await Promise.all([
+    const [
+      { data: r, error: re },
+      { data: b, error: be },
+      { data: external, error: externalError },
+    ] = await Promise.all([
       this.db
         .from("reservations")
         .select("check_in,check_out")
@@ -115,11 +131,21 @@ export class SupabaseReservationRepository {
           `status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`,
         ),
       this.db.from("blocked_dates").select("start_date,end_date"),
+      this.db
+        .from("calendar_blocks")
+        .select("start_date,end_date")
+        .in("provider", ["booking", "airbnb"])
+        .in("status", ["confirmed", "blocked"]),
     ]);
-    if (re || be) throw new Error("AVAILABILITY_READ_FAILED");
+    if (re || be || externalError)
+      throw new Error("AVAILABILITY_READ_FAILED");
     return [
       ...(r ?? []).map((row) => ({ start: row.check_in, end: row.check_out })),
       ...(b ?? []).map((row) => ({ start: row.start_date, end: row.end_date })),
+      ...(external ?? []).map((row) => ({
+        start: row.start_date,
+        end: row.end_date,
+      })),
     ];
   }
 }

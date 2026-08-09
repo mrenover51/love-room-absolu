@@ -14,6 +14,12 @@ export type SyncResult = {
   updated: number;
   cancelled: number;
   conflicts: number;
+  previousActive: number;
+  missing: number;
+  missingPercentage: number;
+  protected: number;
+  suspicious: boolean;
+  decision: string;
   durationMs: number;
   error?: string;
 };
@@ -22,7 +28,14 @@ type TransactionResult = {
   updated: number;
   cancelled: number;
   conflicts: number;
+  previousActive: number;
+  missing: number;
+  missingPercentage: number;
+  protected: number;
+  suspicious: boolean;
+  decision: string;
 };
+export type SyncTrigger = "individual" | "sync-all" | "cron" | "api";
 const MAX_ICAL_BYTES = 2_000_000;
 const MAX_EVENTS = 500;
 
@@ -119,6 +132,7 @@ async function recordNotification(
 export async function syncExternalCalendar(
   source: CalendarSource,
   url: string,
+  trigger: SyncTrigger = "api",
 ): Promise<SyncResult> {
   const started = Date.now(),
     db = createAdminClient();
@@ -149,6 +163,12 @@ export async function syncExternalCalendar(
       updated: counts.updated,
       cancelled: counts.cancelled,
       conflicts: counts.conflicts,
+      previousActive: counts.previousActive,
+      missing: counts.missing,
+      missingPercentage: counts.missingPercentage,
+      protected: counts.protected,
+      suspicious: counts.suspicious,
+      decision: counts.decision,
       durationMs: Date.now() - started,
     };
     await db.from("sync_logs").insert({
@@ -159,6 +179,16 @@ export async function syncExternalCalendar(
       updated_count: result.updated,
       cancelled_count: result.cancelled,
       conflict_count: result.conflicts,
+      sync_trigger: trigger,
+      provider: source,
+      downloaded_count: incoming.length,
+      validated_count: incoming.length,
+      previous_active_count: result.previousActive,
+      missing_count: result.missing,
+      missing_percentage: result.missingPercentage,
+      reconciliation_decision: result.decision,
+      suspicious_snapshot: result.suspicious,
+      url_fingerprint: createHash("sha256").update(url).digest("hex"),
       duration_ms: result.durationMs,
     });
     await recordNotification(
@@ -171,11 +201,19 @@ export async function syncExternalCalendar(
     const message =
         error instanceof Error ? error.message : "ICAL_UNKNOWN_ERROR",
       durationMs = Date.now() - started;
+    const { count: protectedCount } = await db
+      .from("calendar_blocks")
+      .select("id", { count: "exact", head: true })
+      .eq("provider", source)
+      .in("status", ["confirmed", "blocked"]);
     await db
       .from("calendar_sources")
       .update({
         status: "error",
         last_error: message,
+        suspicious_snapshot: true,
+        reconciliation_blocked: true,
+        protected_count: protectedCount ?? 0,
         updated_at: new Date().toISOString(),
       })
       .eq("provider", source);
@@ -185,6 +223,11 @@ export async function syncExternalCalendar(
       events_count: 0,
       error_code: message.slice(0, 80),
       error_message: message.slice(0, 500),
+      sync_trigger: trigger,
+      provider: source,
+      reconciliation_decision: "download_or_validation_failed_protected",
+      suspicious_snapshot: true,
+      url_fingerprint: createHash("sha256").update(url).digest("hex"),
       duration_ms: durationMs,
     });
     await recordNotification(
@@ -200,13 +243,19 @@ export async function syncExternalCalendar(
       updated: 0,
       cancelled: 0,
       conflicts: 0,
+      previousActive: 0,
+      missing: 0,
+      missingPercentage: 0,
+      protected: 0,
+      suspicious: true,
+      decision: "download_or_validation_failed_protected",
       durationMs,
       error: message,
     };
   }
 }
 
-export async function syncAllCalendars() {
+export async function syncAllCalendars(trigger: SyncTrigger = "sync-all") {
   const definitions = await getCalendarSourceDefinitions(),
     results: SyncResult[] = [];
   for (const { source, url } of definitions) {
@@ -219,11 +268,17 @@ export async function syncAllCalendars() {
         updated: 0,
         cancelled: 0,
         conflicts: 0,
+        previousActive: 0,
+        missing: 0,
+        missingPercentage: 0,
+        protected: 0,
+        suspicious: false,
+        decision: "not_configured",
         durationMs: 0,
       });
       continue;
     }
-    results.push(await syncExternalCalendar(source, url));
+    results.push(await syncExternalCalendar(source, url, trigger));
   }
   return results;
 }

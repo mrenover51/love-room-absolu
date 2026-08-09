@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       );
     if (saveError) throw new Error("ICAL_SOURCE_SAVE_FAILED");
     if (body.action === "save") return Response.json({ ok: true, saved: true });
-    const result = await syncExternalCalendar(provider, url);
+    const result = await syncExternalCalendar(provider, url, "individual");
     return Response.json(result, {
       status: result.status === "ok" ? 200 : 502,
     });

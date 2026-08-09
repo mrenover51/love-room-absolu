@@ -30,6 +30,9 @@ export function IcalSourceCard({
   count,
   status,
   lastError,
+  suspiciousSnapshot,
+  reconciliationBlocked,
+  protectedCount,
 }: {
   provider: Provider;
   name: string;
@@ -40,6 +43,9 @@ export function IcalSourceCard({
   count: number;
   status: string;
   lastError: string | null;
+  suspiciousSnapshot: boolean;
+  reconciliationBlocked: boolean;
+  protectedCount: number;
 }) {
   const reduced = useReducedMotion(),
     [url, setUrl] = useState(initialUrl),
@@ -100,6 +106,15 @@ export function IcalSourceCard({
               : "À configurer"}
         </span>
       </div>
+      {suspiciousSnapshot && (
+        <div className="mt-5 flex gap-3 rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-4 text-xs leading-5 text-orange-100">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-orange-300" />
+          <p>
+            Variation inhabituelle du calendrier {name}. Les anciennes dates
+            restent protégées afin d’éviter une double réservation.
+          </p>
+        </div>
+      )}
       <label className="mt-6 block text-xs text-white/50">
         URL iCal {name}
         <input
@@ -162,6 +177,16 @@ export function IcalSourceCard({
         <div>
           <dt className="text-white/35">Réservations importées</dt>
           <dd className="mt-1 text-white/65">{count}</dd>
+        </div>
+        <div>
+          <dt className="text-white/35">Réconciliation</dt>
+          <dd className={reconciliationBlocked ? "mt-1 text-orange-300" : "mt-1 text-emerald-300"}>
+            {reconciliationBlocked ? "Bloquée" : "Normale"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-white/35">Dates protégées</dt>
+          <dd className="mt-1 text-white/65">{protectedCount}</dd>
         </div>
       </dl>
       {(result || lastError) && (
