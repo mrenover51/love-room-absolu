@@ -1,5 +1,7 @@
-import { createAdminClient } from "@/lib/supabase/admin";
-import { generateIcal } from "@/lib/booking/ical";
+import { createOutboundCalendarResponse } from "@/lib/calendar/outbound-export";
 
-export const dynamic="force-dynamic";
-export async function GET(){const db=createAdminClient(),now=new Date(),{data,error}=await db.from("reservations").select("id,check_in,check_out,provider,status").or(`status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now.toISOString()})`).order("check_in");if(error)return new Response("Export temporairement indisponible",{status:503});const calendar=generateIcal((data??[]).map(row=>({id:row.id,start:row.check_in,end:row.check_out,summary:"Indisponible",description:`Réservation ${row.provider==="site"?"directe":row.provider} — Love Room Absolu`,status:"CONFIRMED"})));return new Response(calendar,{headers:{"Content-Type":"text/calendar; charset=utf-8","Content-Disposition":"attachment; filename=love-room-absolu.ics","Cache-Control":"no-store, max-age=0","X-Calendar-Events":String(data?.length??0),"X-Generated-At":now.toISOString()}})}
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  return createOutboundCalendarResponse();
+}
