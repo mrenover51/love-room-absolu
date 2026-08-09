@@ -1,14 +1,16 @@
 import type { PublicPricingConfig } from "@/lib/booking/types";
-import { formatAmount } from "@/lib/booking/pricing";
+import { formatAmount, isExtraAvailable } from "@/lib/booking/pricing";
 import Link from "next/link";
 export function ExtrasSelector({
   selected,
   onChange,
   extras,
+  checkIn,
 }: {
   selected: string[];
   onChange: (keys: string[]) => void;
   extras: PublicPricingConfig["extras"];
+  checkIn: string;
 }) {
   return (
     <fieldset>
@@ -18,11 +20,15 @@ export function ExtrasSelector({
       </p>
       <div className="mt-7 grid gap-3 sm:grid-cols-2">
         {extras
-          .filter((extra) => extra.enabled !== false)
+          .filter(
+            (extra) =>
+              extra.enabled !== false && isExtraAvailable(extra, checkIn),
+          )
           .map((extra) => (
             <label
               key={extra.key}
-              className={`cursor-pointer border p-5 transition-colors ${selected.includes(extra.key) ? "border-[#C9A86A] bg-[#C9A86A]/10" : "border-white/10 bg-[#121212]"}`}
+              data-selected={selected.includes(extra.key)}
+              className={`option-card cursor-pointer border p-5 ${selected.includes(extra.key) ? "border-[#C9A86A] bg-[#C9A86A]/10" : "border-white/10 bg-[#121212]"}`}
             >
               <input
                 type="checkbox"
@@ -43,7 +49,7 @@ export function ExtrasSelector({
                 </span>
               )}
               <span className="mt-2 block pl-8 text-sm text-[#C9A86A]">
-                {formatAmount(extra.amount)}
+                {formatAmount(extra.amount)} {billingLabel(extra.billingType)}
               </span>
             </label>
           ))}
@@ -65,4 +71,13 @@ export function ExtrasSelector({
       </aside>
     </fieldset>
   );
+}
+
+function billingLabel(
+  type: PublicPricingConfig["extras"][number]["billingType"],
+) {
+  if (type === "per_night") return "par nuit";
+  if (type === "per_person") return "par personne";
+  if (type === "per_person_per_night") return "par personne et par nuit";
+  return "par séjour";
 }

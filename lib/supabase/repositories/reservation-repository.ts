@@ -1,13 +1,125 @@
 import "server-only";
 import { createAdminClient } from "../admin";
 import type { PriceBreakdown } from "@/lib/booking/types";
-export type CheckoutReservationInput={reference:string;checkIn:string;checkOut:string;firstName:string;lastName:string;email:string;phone:string;guestCount:number;message?:string;expiresAt:string;pricing:PriceBreakdown};
+export type CheckoutReservationInput = {
+  reference: string;
+  checkIn: string;
+  checkOut: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  guestCount: number;
+  message?: string;
+  expiresAt: string;
+  pricing: PriceBreakdown;
+};
 export class SupabaseReservationRepository {
-  private db=createAdminClient();
-  async create(input:CheckoutReservationInput){const options=input.pricing.extras.map((item)=>({key:item.key,label:item.label,quantity:1,price:item.amount,total:item.amount}));const{data,error}=await this.db.rpc("create_checkout_reservation",{p_reference:input.reference,p_check_in:input.checkIn,p_check_out:input.checkOut,p_first_name:input.firstName,p_last_name:input.lastName,p_email:input.email,p_phone:input.phone,p_guest_count:input.guestCount,p_message:input.message||null,p_subtotal:input.pricing.baseAmount,p_extras_total:input.pricing.extrasAmount,p_taxes:input.pricing.feesAmount,p_total:input.pricing.totalAmount,p_expires_at:input.expiresAt,p_options:options});if(error||!data)throw new Error(error?.message.includes("DATES_UNAVAILABLE")?"DATES_UNAVAILABLE":"RESERVATION_CREATE_FAILED");return String(data)}
-  async attachCheckout(id:string,sessionId:string){const{error}=await this.db.from("reservations").update({stripe_checkout_session:sessionId,updated_at:new Date().toISOString()}).eq("id",id).eq("status","pending_payment");if(error)throw new Error("CHECKOUT_ATTACH_FAILED")}
-  async cancelPending(id:string){await this.db.from("reservations").update({status:"cancelled",payment_status:"failed",updated_at:new Date().toISOString()}).eq("id",id).eq("status","pending_payment")}
-  async findReservation(id:string){const{data,error}=await this.db.from("reservations").select("*,reservation_options(*)").eq("id",id).maybeSingle();if(error)throw new Error("RESERVATION_READ_FAILED");return data}
-  async isAvailable(checkIn:string,checkOut:string){const now=new Date().toISOString();const[{data:r,error:re},{data:b,error:be}]=await Promise.all([this.db.from("reservations").select("id").lt("check_in",checkOut).gt("check_out",checkIn).or(`status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`).limit(1),this.db.from("blocked_dates").select("id").lt("start_date",checkOut).gt("end_date",checkIn).limit(1)]);if(re||be)throw new Error("AVAILABILITY_READ_FAILED");return !(r?.length||b?.length)}
-  async occupiedRanges(){const now=new Date().toISOString();const[{data:r,error:re},{data:b,error:be}]=await Promise.all([this.db.from("reservations").select("check_in,check_out").or(`status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`),this.db.from("blocked_dates").select("start_date,end_date")]);if(re||be)throw new Error("AVAILABILITY_READ_FAILED");return[...(r??[]).map((row)=>({start:row.check_in,end:row.check_out})),...(b??[]).map((row)=>({start:row.start_date,end:row.end_date}))]}
+  private db = createAdminClient();
+  async create(input: CheckoutReservationInput) {
+    const options = input.pricing.extras.map((item) => {
+      const quantity = item.quantity ?? 1;
+      return {
+        key: item.key,
+        label: item.label,
+        quantity,
+        price: Math.round(item.amount / quantity),
+        total: item.amount,
+      };
+    });
+    const { data, error } = await this.db.rpc("create_checkout_reservation", {
+      p_reference: input.reference,
+      p_check_in: input.checkIn,
+      p_check_out: input.checkOut,
+      p_first_name: input.firstName,
+      p_last_name: input.lastName,
+      p_email: input.email,
+      p_phone: input.phone,
+      p_guest_count: input.guestCount,
+      p_message: input.message || null,
+      p_subtotal: input.pricing.baseAmount,
+      p_extras_total: input.pricing.extrasAmount,
+      p_taxes: input.pricing.feesAmount,
+      p_total: input.pricing.totalAmount,
+      p_expires_at: input.expiresAt,
+      p_options: options,
+    });
+    if (error || !data)
+      throw new Error(
+        error?.message.includes("DATES_UNAVAILABLE")
+          ? "DATES_UNAVAILABLE"
+          : "RESERVATION_CREATE_FAILED",
+      );
+    return String(data);
+  }
+  async attachCheckout(id: string, sessionId: string) {
+    const { error } = await this.db
+      .from("reservations")
+      .update({
+        stripe_checkout_session: sessionId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("status", "pending_payment");
+    if (error) throw new Error("CHECKOUT_ATTACH_FAILED");
+  }
+  async cancelPending(id: string) {
+    await this.db
+      .from("reservations")
+      .update({
+        status: "cancelled",
+        payment_status: "failed",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("status", "pending_payment");
+  }
+  async findReservation(id: string) {
+    const { data, error } = await this.db
+      .from("reservations")
+      .select("*,reservation_options(*)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error("RESERVATION_READ_FAILED");
+    return data;
+  }
+  async isAvailable(checkIn: string, checkOut: string) {
+    const now = new Date().toISOString();
+    const [{ data: r, error: re }, { data: b, error: be }] = await Promise.all([
+      this.db
+        .from("reservations")
+        .select("id")
+        .lt("check_in", checkOut)
+        .gt("check_out", checkIn)
+        .or(
+          `status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`,
+        )
+        .limit(1),
+      this.db
+        .from("blocked_dates")
+        .select("id")
+        .lt("start_date", checkOut)
+        .gt("end_date", checkIn)
+        .limit(1),
+    ]);
+    if (re || be) throw new Error("AVAILABILITY_READ_FAILED");
+    return !(r?.length || b?.length);
+  }
+  async occupiedRanges() {
+    const now = new Date().toISOString();
+    const [{ data: r, error: re }, { data: b, error: be }] = await Promise.all([
+      this.db
+        .from("reservations")
+        .select("check_in,check_out")
+        .or(
+          `status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`,
+        ),
+      this.db.from("blocked_dates").select("start_date,end_date"),
+    ]);
+    if (re || be) throw new Error("AVAILABILITY_READ_FAILED");
+    return [
+      ...(r ?? []).map((row) => ({ start: row.check_in, end: row.check_out })),
+      ...(b ?? []).map((row) => ({ start: row.start_date, end: row.end_date })),
+    ];
+  }
 }

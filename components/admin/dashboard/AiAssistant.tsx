@@ -1,2 +1,39 @@
-"use client";import {useState} from "react";import {ArrowUp,LoaderCircle,Sparkles} from "lucide-react";import {Card} from "./dashboard-ui";const suggestions=["Combien ai-je gagné ce mois ?","Quel week-end est encore libre ?","Quel est mon meilleur client ?","Prévois mon chiffre d’affaires du mois prochain."];
-export function AiAssistant(){const[input,setInput]=useState("");return <Card className="relative overflow-hidden border-[#C8A66A]/20 p-5 sm:p-7"><div className="absolute -right-16 -top-16 size-48 rounded-full bg-[#C8A66A]/10 blur-3xl"/><div className="relative"><span className="inline-flex rounded-xl border border-[#C8A66A]/20 bg-[#C8A66A]/10 p-2.5"><Sparkles className="size-5 text-[#E2C48B]"/></span><h2 className="mt-5 font-heading text-2xl">Absolu Assistant</h2><p className="mt-2 text-sm text-[#B8B2A8]">Interrogez bientôt votre activité en langage naturel.</p><div className="mt-5 flex flex-wrap gap-2">{suggestions.map((s, keyIndex)=><button key={`${s}-${keyIndex}`} onClick={()=>setInput(s)} className="rounded-full border border-white/[.08] px-3 py-2 text-left text-[11px] text-white/60 transition hover:border-[#C8A66A]/30 hover:text-white">{s}</button>)}</div><div className="mt-5 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/30 p-2 pl-4"><input value={input} onChange={e=>setInput(e.target.value)} placeholder="Posez votre question…" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-white/25"/><button type="button" aria-label="Envoyer (bientôt disponible)" disabled className="flex size-10 items-center justify-center rounded-xl bg-[#C8A66A] text-black opacity-60"><ArrowUp className="size-4"/></button></div><p className="mt-2 flex items-center gap-1.5 text-[10px] text-white/30"><LoaderCircle className="size-3"/>Interface prête pour une future connexion IA</p></div></Card>}
+import Link from "next/link";
+import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Card } from "./dashboard-ui";
+
+const signals = ["Occupation", "Prévisions", "Revenus", "Tarification"];
+
+export function AiAssistant() {
+  return (
+    <Card className="relative overflow-hidden border-[#8E48FF]/20 p-5 sm:p-7">
+      <div className="absolute -right-16 -top-16 size-48 rounded-full bg-[#8E48FF]/15 blur-3xl" />
+      <div className="relative">
+        <span className="inline-flex rounded-xl border border-[#C8A66A]/20 bg-[#C8A66A]/10 p-2.5">
+          <Sparkles className="size-5 text-[#E2C48B]" />
+        </span>
+        <h2 className="mt-5 font-heading text-2xl">Absolu Intelligence</h2>
+        <p className="mt-2 max-w-xl text-sm leading-6 text-[#B8B2A8]">
+          Explorez les prévisions, périodes creuses et recommandations calculées
+          à partir de votre activité.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {signals.map((signal) => (
+            <span
+              key={signal}
+              className="rounded-full border border-white/[.08] px-3 py-2 text-[11px] text-white/55"
+            >
+              {signal}
+            </span>
+          ))}
+        </div>
+        <Link
+          href="/admin/assistant"
+          className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#C8A66A] px-5 text-sm font-semibold text-black transition hover:bg-[#E5C98E]"
+        >
+          Ouvrir le tableau intelligent <ArrowUpRight className="size-4" />
+        </Link>
+      </div>
+    </Card>
+  );
+}

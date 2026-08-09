@@ -43,7 +43,7 @@ export function MobileMenu({ open, onClose, pathname }: { open: boolean; onClose
         <nav className="mt-9" aria-label="Navigation mobile principale">
           {primaryLinks.map(link => { const active = pathname.startsWith(link.href); return <Link key={link.href} href={link.href} onClick={onClose} aria-current={active ? "page" : undefined} className={`group flex items-center justify-between border-b border-white/10 py-4 font-heading text-3xl transition-colors ${active ? "text-[#C9A86A]" : "text-[#F6F2EC] hover:text-[#D8BD87]"}`}>{link.label}<ArrowUpRight className="size-4 opacity-30 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:opacity-100" aria-hidden="true" /></Link>; })}
         </nav>
-        <div className="mt-10"><p className="eyebrow text-[#C9A86A]">Découvrir</p><nav className="mt-5 grid grid-cols-2 gap-x-7 gap-y-1" aria-label="Découvrir Absolu">{discoveryLinks.map(link => <Link key={link.href} href={link.href} onClick={onClose} className="border-b border-white/[.07] py-3 text-sm text-white/55 transition-all duration-300 hover:translate-x-1 hover:text-white">{link.label}</Link>)}</nav></div>
+        <div className="mt-10"><p className="eyebrow text-[#C9A86A]">Explorer</p><nav className="mt-5 grid grid-cols-2 gap-x-7 gap-y-1" aria-label="Explorer Absolu">{discoveryLinks.map(link => <Link key={link.href} href={link.href} onClick={onClose} className="border-b border-white/[.07] py-3 text-sm text-white/55 transition-all duration-300 hover:translate-x-1 hover:text-white">{link.label}</Link>)}</nav></div>
       </motion.div>
     </div>
   </motion.div>}</AnimatePresence>;

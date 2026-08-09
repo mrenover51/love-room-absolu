@@ -64,7 +64,11 @@ export function DateRangePicker({
       ...Array.from(
         { length: last.getDate() },
         (_, index) =>
-          new Date(month.getFullYear(), month.getMonth(), index + 1),
+          new Date(
+            displayMonth.getFullYear(),
+            displayMonth.getMonth(),
+            index + 1,
+          ),
       ),
     ];
   };
@@ -131,12 +135,12 @@ export function DateRangePicker({
           <ChevronRight aria-hidden="true" />
         </button>
       </div>
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid items-start gap-8 md:grid-cols-2">
         {[month, new Date(month.getFullYear(), month.getMonth() + 1, 1)].map(
           (displayMonth, monthIndex) => (
             <div
               key={`${displayMonth.toISOString()}-${monthIndex}`}
-              className={monthIndex === 1 ? "hidden xl:block" : ""}
+              className={monthIndex === 1 ? "hidden md:block" : "min-w-0"}
             >
               <h4 className="mb-5 text-center font-heading text-2xl capitalize">
                 {new Intl.DateTimeFormat("fr-FR", {
@@ -186,7 +190,7 @@ export function DateRangePicker({
                           aria-disabled={blocked || past || loading}
                           aria-label={`${date.toLocaleDateString("fr-FR", { dateStyle: "full" })}${blocked ? ", indisponible" : selected ? ", sélectionnée" : inRange ? ", dans la plage sélectionnée" : ""}`}
                           aria-selected={selected || inRange}
-                          className={`aspect-square min-h-11 border border-transparent text-sm transition-colors disabled:cursor-not-allowed ${blocked || past ? "bg-white/[.035] text-white/20" : selected ? "bg-[#C9A86A] text-black" : inRange ? "bg-[#C9A86A]/15 text-white" : "hover:border-[#C9A86A]/50"}`}
+                          className={`min-h-11 w-full border border-transparent text-sm transition-colors disabled:cursor-not-allowed sm:aspect-square ${blocked || past ? "bg-white/[.035] text-white/20" : selected ? "bg-[#C9A86A] text-black" : inRange ? "bg-[#C9A86A]/15 text-white" : value === today ? "border-[#C9A86A]/45 text-[#E8CC91]" : "hover:border-[#C9A86A]/50"}`}
                         >
                           {date.getDate()}
                           <span className="sr-only">

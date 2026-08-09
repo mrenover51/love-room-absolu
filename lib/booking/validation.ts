@@ -6,9 +6,7 @@ export const reservationRequestSchema = z
   .object({
     checkIn: z.iso.date("Veuillez sélectionner une date d’arrivée."),
     checkOut: z.iso.date("Veuillez sélectionner une date de départ."),
-    extraKeys: z
-      .array(z.string().trim().min(1).max(80))
-      .max(BOOKING_CONFIG.extras.length),
+    extraKeys: z.array(z.string().trim().min(1).max(80)).max(50),
     promoCode: z.string().trim().toUpperCase().max(40).optional(),
     firstName: z
       .string()

@@ -156,8 +156,16 @@ export function rootSchema(stay: StaySettings): JsonLdGraph {
       "@type": "Product",
       "@id": `${url}/#suite-product`,
       name: "Séjour dans la Suite Absolu",
+      description:
+        "Séjour romantique à Avize dans une suite avec baignoire balnéo et sauna infrarouge privatifs.",
+      url,
       image: { "@id": imageId },
       brand: { "@id": organizationId },
+      category: "Hébergement romantique",
+      audience: { "@type": "PeopleAudience", suggestedMinAge: 18 },
+      ...(siteConfig.startingPrice !== undefined
+        ? { offers: { "@id": `${url}/#direct-offer` } }
+        : {}),
     },
   ];
   if (siteConfig.startingPrice !== undefined)

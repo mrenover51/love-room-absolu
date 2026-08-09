@@ -47,7 +47,7 @@ export function Hero() {
       </motion.div>
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,9,8,.9)_0%,rgba(28,18,14,.44)_55%,rgba(11,9,8,.12)_100%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(11,9,8,.88)_0%,transparent_56%,rgba(11,9,8,.34)_100%)]" />
-      <div className="absolute -bottom-32 left-1/4 size-[34rem] rounded-full bg-[#D4A4A0]/10 blur-[120px]" />
+      <div className="ambient-float absolute -bottom-32 left-1/4 size-[34rem] rounded-full bg-[#D4A4A0]/10 blur-[120px]" />
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#D0AE72]/45 to-transparent"

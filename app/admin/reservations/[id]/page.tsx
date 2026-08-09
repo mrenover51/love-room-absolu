@@ -1,14 +1,321 @@
 import { createHash } from "node:crypto";
 import { notFound } from "next/navigation";
-import { CalendarDays, CreditCard, Download, Mail, MessageCircle, Phone, UserRound } from "lucide-react";
+import {
+  CalendarDays,
+  CreditCard,
+  Download,
+  Mail,
+  MessageCircle,
+  Phone,
+  UserRound,
+} from "lucide-react";
 import { requireAdmin } from "@/lib/admin/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { updateReservation } from "../../actions";
 import { RefundButton } from "@/components/admin/refund-button";
 
-const euro=(value:number)=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(value/100);
-export default async function ReservationDetail({params}:{params:Promise<{id:string}>}){await requireAdmin();const{id}=await params,db=createAdminClient(),{data:r}=await db.from("reservations").select("*,reservation_options(*)").eq("id",id).maybeSingle();if(!r)notFound();const recipientHash=createHash("sha256").update(r.guest_email.trim().toLowerCase()).digest("hex"),[{data:history},{data:audits},{data:emails}]=await Promise.all([db.from("reservation_history").select("id,event,previous_value,new_value,created_at").eq("reservation_id",id).order("created_at",{ascending:false}),db.from("audit_logs").select("id,action,actor_email,ip,created_at").eq("entity_id",id).order("created_at",{ascending:false}),db.from("email_logs").select("id,template,status,created_at,delivered_at,opened_at,replied_at,error_code").eq("recipient_hash",recipientHash).order("created_at",{ascending:false}).limit(30)]),phone=String(r.guest_phone).replaceAll(/[^+\d]/g,"");return <><AdminPageHeader eyebrow={r.reference} title={`${r.guest_first_name} ${r.guest_last_name}`} description={`${r.check_in} → ${r.check_out} · ${r.nights} nuit${r.nights>1?"s":""}`}/><nav className="mb-6 flex flex-wrap gap-2" aria-label="Actions réservation"><a href={`tel:${phone}`} className="rounded-full bg-[#C9A86A] px-5 py-3 text-sm text-black"><Phone className="mr-2 inline size-4"/>Appeler</a><a href={`mailto:${r.guest_email}?subject=${encodeURIComponent(`Votre réservation ${r.reference}`)}`} className="rounded-full border border-white/15 px-5 py-3 text-sm"><Mail className="mr-2 inline size-4"/>Envoyer un email</a><a href={`https://wa.me/${phone.replace(/^\+/,"")}`} target="_blank" rel="noreferrer" className="rounded-full border border-white/15 px-5 py-3 text-sm"><MessageCircle className="mr-2 inline size-4"/>WhatsApp</a><a href="#modifier" className="rounded-full border border-white/15 px-5 py-3 text-sm">Modifier</a><a href={`/api/admin/reservations/${r.id}/invoice`} className="rounded-full border border-white/15 px-5 py-3 text-sm"><Download className="mr-2 inline size-4"/>Facture</a>{r.status!=="cancelled"&&<form action={updateReservation}><input type="hidden" name="id" value={r.id}/><input type="hidden" name="status" value="cancelled"/><input type="hidden" name="notes" value={r.admin_notes??""}/><button className="rounded-full border border-rose-400/30 px-5 py-3 text-sm text-rose-200">Annuler</button></form>}{r.status==="pending_payment"&&r.payment_status==="paid"&&<form action={updateReservation}><input type="hidden" name="id" value={r.id}/><input type="hidden" name="status" value="confirmed"/><input type="hidden" name="notes" value={r.admin_notes??""}/><button className="rounded-full border border-emerald-400/30 px-5 py-3 text-sm text-emerald-200">Confirmer</button></form>}</nav><div className="grid gap-5 xl:grid-cols-3"><Card icon={UserRound} title="Client"><p>{r.guest_first_name} {r.guest_last_name}</p><p className="mt-2 text-sm text-white/50">{r.guest_phone}<br/>{r.guest_email}</p></Card><Card icon={CalendarDays} title="Séjour"><p>{r.check_in} → {r.check_out}</p><p className="mt-2 text-sm text-white/50">{r.guest_count} personne(s) · canal {r.source}</p><p className="mt-4 text-2xl text-[#C9A86A]">{euro(r.total)}</p></Card><Card icon={CreditCard} title="Paiement Stripe"><p>{r.payment_status} · {r.status}</p><p className="mt-2 break-all text-xs text-white/35">{r.stripe_payment_intent??r.stripe_checkout_session??"Aucun identifiant"}</p>{["paid","partially_refunded"].includes(r.payment_status)&&<RefundButton id={r.id} reference={r.reference} total={r.total}/>}</Card></div><section className="mt-5 rounded-2xl border border-white/10 bg-[#121212] p-6"><h2 className="font-heading text-2xl">Options et commentaires</h2><div className="mt-4 flex flex-wrap gap-2">{r.reservation_options?.length?r.reservation_options.map((option:{id:string;label:string;total:number})=><span key={option.id} className="rounded-full bg-white/5 px-4 py-2 text-sm">{option.label} · {euro(option.total)}</span>):<span className="text-white/40">Aucune option</span>}</div><p className="mt-5 text-sm leading-7 text-white/55">{r.message??"Aucun commentaire client."}</p></section><form id="modifier" action={updateReservation} className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-[#121212] p-6 md:grid-cols-[200px_1fr_auto]"><input type="hidden" name="id" value={r.id}/><select name="status" defaultValue={r.status} className="rounded-xl bg-black p-3">{["pending_payment","confirmed","cancelled","completed"].map(value=><option key={value}>{value}</option>)}</select><textarea name="notes" defaultValue={r.admin_notes??""} placeholder="Notes privées et commentaires internes" className="rounded-xl bg-black p-3"/><button className="rounded-xl bg-[#C9A86A] px-5 text-black">Enregistrer</button></form><div className="mt-5 grid gap-5 xl:grid-cols-2"><Timeline title="Historique">{[...(history??[]).map(item=>({id:item.id,title:item.event,detail:`${item.previous_value??"—"} → ${item.new_value??"—"}`,date:item.created_at})),...(audits??[]).map(item=>({id:item.id,title:item.action,detail:`${item.actor_email??"Administrateur"} · ${item.ip??"IP inconnue"}`,date:item.created_at}))].sort((a,b)=>b.date.localeCompare(a.date)).map(item=><Event key={item.id}{...item}/>)}</Timeline><Timeline title="Emails">{emails?.map(item=><Event key={item.id} title={item.template} detail={`${item.status}${item.opened_at?" · ouvert":item.delivered_at?" · livré":""}${item.replied_at?" · réponse reçue":""}${item.error_code?` · ${item.error_code}`:""}`} date={item.created_at}/>)}</Timeline></div></>}
-function Card({icon:Icon,title,children}:{icon:typeof UserRound;title:string;children:React.ReactNode}){return <section className="rounded-2xl border border-white/10 bg-[#121212] p-6"><h2 className="flex items-center gap-2 font-heading text-2xl"><Icon className="size-4 text-[#C9A86A]"/>{title}</h2><div className="mt-4">{children}</div></section>}
-function Timeline({title,children}:{title:string;children:React.ReactNode}){return <section className="rounded-2xl border border-white/10 bg-[#121212] p-6"><h2 className="font-heading text-2xl">{title}</h2><div className="mt-4 space-y-3">{children||<p className="text-sm text-white/40">Aucun événement.</p>}</div></section>}
-function Event({title,detail,date}:{title:string;detail:string;date:string}){return <article className="border-l border-[#C9A86A]/30 pl-4"><p className="text-sm">{title}</p><p className="text-xs text-white/40">{detail}</p><time className="text-[10px] text-white/25">{new Date(date).toLocaleString("fr-FR")}</time></article>}
+const euro = (value: number) =>
+  new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
+    value / 100,
+  );
+export default async function ReservationDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  await requireAdmin();
+  const { id } = await params,
+    db = createAdminClient(),
+    { data: r } = await db
+      .from("reservations")
+      .select("*,reservation_options(*)")
+      .eq("id", id)
+      .maybeSingle();
+  if (!r) notFound();
+  const recipientHash = createHash("sha256")
+      .update(r.guest_email.trim().toLowerCase())
+      .digest("hex"),
+    [{ data: history }, { data: audits }, { data: emails }] = await Promise.all(
+      [
+        db
+          .from("reservation_history")
+          .select("id,event,previous_value,new_value,created_at")
+          .eq("reservation_id", id)
+          .order("created_at", { ascending: false }),
+        db
+          .from("audit_logs")
+          .select("id,action,actor_email,ip,created_at")
+          .eq("entity_id", id)
+          .order("created_at", { ascending: false }),
+        db
+          .from("email_logs")
+          .select(
+            "id,template,status,created_at,delivered_at,opened_at,replied_at,error_code",
+          )
+          .eq("recipient_hash", recipientHash)
+          .order("created_at", { ascending: false })
+          .limit(30),
+      ],
+    ),
+    phone = String(r.guest_phone).replaceAll(/[^+\d]/g, ""),
+    optionsTotal = (r.reservation_options ?? []).reduce(
+      (sum: number, option: { total: number }) => sum + option.total,
+      0,
+    );
+  return (
+    <>
+      <AdminPageHeader
+        eyebrow={r.reference}
+        title={`${r.guest_first_name} ${r.guest_last_name}`}
+        description={`${r.check_in} → ${r.check_out} · ${r.nights} nuit${r.nights > 1 ? "s" : ""}`}
+      />
+      <nav
+        className="mb-6 flex flex-wrap gap-2"
+        aria-label="Actions réservation"
+      >
+        <a
+          href={`tel:${phone}`}
+          className="rounded-full bg-[#C9A86A] px-5 py-3 text-sm text-black"
+        >
+          <Phone className="mr-2 inline size-4" />
+          Appeler
+        </a>
+        <a
+          href={`mailto:${r.guest_email}?subject=${encodeURIComponent(`Votre réservation ${r.reference}`)}`}
+          className="rounded-full border border-white/15 px-5 py-3 text-sm"
+        >
+          <Mail className="mr-2 inline size-4" />
+          Envoyer un email
+        </a>
+        <a
+          href={`https://wa.me/${phone.replace(/^\+/, "")}`}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-full border border-white/15 px-5 py-3 text-sm"
+        >
+          <MessageCircle className="mr-2 inline size-4" />
+          WhatsApp
+        </a>
+        <a
+          href="#modifier"
+          className="rounded-full border border-white/15 px-5 py-3 text-sm"
+        >
+          Modifier
+        </a>
+        <a
+          href={`/api/admin/reservations/${r.id}/invoice`}
+          className="rounded-full border border-white/15 px-5 py-3 text-sm"
+        >
+          <Download className="mr-2 inline size-4" />
+          Facture
+        </a>
+        {r.status !== "cancelled" && (
+          <form action={updateReservation}>
+            <input type="hidden" name="id" value={r.id} />
+            <input type="hidden" name="status" value="cancelled" />
+            <input type="hidden" name="notes" value={r.admin_notes ?? ""} />
+            <button className="rounded-full border border-rose-400/30 px-5 py-3 text-sm text-rose-200">
+              Annuler
+            </button>
+          </form>
+        )}
+        {r.status === "pending_payment" && r.payment_status === "paid" && (
+          <form action={updateReservation}>
+            <input type="hidden" name="id" value={r.id} />
+            <input type="hidden" name="status" value="confirmed" />
+            <input type="hidden" name="notes" value={r.admin_notes ?? ""} />
+            <button className="rounded-full border border-emerald-400/30 px-5 py-3 text-sm text-emerald-200">
+              Confirmer
+            </button>
+          </form>
+        )}
+      </nav>
+      <div className="grid gap-5 xl:grid-cols-3">
+        <Card icon={UserRound} title="Client">
+          <p>
+            {r.guest_first_name} {r.guest_last_name}
+          </p>
+          <p className="mt-2 text-sm text-white/50">
+            {r.guest_phone}
+            <br />
+            {r.guest_email}
+          </p>
+        </Card>
+        <Card icon={CalendarDays} title="Séjour">
+          <p>
+            {r.check_in} → {r.check_out}
+          </p>
+          <p className="mt-2 text-sm text-white/50">
+            {r.guest_count} personne(s) · canal {r.source}
+          </p>
+          <p className="mt-4 text-2xl text-[#C9A86A]">{euro(r.total)}</p>
+        </Card>
+        <Card icon={CreditCard} title="Paiement Stripe">
+          <p>
+            {r.payment_status} · {r.status}
+          </p>
+          <p className="mt-2 break-all text-xs text-white/35">
+            {r.stripe_payment_intent ??
+              r.stripe_checkout_session ??
+              "Aucun identifiant"}
+          </p>
+          {["paid", "partially_refunded"].includes(r.payment_status) && (
+            <RefundButton id={r.id} reference={r.reference} total={r.total} />
+          )}
+        </Card>
+      </div>
+      <section className="mt-5 rounded-2xl border border-white/10 bg-[#121212] p-6">
+        <h2 className="font-heading text-2xl">Options choisies</h2>
+        <div className="mt-4 divide-y divide-white/[.06]">
+          {r.reservation_options?.length ? (
+            r.reservation_options.map(
+              (option: {
+                id: string;
+                label: string;
+                quantity: number;
+                total: number;
+              }) => (
+                <div
+                  key={option.id}
+                  className="flex items-center justify-between gap-4 py-3 text-sm"
+                >
+                  <span>
+                    {option.label}
+                    {option.quantity > 1 ? ` × ${option.quantity}` : ""}
+                  </span>
+                  <span className="text-[#E5C98E]">{euro(option.total)}</span>
+                </div>
+              ),
+            )
+          ) : (
+            <p className="py-3 text-sm text-white/40">Aucune option</p>
+          )}
+        </div>
+        <div className="flex justify-between border-t border-white/10 pt-4 font-medium">
+          <span>Total options</span>
+          <span className="text-[#C9A86A]">{euro(optionsTotal)}</span>
+        </div>
+        <h3 className="mt-6 text-xs uppercase tracking-wider text-white/35">
+          Commentaire client
+        </h3>
+        <p className="mt-5 text-sm leading-7 text-white/55">
+          {r.message ?? "Aucun commentaire client."}
+        </p>
+      </section>
+      <form
+        id="modifier"
+        action={updateReservation}
+        className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-[#121212] p-6 md:grid-cols-[200px_1fr_auto]"
+      >
+        <input type="hidden" name="id" value={r.id} />
+        <select
+          name="status"
+          defaultValue={r.status}
+          className="rounded-xl bg-black p-3"
+        >
+          {["pending_payment", "confirmed", "cancelled", "completed"].map(
+            (value) => (
+              <option key={value}>{value}</option>
+            ),
+          )}
+        </select>
+        <textarea
+          name="notes"
+          defaultValue={r.admin_notes ?? ""}
+          placeholder="Notes privées et commentaires internes"
+          className="rounded-xl bg-black p-3"
+        />
+        <button className="rounded-xl bg-[#C9A86A] px-5 text-black">
+          Enregistrer
+        </button>
+      </form>
+      <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <Timeline title="Historique">
+          {[
+            ...(history ?? []).map((item) => ({
+              id: item.id,
+              title: item.event,
+              detail: `${item.previous_value ?? "—"} → ${item.new_value ?? "—"}`,
+              date: item.created_at,
+            })),
+            ...(audits ?? []).map((item) => ({
+              id: item.id,
+              title: item.action,
+              detail: `${item.actor_email ?? "Administrateur"} · ${item.ip ?? "IP inconnue"}`,
+              date: item.created_at,
+            })),
+          ]
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map((item) => (
+              <Event key={item.id} {...item} />
+            ))}
+        </Timeline>
+        <Timeline title="Emails">
+          {emails?.map((item) => (
+            <Event
+              key={item.id}
+              title={item.template}
+              detail={`${item.status}${item.opened_at ? " · ouvert" : item.delivered_at ? " · livré" : ""}${item.replied_at ? " · réponse reçue" : ""}${item.error_code ? ` · ${item.error_code}` : ""}`}
+              date={item.created_at}
+            />
+          ))}
+        </Timeline>
+      </div>
+    </>
+  );
+}
+function Card({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof UserRound;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-[#121212] p-6">
+      <h2 className="flex items-center gap-2 font-heading text-2xl">
+        <Icon className="size-4 text-[#C9A86A]" />
+        {title}
+      </h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+function Timeline({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-[#121212] p-6">
+      <h2 className="font-heading text-2xl">{title}</h2>
+      <div className="mt-4 space-y-3">
+        {children || <p className="text-sm text-white/40">Aucun événement.</p>}
+      </div>
+    </section>
+  );
+}
+function Event({
+  title,
+  detail,
+  date,
+}: {
+  title: string;
+  detail: string;
+  date: string;
+}) {
+  return (
+    <article className="border-l border-[#C9A86A]/30 pl-4">
+      <p className="text-sm">{title}</p>
+      <p className="text-xs text-white/40">{detail}</p>
+      <time className="text-[10px] text-white/25">
+        {new Date(date).toLocaleString("fr-FR")}
+      </time>
+    </article>
+  );
+}

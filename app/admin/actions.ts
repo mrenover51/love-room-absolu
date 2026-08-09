@@ -1,9 +1,261 @@
-"use server";import {revalidatePath} from 'next/cache';import {z} from 'zod';import {requireAdmin} from '@/lib/admin/auth';import {auditAdminAction} from '@/lib/admin/audit';import {createAdminClient} from '@/lib/supabase/admin';import {sendStatusEmail} from '@/lib/email';
-export async function updateReservation(formData:FormData){await requireAdmin();const input=z.object({id:z.uuid(),status:z.enum(['pending_payment','confirmed','cancelled','completed']),notes:z.string().max(5000)}).parse(Object.fromEntries(formData)),db=createAdminClient(),{data:current}=await db.from('reservations').select('status,payment_status,reference,guest_first_name,guest_email,check_in,check_out,total').eq('id',input.id).single();if(!current)throw new Error('Réservation introuvable');if(input.status==='confirmed'&&current.payment_status!=='paid')throw new Error('Une réservation impayée ne peut être confirmée');if(input.status==='completed'&&current.status!=='confirmed')throw new Error('Transition de statut impossible');const{error}=await db.from('reservations').update({status:input.status,admin_notes:input.notes,updated_at:new Date().toISOString()}).eq('id',input.id);if(error)throw new Error('Mise à jour impossible');await auditAdminAction('reservation.update','reservation',input.id,{from:current.status,to:input.status});if(input.status==='cancelled'&&current.status!=='cancelled'){await db.from('reservation_requests').update({statut:'cancelled',updated_at:new Date().toISOString()}).eq('reservation_id',input.id).in('statut',['accepted','pending_payment','confirmed']);await sendStatusEmail('cancelled',{reference:current.reference,firstName:current.guest_first_name,email:current.guest_email,checkIn:current.check_in,checkOut:current.check_out,totalAmount:current.total})}revalidatePath('/admin/reservations');revalidatePath('/admin/demandes-reservation')}
-export async function addBlock(formData:FormData){await requireAdmin();const data=z.object({start_date:z.iso.date(),end_date:z.iso.date(),reason:z.string().trim().max(500).optional()}).refine(v=>v.end_date>v.start_date).parse(Object.fromEntries(formData)),{data:row,error}=await createAdminClient().from('blocked_dates').insert({...data,source:'manual'}).select('id').single();if(error)throw new Error('Blocage impossible');await auditAdminAction('block.create','blocked_date',row.id);revalidatePath('/admin/calendrier')}
-export async function removeBlock(formData:FormData){await requireAdmin();const id=z.uuid().parse(formData.get('id')),{error}=await createAdminClient().from('blocked_dates').delete().eq('id',id).eq('source','manual');if(error)throw new Error('Suppression impossible');await auditAdminAction('block.delete','blocked_date',id);revalidatePath('/admin/calendrier')}
-export async function saveWeekdayPrice(formData:FormData){await requireAdmin();const input=z.object({weekday:z.coerce.number().int().min(0).max(6),price:z.coerce.number().int().min(0).max(1000000)}).parse(Object.fromEntries(formData)),{error}=await createAdminClient().from('pricing').upsert(input,{onConflict:'weekday'});if(error)throw new Error('Tarif impossible à enregistrer');await auditAdminAction('pricing.update','pricing',String(input.weekday),{price:input.price});revalidatePath('/admin/tarifs')}
-export async function createSeason(formData:FormData){await requireAdmin();const input=z.object({name:z.string().trim().min(2).max(100),start_date:z.iso.date(),end_date:z.iso.date(),price:z.coerce.number().int().min(0)}).refine(v=>v.end_date>v.start_date).parse(Object.fromEntries(formData)),{data,error}=await createAdminClient().from('seasonal_prices').insert(input).select('id').single();if(error)throw new Error('Période impossible à créer');await auditAdminAction('season.create','seasonal_price',data.id);revalidatePath('/admin/tarifs')}
-export async function createSeasonCategory(formData:FormData){await requireAdmin();const input=z.object({name:z.string().trim().min(2).max(100),season:z.enum(['low','medium','high']),start_date:z.iso.date(),end_date:z.iso.date(),price:z.coerce.number().int().min(0)}).refine(v=>v.end_date>v.start_date).parse(Object.fromEntries(formData));const{data,error}=await createAdminClient().from('seasonal_prices').insert(input).select('id').single();if(error)throw new Error('Période impossible à créer');await auditAdminAction('season.create','seasonal_price',data.id,{season:input.season});revalidatePath('/admin/tarifs')}
-export async function saveOption(formData:FormData){await requireAdmin();const input=z.object({id:z.string().optional(),option_key:z.string().trim().regex(/^[a-z0-9-]+$/),name:z.string().trim().min(2).max(100),description:z.string().trim().max(500),price:z.coerce.number().int().min(0),active:z.coerce.boolean().default(false),order:z.coerce.number().int().min(0)}).parse(Object.fromEntries(formData)),payload={option_key:input.option_key,name:input.name,description:input.description,price:input.price,active:input.active,order:input.order},db=createAdminClient(),result=input.id?await db.from('options').update(payload).eq('id',z.uuid().parse(input.id)):await db.from('options').insert(payload);if(result.error)throw new Error('Option impossible à enregistrer');await auditAdminAction('option.save','option',input.id??input.option_key);revalidatePath('/admin/options')}
-export async function saveAdminSetting(formData:FormData){await requireAdmin();const key=z.enum(['property','social','seo','branding','times','conditions','legal','taxes','maintenance']).parse(formData.get('key')),value=JSON.parse(z.string().max(20000).parse(formData.get('value'))),{error}=await createAdminClient().from('settings').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw new Error('Paramètre impossible à enregistrer');await auditAdminAction('setting.update','setting',key);revalidatePath('/admin/parametres')}
+"use server";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { requireAdmin } from "@/lib/admin/auth";
+import { auditAdminAction } from "@/lib/admin/audit";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { sendStatusEmail } from "@/lib/email";
+export async function updateReservation(formData: FormData) {
+  await requireAdmin();
+  const input = z
+      .object({
+        id: z.uuid(),
+        status: z.enum([
+          "pending_payment",
+          "confirmed",
+          "cancelled",
+          "completed",
+        ]),
+        notes: z.string().max(5000),
+      })
+      .parse(Object.fromEntries(formData)),
+    db = createAdminClient(),
+    { data: current } = await db
+      .from("reservations")
+      .select(
+        "status,payment_status,reference,guest_first_name,guest_email,check_in,check_out,total",
+      )
+      .eq("id", input.id)
+      .single();
+  if (!current) throw new Error("Réservation introuvable");
+  if (input.status === "confirmed" && current.payment_status !== "paid")
+    throw new Error("Une réservation impayée ne peut être confirmée");
+  if (input.status === "completed" && current.status !== "confirmed")
+    throw new Error("Transition de statut impossible");
+  const { error } = await db
+    .from("reservations")
+    .update({
+      status: input.status,
+      admin_notes: input.notes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", input.id);
+  if (error) throw new Error("Mise à jour impossible");
+  await auditAdminAction("reservation.update", "reservation", input.id, {
+    from: current.status,
+    to: input.status,
+  });
+  if (input.status === "cancelled" && current.status !== "cancelled") {
+    await db
+      .from("reservation_requests")
+      .update({ statut: "cancelled", updated_at: new Date().toISOString() })
+      .eq("reservation_id", input.id)
+      .in("statut", ["accepted", "pending_payment", "confirmed"]);
+    await sendStatusEmail("cancelled", {
+      reference: current.reference,
+      firstName: current.guest_first_name,
+      email: current.guest_email,
+      checkIn: current.check_in,
+      checkOut: current.check_out,
+      totalAmount: current.total,
+    });
+  }
+  revalidatePath("/admin/reservations");
+  revalidatePath("/admin/demandes-reservation");
+}
+export async function addBlock(formData: FormData) {
+  await requireAdmin();
+  const data = z
+      .object({
+        start_date: z.iso.date(),
+        end_date: z.iso.date(),
+        reason: z.string().trim().max(500).optional(),
+      })
+      .refine((v) => v.end_date > v.start_date)
+      .parse(Object.fromEntries(formData)),
+    { data: row, error } = await createAdminClient()
+      .from("blocked_dates")
+      .insert({ ...data, source: "manual" })
+      .select("id")
+      .single();
+  if (error) throw new Error("Blocage impossible");
+  await auditAdminAction("block.create", "blocked_date", row.id);
+  revalidatePath("/admin/calendrier");
+}
+export async function removeBlock(formData: FormData) {
+  await requireAdmin();
+  const id = z.uuid().parse(formData.get("id")),
+    { error } = await createAdminClient()
+      .from("blocked_dates")
+      .delete()
+      .eq("id", id)
+      .eq("source", "manual");
+  if (error) throw new Error("Suppression impossible");
+  await auditAdminAction("block.delete", "blocked_date", id);
+  revalidatePath("/admin/calendrier");
+}
+export async function saveWeekdayPrice(formData: FormData) {
+  await requireAdmin();
+  const input = z
+      .object({
+        weekday: z.coerce.number().int().min(0).max(6),
+        price: z.coerce.number().int().min(0).max(1000000),
+      })
+      .parse(Object.fromEntries(formData)),
+    { error } = await createAdminClient()
+      .from("pricing")
+      .upsert(input, { onConflict: "weekday" });
+  if (error) throw new Error("Tarif impossible à enregistrer");
+  await auditAdminAction("pricing.update", "pricing", String(input.weekday), {
+    price: input.price,
+  });
+  revalidatePath("/admin/tarifs");
+}
+export async function createSeason(formData: FormData) {
+  await requireAdmin();
+  const input = z
+      .object({
+        name: z.string().trim().min(2).max(100),
+        start_date: z.iso.date(),
+        end_date: z.iso.date(),
+        price: z.coerce.number().int().min(0),
+      })
+      .refine((v) => v.end_date > v.start_date)
+      .parse(Object.fromEntries(formData)),
+    { data, error } = await createAdminClient()
+      .from("seasonal_prices")
+      .insert(input)
+      .select("id")
+      .single();
+  if (error) throw new Error("Période impossible à créer");
+  await auditAdminAction("season.create", "seasonal_price", data.id);
+  revalidatePath("/admin/tarifs");
+}
+export async function createSeasonCategory(formData: FormData) {
+  await requireAdmin();
+  const input = z
+    .object({
+      name: z.string().trim().min(2).max(100),
+      season: z.enum(["low", "medium", "high"]),
+      start_date: z.iso.date(),
+      end_date: z.iso.date(),
+      price: z.coerce.number().int().min(0),
+    })
+    .refine((v) => v.end_date > v.start_date)
+    .parse(Object.fromEntries(formData));
+  const { data, error } = await createAdminClient()
+    .from("seasonal_prices")
+    .insert(input)
+    .select("id")
+    .single();
+  if (error) throw new Error("Période impossible à créer");
+  await auditAdminAction("season.create", "seasonal_price", data.id, {
+    season: input.season,
+  });
+  revalidatePath("/admin/tarifs");
+}
+export async function saveOption(formData: FormData) {
+  await requireAdmin();
+  const priceValue = String(formData.get("price_euros") ?? "").replace(
+    ",",
+    ".",
+  );
+  const input = z
+      .object({
+        id: z.string().optional(),
+        option_key: z
+          .string()
+          .trim()
+          .regex(/^[a-z0-9-]+$/),
+        name: z.string().trim().min(2).max(100),
+        description: z.string().trim().max(500),
+        price_euros: z.coerce.number().min(0).max(100000),
+        active: z.coerce.boolean().default(false),
+        order: z.coerce.number().int().min(0),
+        image_url: z.union([z.literal(""), z.url().max(2048)]).default(""),
+        icon: z.string().trim().max(50).default(""),
+        billing_type: z.enum([
+          "per_stay",
+          "per_night",
+          "per_person",
+          "per_person_per_night",
+        ]),
+        max_quantity: z.coerce.number().int().min(1).max(100),
+        min_lead_days: z.coerce.number().int().min(0).max(365),
+      })
+      .parse({ ...Object.fromEntries(formData), price_euros: priceValue }),
+    availableWeekdays = formData
+      .getAll("available_weekdays")
+      .map(Number)
+      .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6);
+  if (!availableWeekdays.length)
+    throw new Error("Sélectionnez au moins un jour disponible");
+  const payload = {
+      option_key: input.option_key,
+      name: input.name,
+      description: input.description,
+      price: Math.round(input.price_euros * 100),
+      active: input.active,
+      order: input.order,
+      image_url: input.image_url || null,
+      icon: input.icon || null,
+      billing_type: input.billing_type,
+      available_weekdays: [...new Set(availableWeekdays)].sort(),
+      max_quantity: input.max_quantity,
+      min_lead_days: input.min_lead_days,
+      updated_at: new Date().toISOString(),
+    },
+    db = createAdminClient(),
+    result = input.id
+      ? await db
+          .from("options")
+          .update(payload)
+          .eq("id", z.uuid().parse(input.id))
+      : await db.from("options").insert(payload);
+  if (result.error) throw new Error("Option impossible à enregistrer");
+  await auditAdminAction("option.save", "option", input.id ?? input.option_key);
+  revalidatePath("/admin/options");
+  revalidatePath("/reservation");
+}
+export async function deleteOption(formData: FormData) {
+  await requireAdmin();
+  const id = z.uuid().parse(formData.get("id"));
+  const { data, error } = await createAdminClient()
+    .from("options")
+    .delete()
+    .eq("id", id)
+    .select("option_key")
+    .maybeSingle();
+  if (error || !data) throw new Error("Option impossible à supprimer");
+  await auditAdminAction("option.delete", "option", id, {
+    optionKey: data.option_key,
+  });
+  revalidatePath("/admin/options");
+  revalidatePath("/reservation");
+}
+export async function saveAdminSetting(formData: FormData) {
+  await requireAdmin();
+  const key = z
+      .enum([
+        "property",
+        "social",
+        "seo",
+        "branding",
+        "times",
+        "conditions",
+        "legal",
+        "taxes",
+        "maintenance",
+      ])
+      .parse(formData.get("key")),
+    value = JSON.parse(z.string().max(20000).parse(formData.get("value"))),
+    { error } = await createAdminClient()
+      .from("settings")
+      .upsert(
+        { key, value, updated_at: new Date().toISOString() },
+        { onConflict: "key" },
+      );
+  if (error) throw new Error("Paramètre impossible à enregistrer");
+  await auditAdminAction("setting.update", "setting", key);
+  revalidatePath("/admin/parametres");
+}

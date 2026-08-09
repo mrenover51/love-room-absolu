@@ -1,4 +1,4 @@
-export type AssistantIntent = "revenue_month" | "occupancy" | "best_month" | "promotion" | "email" | "customer_reply";
+export type AssistantIntent = "revenue_month" | "occupancy" | "best_month" | "promotion" | "email" | "customer_reply" | "business_analysis";
 export type AssistantRequest = { intent: AssistantIntent; prompt: string; context?: Record<string, unknown> };
 export type AssistantResponse = { content: string; provider: string };
 export interface AbsoluAssistantProvider { readonly name: string; isConfigured(): boolean; complete(request: AssistantRequest): Promise<AssistantResponse> }

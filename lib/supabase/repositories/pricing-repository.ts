@@ -1,6 +1,5 @@
 ﻿import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import type { PublicPricingConfig } from "@/lib/booking/types";
-import { DEFAULT_STAY_SETTINGS, type StaySettings } from "@/lib/stay-config";
 import { createAdminClient } from "@/lib/supabase/admin";
 export class SupabasePricingRepository {
   async validatePromoCode(code: string) {
@@ -33,7 +32,9 @@ export class SupabasePricingRepository {
       db.from("pricing").select("weekday,price"),
       db
         .from("options")
-        .select("option_key,name,description,price,active,order")
+        .select(
+          "option_key,name,description,price,active,order,image_url,icon,billing_type,available_weekdays,max_quantity,min_lead_days",
+        )
         .eq("active", true)
         .order("order"),
       db
@@ -48,12 +49,7 @@ export class SupabasePricingRepository {
       db
         .from("settings")
         .select("key,value")
-        .in("key", [
-          "minimum_nights",
-          "maximum_nights",
-          "revenue_rules",
-          "times",
-        ]),
+        .in("key", ["minimum_nights", "maximum_nights", "revenue_rules"]),
     ]);
     if (pe || oe || se || pre || ste) throw new Error("PRICING_READ_FAILED");
     const value = (key: string) =>
@@ -74,31 +70,18 @@ export class SupabasePricingRepository {
         "lastMinuteDays" in rawRules
           ? (rawRules as PublicPricingConfig["revenueRules"])
           : undefined,
-      rawTimes = value("times"),
-      times =
-        typeof rawTimes === "object" && rawTimes !== null
-          ? (rawTimes as Partial<StaySettings>)
-          : DEFAULT_STAY_SETTINGS;
-    const extras = (options ?? [])
-      .filter(
-        (row) =>
-          (row.option_key !== "early-checkin" &&
-            row.option_key !== "late-checkout") ||
-          (row.option_key === "early-checkin"
-            ? times.earlyCheckInEnabled
-            : times.lateCheckOutEnabled),
-      )
-      .map((row) => ({
+      extras = (options ?? []).map((row) => ({
         key: row.option_key,
         label: row.name,
         description: row.description,
-        amount:
-          row.option_key === "early-checkin"
-            ? Math.round((times.earlyCheckInFee ?? 0) * 100)
-            : row.option_key === "late-checkout"
-              ? Math.round((times.lateCheckOutFee ?? 0) * 100)
-              : row.price,
+        amount: row.price,
         enabled: row.active,
+        imageUrl: row.image_url ?? undefined,
+        icon: row.icon ?? undefined,
+        billingType: row.billing_type,
+        availableWeekdays: row.available_weekdays,
+        maxQuantity: row.max_quantity,
+        minLeadDays: row.min_lead_days,
       }));
     return {
       weekdayAmounts: Object.fromEntries(

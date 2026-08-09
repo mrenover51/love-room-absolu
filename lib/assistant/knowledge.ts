@@ -27,6 +27,11 @@ export const assistantScenarios = [
 
 export const assistantKnowledge = [
   {
+    keywords: ["reservation", "reserver", "disponibilite", "tarif"],
+    answer:
+      "Choisissez vos dates sur la page Réservation. Les disponibilités et le montant sont revérifiés côté serveur avant toute confirmation ou ouverture du paiement.",
+  },
+  {
     keywords: ["balneo", "baignoire", "spa", "jacuzzi"],
     answer:
       "La baignoire balnéo est privative et réservée aux occupants de la suite. Elle se trouve directement dans l’espace bien-être.",
@@ -50,6 +55,21 @@ export const assistantKnowledge = [
     keywords: ["annulation", "remboursement", "modifier"],
     answer:
       "Les règles d’annulation et de modification dépendent des conditions acceptées lors de la réservation. Consultez le récapitulatif puis contactez Absolu rapidement en cas d’imprévu.",
+  },
+  {
+    keywords: ["restaurant", "diner", "manger", "table"],
+    answer:
+      "Le guide Restaurants rassemble les adresses sélectionnées autour d’Avize et d’Épernay. Vérifiez les horaires et réservez directement auprès de l’établissement choisi.",
+  },
+  {
+    keywords: ["activite", "visite", "tourisme", "cave"],
+    answer:
+      "Le guide touristique propose caves, promenades et découvertes romantiques autour d’Avize. Gardez toujours une marge avant l’arrivée pour profiter sereinement de la suite.",
+  },
+  {
+    keywords: ["faq", "question", "aide", "information"],
+    answer:
+      "Le centre d’aide regroupe les réponses pratiques sur la réservation, les équipements et votre arrivée. Si une information engage votre séjour, votre confirmation reste prioritaire.",
   },
   {
     keywords: ["champagne", "bouteille"],

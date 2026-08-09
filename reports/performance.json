@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05",
+  "generatedAt": "2026-08-09",
   "status": "pass",
   "checks": {
     "optimizedImageBudget": true,
@@ -9,8 +9,8 @@
     "heroPreloadsLimited": true
   },
   "inventory": {
-    "sourceFiles": 251,
-    "clientBoundaries": 55,
+    "sourceFiles": 259,
+    "clientBoundaries": 56,
     "images": 32,
     "optimizedImages": 18,
     "eagerImages": 20,

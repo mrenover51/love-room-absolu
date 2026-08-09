@@ -16,6 +16,7 @@ export class ReservationService {
     checkOut: string,
     extraKeys: string[],
     promoCode?: string,
+    guestCount = 1,
   ): Promise<PriceBreakdown> {
     const promo = promoCode
       ? await this.pricing.validatePromoCode(promoCode)
@@ -28,6 +29,7 @@ export class ReservationService {
       await this.pricing.getConfig(),
       promo?.discountPercent ?? 0,
       promo?.code,
+      guestCount,
     );
   }
   async createReservation(input: CreateReservationDto) {
@@ -38,6 +40,7 @@ export class ReservationService {
         input.checkOut,
         input.extraKeys,
         input.promoCode,
+        input.guestCount,
       ),
       reference = `ABS-${new Date().getUTCFullYear()}-${randomBytes(5).toString("base64url").slice(0, 6).toUpperCase()}`,
       expiresAt = new Date(Date.now() + 30 * 60_000).toISOString();

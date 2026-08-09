@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Check, ShieldCheck, X } from "lucide-react";
+import { CalendarDays, Check, ShieldCheck, Users, X } from "lucide-react";
 import { calculatePriceFromConfig, formatAmount } from "@/lib/booking/pricing";
 import type { PublicPricingConfig } from "@/lib/booking/types";
 import { trackConversion } from "@/lib/analytics/conversion";
@@ -28,6 +28,7 @@ export function CroLayer() {
   const [availability, setAvailability] = useState<Availability | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [weeklyBookings, setWeeklyBookings] = useState<number | null>(null);
   const excluded =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/reservation") ||
@@ -54,6 +55,24 @@ export function CroLayer() {
       document.removeEventListener("mouseout", exit);
     };
   }, [excluded, pathname]);
+
+  useEffect(() => {
+    if (excluded) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      fetch("/api/cro-signals", { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (typeof data?.confirmedBookingsThisWeek === "number")
+            setWeeklyBookings(data.confirmedBookingsThisWeek);
+        })
+        .catch(() => undefined);
+    }, 1_500);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [excluded]);
 
   const pricing = useMemo(() => {
     if (!config || !checkIn || !checkOut || checkOut <= checkIn) return null;
@@ -109,13 +128,27 @@ export function CroLayer() {
           className="hidden size-5 shrink-0 text-[#C9A86A] sm:block"
           aria-hidden="true"
         />
-        <p className="min-w-0 flex-1 truncate text-xs sm:text-sm">
-          <strong>Réservation directe</strong>
-          <span className="hidden text-white/45 sm:inline">
-            {" "}
-            · prix transparent
-          </span>
-        </p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs sm:text-sm">
+            <strong>Réservation directe</strong>
+            <span className="hidden text-white/45 sm:inline">
+              {" "}
+              · prix transparent
+            </span>
+          </p>
+          <p className="mt-0.5 flex items-center gap-1.5 truncate text-[10px] text-emerald-200/80">
+            <span
+              className="size-1.5 shrink-0 rounded-full bg-emerald-400"
+              aria-hidden="true"
+            />
+            Disponibilités vérifiées en temps réel
+            {weeklyBookings !== null && weeklyBookings > 0 && (
+              <span className="hidden text-white/40 sm:inline">
+                · {weeklyBookings} cette semaine
+              </span>
+            )}
+          </p>
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -231,6 +264,22 @@ export function CroLayer() {
               <span>Annulation gratuite jusqu’à J-5</span>
               <span>Réservation directe</span>
             </div>
+            {weeklyBookings !== null && weeklyBookings > 0 && (
+              <p
+                className="mt-5 flex items-center gap-2 text-xs text-white/55"
+                aria-live="polite"
+              >
+                <Users
+                  className="size-4 text-[#C9A86A]"
+                  aria-hidden="true"
+                />
+                {weeklyBookings}{" "}
+                {weeklyBookings === 1
+                  ? "réservation confirmée"
+                  : "réservations confirmées"}{" "}
+                cette semaine
+              </p>
+            )}
           </section>
         </div>
       )}

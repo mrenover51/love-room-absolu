@@ -9,6 +9,18 @@ export type SelectedExtra = {
   amount: number;
   quantity?: number;
 };
+export type ExtraBillingType =
+  "per_stay" | "per_night" | "per_person" | "per_person_per_night";
+export type PublicExtra = SelectedExtra & {
+  description?: string;
+  enabled?: boolean;
+  imageUrl?: string;
+  icon?: string;
+  billingType?: ExtraBillingType;
+  availableWeekdays?: number[];
+  maxQuantity?: number;
+  minLeadDays?: number;
+};
 export type PublicPricingConfig = {
   weekdayAmounts?: Record<number, number>;
   seasonalPrices?: Array<{
@@ -39,7 +51,7 @@ export type PublicPricingConfig = {
   minimumNights: number;
   maximumNights: number;
   currency: string;
-  extras: Array<SelectedExtra & { description?: string; enabled?: boolean }>;
+  extras: PublicExtra[];
 };
 export type PricingBreakdown = {
   nights: number;

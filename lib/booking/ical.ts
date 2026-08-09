@@ -25,38 +25,46 @@ export function parseIcal(
   source: CalendarSource = "booking",
 ): ExternalCalendarEvent[] {
   const root = new ICAL.Component(ICAL.parse(content));
-  const events = root.getAllSubcomponents("vevent").flatMap((component) => {
+  const events = root.getAllSubcomponents("vevent").map((component) => {
     try {
       const event = new ICAL.Event(component);
-      if (!event.startDate || !event.endDate) return [];
+      if (!event.uid?.trim()) throw new Error("ICAL_EVENT_UID_MISSING");
+      if (!event.startDate || !event.endDate)
+        throw new Error("ICAL_EVENT_DATES_MISSING");
       const start = calendarDate(event.startDate);
       const end = calendarDate(event.endDate);
-      if (end <= start) return [];
+      if (end <= start) throw new Error("ICAL_EVENT_DATES_INVALID");
       const status = component.getFirstPropertyValue("status");
-      return [
-        {
-          start,
-          end,
-          uid: event.uid || `${source}-${start}-${end}`,
-          source,
-          summary: event.summary || "Indisponible",
-          description: event.description || "",
-          cancelled:
-            typeof status === "string" && status.toUpperCase() === "CANCELLED",
-        },
-      ];
-    } catch {
-      return [];
+      return {
+        start,
+        end,
+        uid: event.uid.trim(),
+        source,
+        summary: event.summary || "Indisponible",
+        description: event.description || "",
+        cancelled:
+          typeof status === "string" && status.toUpperCase() === "CANCELLED",
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("ICAL_EVENT_"))
+        throw error;
+      throw new Error("ICAL_EVENT_INVALID");
     }
   });
-  return [
-    ...new Map(
-      events.map((event) => [
-        `${event.source}:${event.uid}:${event.start}:${event.end}`,
-        event,
-      ]),
-    ).values(),
-  ];
+  const unique = new Map<string, ExternalCalendarEvent>();
+  for (const event of events) {
+    const key = `${event.source}:${event.uid}`;
+    const previous = unique.get(key);
+    if (
+      previous &&
+      (previous.start !== event.start ||
+        previous.end !== event.end ||
+        previous.cancelled !== event.cancelled)
+    )
+      throw new Error("ICAL_EVENT_UID_DUPLICATE");
+    unique.set(key, event);
+  }
+  return [...unique.values()];
 }
 
 async function fetchCalendar(source: CalendarSource, url: string) {
@@ -95,7 +103,10 @@ export async function getExternalCalendarData() {
     ...new Map(
       results
         .flatMap((result) => result.events)
-        .map((event) => [`${event.start}:${event.end}:${event.uid}`, event]),
+        .map((event) => [
+          `${event.source}:${event.start}:${event.end}:${event.uid}`,
+          event,
+        ]),
     ).values(),
   ];
   return {

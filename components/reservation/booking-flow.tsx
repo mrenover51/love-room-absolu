@@ -7,7 +7,10 @@ import {
   reservationRequestSchema,
   type ReservationRequestInput,
 } from "@/lib/booking/validation";
-import { calculatePriceFromConfig } from "@/lib/booking/pricing";
+import {
+  calculatePriceFromConfig,
+  isExtraAvailable,
+} from "@/lib/booking/pricing";
 import type { PublicPricingConfig } from "@/lib/booking/types";
 import { DateRangePicker } from "./date-range-picker";
 import { ExtrasSelector } from "./extras-selector";
@@ -17,7 +20,13 @@ import { trackConversion } from "@/lib/analytics/conversion";
 import type { BookingMode } from "@/lib/booking/workflow-settings";
 
 const steps = ["Dates", "Options", "Informations", "Confirmation"];
-const timelineSteps = ["Dates", "Informations", "Options", "Paiement", "Confirmation"];
+const timelineSteps = [
+  "Dates",
+  "Informations",
+  "Options",
+  "Paiement",
+  "Confirmation",
+];
 export function BookingFlow({
   pricingConfig,
   bookingMode,
@@ -65,6 +74,7 @@ export function BookingFlow({
             pricingConfig,
             promoPercent,
             values.promoCode,
+            values.guestCount,
           )
         : null;
     } catch {
@@ -75,6 +85,7 @@ export function BookingFlow({
     values.checkOut,
     values.extraKeys,
     values.promoCode,
+    values.guestCount,
     pricingConfig,
     promoPercent,
   ]);
@@ -166,16 +177,24 @@ export function BookingFlow({
     if (loading) return;
     setLoading(true);
     setServerError("");
-    trackConversion(bookingMode === "manual" ? "booking_request_started" : "begin_checkout", {
-      value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
-      currency: "EUR",
-    });
+    trackConversion(
+      bookingMode === "manual" ? "booking_request_started" : "begin_checkout",
+      {
+        value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
+        currency: "EUR",
+      },
+    );
     try {
-      const response = await fetch(bookingMode === "manual" ? "/api/reservation-request" : "/api/stripe/create-checkout-session", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(data),
-        }),
+      const response = await fetch(
+          bookingMode === "manual"
+            ? "/api/reservation-request"
+            : "/api/stripe/create-checkout-session",
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(data),
+          },
+        ),
         result = await response.json();
       if (!response.ok) {
         if (response.status === 409 && result.code === "DATES_UNAVAILABLE") {
@@ -184,9 +203,12 @@ export function BookingFlow({
         }
         throw new Error(result.error);
       }
-      if(bookingMode === "manual"){
+      if (bookingMode === "manual") {
         setRequestSent(true);
-        trackConversion("booking_request_submitted",{value:pricing?.totalAmount?pricing.totalAmount/100:0,currency:"EUR"});
+        trackConversion("booking_request_submitted", {
+          value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
+          currency: "EUR",
+        });
         return;
       }
       if (!result.url) throw new Error("Le paiement n’a pas pu être ouvert.");
@@ -202,7 +224,19 @@ export function BookingFlow({
       setLoading(false);
     }
   }
-  if(requestSent)return <section className="rounded-[1.75rem] border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-8 text-center sm:p-12"><p className="eyebrow text-[#C9A86A]">Demande reçue</p><h2 className="mt-4 font-heading text-4xl">Votre parenthèse est entre de bonnes mains.</h2><p className="mx-auto mt-5 max-w-2xl leading-8 text-white/65">Nous vérifions personnellement la disponibilité de la suite. Vous recevrez notre réponse par email avant toute demande de paiement.</p></section>;
+  if (requestSent)
+    return (
+      <section className="rounded-[1.75rem] border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-8 text-center sm:p-12">
+        <p className="eyebrow text-[#C9A86A]">Demande reçue</p>
+        <h2 className="mt-4 font-heading text-4xl">
+          Votre parenthèse est entre de bonnes mains.
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl leading-8 text-white/65">
+          Nous vérifions personnellement la disponibilité de la suite. Vous
+          recevrez notre réponse par email avant toute demande de paiement.
+        </p>
+      </section>
+    );
   return (
     <form onSubmit={form.handleSubmit(submit)} noValidate>
       <ol
@@ -215,13 +249,21 @@ export function BookingFlow({
             aria-current={index === step ? "step" : undefined}
             className={`border-t pt-3 text-center text-[.52rem] uppercase tracking-wider transition-colors duration-500 sm:text-[.68rem] ${index <= (step === 1 ? 2 : step === 2 ? 1 : step) ? "border-[#C9A86A] text-[#D8C8B6]" : "border-white/10 text-white/30"}`}
           >
-            <span className="mx-auto mb-1 grid size-5 place-items-center rounded-full border border-current text-[9px]">{index + 1}</span>{label}
+            <span className="mx-auto mb-1 grid size-5 place-items-center rounded-full border border-current text-[9px]">
+              {index + 1}
+            </span>
+            {label}
           </li>
         ))}
       </ol>
-      <div className="-mt-5 mb-8 h-1 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-[#C9A86A] transition-[width] duration-700" style={{ width: `${((step + 1) / 5) * 100}%` }} /></div>
+      <div className="-mt-5 mb-8 h-1 overflow-hidden rounded-full bg-white/10">
+        <div
+          className="h-full rounded-full bg-[#C9A86A] transition-[width] duration-700"
+          style={{ width: `${((step + 1) / 5) * 100}%` }}
+        />
+      </div>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 border border-white/10 bg-black/25 p-5 sm:p-8">
+        <div className="premium-panel min-w-0 border border-white/10 p-5 sm:p-8">
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">
             Étape {step + 1} : {steps[step]}
           </h2>
@@ -234,6 +276,15 @@ export function BookingFlow({
               onChange={(checkIn, checkOut) => {
                 form.setValue("checkIn", checkIn, { shouldValidate: true });
                 form.setValue("checkOut", checkOut, { shouldValidate: true });
+                form.setValue(
+                  "extraKeys",
+                  (values.extraKeys ?? []).filter((key) => {
+                    const extra = pricingConfig.extras.find(
+                      (item) => item.key === key,
+                    );
+                    return Boolean(extra && isExtraAvailable(extra, checkIn));
+                  }),
+                );
               }}
             />
           )}
@@ -242,13 +293,14 @@ export function BookingFlow({
               <ExtrasSelector
                 selected={values.extraKeys ?? []}
                 extras={pricingConfig.extras}
+                checkIn={values.checkIn}
                 onChange={(extraKeys) =>
                   form.setValue("extraKeys", extraKeys, {
                     shouldValidate: true,
                   })
                 }
               />
-              <section className="mt-8 rounded-2xl border border-white/10 p-5">
+              <section className="premium-panel mt-8 border border-white/10 p-5">
                 <h3 className="font-heading text-2xl">Code promotionnel</h3>
                 <div className="mt-4 flex gap-2">
                   <input
@@ -285,7 +337,9 @@ export function BookingFlow({
           {step === 3 && pricing && (
             <section aria-labelledby="review-title">
               <h3 id="review-title" className="font-heading text-3xl">
-                {bookingMode === "manual" ? "Vérifiez votre demande" : "Vérifiez avant paiement"}
+                {bookingMode === "manual"
+                  ? "Vérifiez votre demande"
+                  : "Vérifiez avant paiement"}
               </h3>
               <p className="mt-4 leading-7 text-white/60">
                 {values.firstName} {values.lastName} · {values.guestCount}{" "}
@@ -320,7 +374,9 @@ export function BookingFlow({
                 </button>
               </nav>
               <p className="mt-8 border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-4 text-sm">
-                {bookingMode === "manual" ? "Les dates et le montant seront revérifiés côté serveur. Aucun paiement ne sera demandé avant la validation de votre séjour." : "Les dates et le montant seront revérifiés côté serveur avant l’ouverture du paiement sécurisé Stripe."}
+                {bookingMode === "manual"
+                  ? "Les dates et le montant seront revérifiés côté serveur. Aucun paiement ne sera demandé avant la validation de votre séjour."
+                  : "Les dates et le montant seront revérifiés côté serveur avant l’ouverture du paiement sécurisé Stripe."}
               </p>
             </section>
           )}
@@ -339,7 +395,7 @@ export function BookingFlow({
               <button
                 type="button"
                 onClick={() => goTo(step - 1)}
-                className="min-h-12 border border-white/20 px-6 text-sm"
+                className="premium-action min-h-12 border border-white/20 px-6 text-sm"
               >
                 Retour
               </button>
@@ -351,7 +407,7 @@ export function BookingFlow({
                 type="button"
                 onClick={next}
                 disabled={step === 0 && !pricing}
-                className="min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-40"
+                className="premium-action min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Continuer
               </button>
@@ -360,9 +416,15 @@ export function BookingFlow({
                 type="submit"
                 disabled={loading || !pricing}
                 aria-busy={loading}
-                className="min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:opacity-50"
+                className="premium-action min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:opacity-50"
               >
-                {loading ? (bookingMode === "manual" ? "Envoi de la demande…" : "Préparation du paiement…") : (bookingMode === "manual" ? "Demander cette parenthèse" : "Payer et réserver")}
+                {loading
+                  ? bookingMode === "manual"
+                    ? "Envoi de la demande…"
+                    : "Préparation du paiement…"
+                  : bookingMode === "manual"
+                    ? "Demander cette parenthèse"
+                    : "Payer et réserver"}
               </button>
             )}
           </div>

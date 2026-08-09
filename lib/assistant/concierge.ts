@@ -4,15 +4,145 @@ import { seasonalEvents, eventEdition } from "@/lib/events/events";
 import { touristAttractions } from "@/lib/tourism/attractions";
 import { getPublicPricingConfig } from "@/lib/booking/server-pricing";
 import { getAvailabilityData } from "@/lib/booking/availability";
-type Context={occasion?:string;checkIn?:string;checkOut?:string;preferences?:string[]};
-const normalize=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-const includes=(query:string,words:string[])=>words.some(word=>query.includes(word));
-async function weather(){try{const response=await fetch("https://api.open-meteo.com/v1/forecast?latitude=48.97&longitude=4.01&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FParis&forecast_days=3",{next:{revalidate:1800},signal:AbortSignal.timeout(2500)});if(!response.ok)return null;return await response.json() as {current?:{temperature_2m?:number};daily?:{temperature_2m_max?:number[];temperature_2m_min?:number[];precipitation_probability_max?:number[]}}}catch{return null}}
-export async function conciergeAnswer(query:string,context:Context={}){const q=normalize(query),occasion=context.occasion??(includes(q,["anniversaire"])?"anniversaire":includes(q,["saint valentin"])?"saint-valentin":includes(q,["mariage","demande"])?"demande-en-mariage":includes(q,["lune de miel"])?"lune-de-miel":undefined);let intent="faq",answer="",href="/faq",label="Consulter le centre d’aide";const suggestions:string[]=[];
-if(includes(q,["message","lettre","carte","mot romantique"])){intent="message";const openings:Record<string,string>={anniversaire:"Une année de plus à t’aimer, et toujours la même envie de nous retrouver.","saint-valentin":"Je ne voulais pas seulement t’offrir quelque chose, mais du temps rien qu’à nous.","demande-en-mariage":"Notre histoire est mon plus beau voyage. J’aimerais que le prochain chapitre dure toute la vie.","lune-de-miel":"À notre première escapade comme jeunes mariés, et à toutes celles qui suivront."};answer=`Proposition de message : « ${openings[occasion??""]??"J’ai choisi cette parenthèse pour que le monde ralentisse un instant autour de nous."} » Personnalisez-le avec un souvenir précis qui n’appartient qu’à votre histoire.`;href="/bons-cadeaux";label="Créer un bon personnalisé";
-}else if(includes(q,["planning","itineraire","programme","journee","week end"])){intent="planning";const forecast=await weather(),rain=forecast?.daily?.precipitation_probability_max?.[0]??0,top=touristAttractions.filter(x=>x.romantic).slice(0,2),next=seasonalEvents.map(event=>({event,date:eventEdition(event,new Date()).start})).sort((a,b)=>a.date.getTime()-b.date.getTime())[0];answer=`Planning conseillé : arrivée et installation sans précipitation, puis temps dans la suite. Le lendemain, ${rain>50?"privilégiez une visite de cave à l’abri":"prévoyez une promenade dans la Côte des Blancs"}, suivie de ${top[0]?.name??"une découverte locale"}. Gardez le dîner et la soirée libres pour la balnéo et le sauna. ${forecast?.current?.temperature_2m!==undefined?`Température actuelle près d’Avize : ${forecast.current.temperature_2m} °C.`:"La météo en direct est temporairement indisponible."} Prochain temps fort : ${next?.event.name??"calendrier à consulter"}.`;href="/carte-touristique";label="Ouvrir le guide interactif";suggestions.push("Trouver un restaurant romantique","Prévoir un programme sous la pluie");
-}else if(includes(q,["disponible","date","calendrier","reserver","reservation"])){intent="booking";if(context.checkIn&&context.checkOut){const availability=await getAvailabilityData(),blocked=availability.ranges.some(range=>range.start<context.checkOut!&&range.end>context.checkIn!);answer=blocked?"Ces dates croisent une indisponibilité connue. Essayez une autre période dans le calendrier.":"Aucun blocage n’apparaît pour cette période dans le calendrier actuel. Poursuivez jusqu’au récapitulatif pour vérifier le prix et confirmer.";}else answer="Indiquez une arrivée et un départ dans l’outil calendrier. Je vérifierai les blocages connus avant de vous orienter vers le récapitulatif.";href="/reservation";label="Voir le calendrier complet";
-}else if(includes(q,["option","champagne","decoration","petale","depart tardif"])){intent="options";const pricing=await getPublicPricingConfig(),extras="extras" in pricing&&Array.isArray(pricing.extras)?pricing.extras.filter(item=>item.enabled!==false).slice(0,4):[];answer=extras.length?`Options actuellement configurées : ${extras.map(item=>`${item.label} (${(item.amount/100).toLocaleString("fr-FR",{style:"currency",currency:"EUR"})})`).join(", ")}. Leur disponibilité finale figure au récapitulatif.`:"Aucune option publique n’est actuellement confirmée. Contactez Absolu avant d’organiser une surprise.";href="/reservation";label="Composer le séjour";
-}else if(includes(q,["tourisme","visite","cave","restaurant","epernay","avize","activite"])){intent="tourism";const choices=touristAttractions.filter(item=>item.top).slice(0,3);answer=`Pour une sortie à deux, explorez ${choices.map(item=>item.name).join(", ")}. Vérifiez toujours les horaires et tarifs auprès de l’organisateur, puis gardez une partie de la journée libre dans la suite.`;href="/guide-touristique";label="Voir le guide touristique";
-}else{answer=findAssistantAnswer(query)}
-return{answer,intent,href,label,suggestions,occasion};}
+type Context = {
+  occasion?: string;
+  checkIn?: string;
+  checkOut?: string;
+  preferences?: string[];
+};
+const normalize = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+const includes = (query: string, words: string[]) =>
+  words.some((word) => query.includes(word));
+async function weather() {
+  try {
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=48.97&longitude=4.01&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FParis&forecast_days=3",
+      { next: { revalidate: 1800 }, signal: AbortSignal.timeout(2500) },
+    );
+    if (!response.ok) return null;
+    return (await response.json()) as {
+      current?: { temperature_2m?: number };
+      daily?: {
+        temperature_2m_max?: number[];
+        temperature_2m_min?: number[];
+        precipitation_probability_max?: number[];
+      };
+    };
+  } catch {
+    return null;
+  }
+}
+export async function conciergeAnswer(query: string, context: Context = {}) {
+  const q = normalize(query),
+    occasion =
+      context.occasion ??
+      (includes(q, ["anniversaire"])
+        ? "anniversaire"
+        : includes(q, ["saint valentin"])
+          ? "saint-valentin"
+          : includes(q, ["mariage", "demande"])
+            ? "demande-en-mariage"
+            : includes(q, ["lune de miel"])
+              ? "lune-de-miel"
+              : undefined);
+  let intent = "faq",
+    answer = "",
+    href = "/faq",
+    label = "Consulter le centre d’aide";
+  const suggestions: string[] = [];
+  if (includes(q, ["message", "lettre", "carte", "mot romantique"])) {
+    intent = "message";
+    const openings: Record<string, string> = {
+      anniversaire:
+        "Une année de plus à t’aimer, et toujours la même envie de nous retrouver.",
+      "saint-valentin":
+        "Je ne voulais pas seulement t’offrir quelque chose, mais du temps rien qu’à nous.",
+      "demande-en-mariage":
+        "Notre histoire est mon plus beau voyage. J’aimerais que le prochain chapitre dure toute la vie.",
+      "lune-de-miel":
+        "À notre première escapade comme jeunes mariés, et à toutes celles qui suivront.",
+    };
+    answer = `Proposition de message : « ${openings[occasion ?? ""] ?? "J’ai choisi cette parenthèse pour que le monde ralentisse un instant autour de nous."} » Personnalisez-le avec un souvenir précis qui n’appartient qu’à votre histoire.`;
+    href = "/bons-cadeaux";
+    label = "Créer un bon personnalisé";
+  } else if (
+    includes(q, ["planning", "itineraire", "programme", "journee", "week end"])
+  ) {
+    intent = "planning";
+    const forecast = await weather(),
+      rain = forecast?.daily?.precipitation_probability_max?.[0] ?? 0,
+      top = touristAttractions.filter((x) => x.romantic).slice(0, 2),
+      next = seasonalEvents
+        .map((event) => ({
+          event,
+          date: eventEdition(event, new Date()).start,
+        }))
+        .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
+    answer = `Planning conseillé : arrivée et installation sans précipitation, puis temps dans la suite. Le lendemain, ${rain > 50 ? "privilégiez une visite de cave à l’abri" : "prévoyez une promenade dans la Côte des Blancs"}, suivie de ${top[0]?.name ?? "une découverte locale"}. Gardez le dîner et la soirée libres pour la balnéo et le sauna. ${forecast?.current?.temperature_2m !== undefined ? `Température actuelle près d’Avize : ${forecast.current.temperature_2m} °C.` : "La météo en direct est temporairement indisponible."} Prochain temps fort : ${next?.event.name ?? "calendrier à consulter"}.`;
+    href = "/carte-touristique";
+    label = "Ouvrir le guide interactif";
+    suggestions.push(
+      "Trouver un restaurant romantique",
+      "Prévoir un programme sous la pluie",
+    );
+  } else if (
+    includes(q, ["disponible", "date", "calendrier", "reserver", "reservation"])
+  ) {
+    intent = "booking";
+    if (context.checkIn && context.checkOut) {
+      const availability = await getAvailabilityData(),
+        blocked = availability.ranges.some(
+          (range) =>
+            range.start < context.checkOut! && range.end > context.checkIn!,
+        );
+      answer = blocked
+        ? "Ces dates croisent une indisponibilité connue. Essayez une autre période dans le calendrier."
+        : "Aucun blocage n’apparaît pour cette période dans le calendrier actuel. Poursuivez jusqu’au récapitulatif pour vérifier le prix et confirmer.";
+    } else
+      answer =
+        "Indiquez une arrivée et un départ dans l’outil calendrier. Je vérifierai les blocages connus avant de vous orienter vers le récapitulatif.";
+    href = "/reservation";
+    label = "Voir le calendrier complet";
+  } else if (
+    includes(q, [
+      "option",
+      "champagne",
+      "decoration",
+      "petale",
+      "depart tardif",
+    ])
+  ) {
+    intent = "options";
+    const pricing = await getPublicPricingConfig(),
+      extras =
+        "extras" in pricing && Array.isArray(pricing.extras)
+          ? pricing.extras.filter((item) => item.enabled !== false).slice(0, 4)
+          : [];
+    answer = extras.length
+      ? `Options actuellement configurées : ${extras.map((item) => `${item.label} (${(item.amount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })})`).join(", ")}. Leur disponibilité finale figure au récapitulatif.`
+      : "Aucune option publique n’est actuellement confirmée. Contactez Absolu avant d’organiser une surprise.";
+    href = "/reservation";
+    label = "Composer le séjour";
+  } else if (includes(q, ["restaurant", "diner", "manger", "table"])) {
+    intent = "restaurants";
+    answer =
+      "Découvrez la sélection de restaurants autour d’Avize et d’Épernay. Les disponibilités et horaires dépendent de chaque établissement : réservez directement votre table avant le séjour.";
+    href = "/restaurants";
+    label = "Voir les restaurants";
+  } else if (
+    includes(q, ["tourisme", "visite", "cave", "epernay", "avize", "activite"])
+  ) {
+    intent = "tourism";
+    const choices = touristAttractions.filter((item) => item.top).slice(0, 3);
+    answer = `Pour une sortie à deux, explorez ${choices.map((item) => item.name).join(", ")}. Vérifiez toujours les horaires et tarifs auprès de l’organisateur, puis gardez une partie de la journée libre dans la suite.`;
+    href = "/guide-touristique";
+    label = "Voir le guide touristique";
+  } else {
+    answer = findAssistantAnswer(query);
+  }
+  return { answer, intent, href, label, suggestions, occasion };
+}

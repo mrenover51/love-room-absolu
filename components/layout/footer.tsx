@@ -9,15 +9,28 @@ export function Footer() {
   return (
     <footer
       id="contact"
-      className="relative overflow-hidden border-t border-[#D0AE72]/15 bg-[#0B0908] py-28 text-white/55 sm:py-40"
+      className="luxury-footer relative overflow-hidden border-t border-[#D0AE72]/15 bg-[#0B0908] py-28 text-white/55 sm:py-40"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#C9A86A]/55 to-transparent" />
-      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 size-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D0AE72]/[.065] blur-[120px]" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(105deg,transparent_0,transparent_11px,rgba(255,255,255,.012)_12px)]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#C9A86A]/55 to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 size-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D0AE72]/[.065] blur-[120px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(105deg,transparent_0,transparent_11px,rgba(255,255,255,.012)_12px)]"
+      />
       <SmartContextLinks />
       <div className="page-shell relative mt-20 grid gap-16 md:grid-cols-2 lg:mt-24 lg:grid-cols-[1.25fr_.8fr_.9fr_1.15fr] lg:gap-20">
         <div>
-          <Link href="/" aria-label="Absolu — accueil" className="inline-flex font-heading text-4xl tracking-[.24em] text-[#F6F2EC] transition-colors duration-300 hover:text-[#DCC18E]">
+          <Link
+            href="/"
+            aria-label="Absolu — accueil"
+            className="inline-flex font-heading text-4xl tracking-[.24em] text-[#F6F2EC] transition-colors duration-300 hover:text-[#DCC18E]"
+          >
             ABSOLU
           </Link>
           <p className="mt-7 max-w-sm text-sm leading-8">
@@ -71,19 +84,31 @@ export function Footer() {
                 href={`tel:${contactDetails.phone.replaceAll(" ", "")}`}
                 className="group flex items-start gap-3 hover:text-white"
               >
-                <Phone className="mt-1 size-4 shrink-0 text-[#C9A86A]" aria-hidden="true" />
+                <Phone
+                  className="mt-1 size-4 shrink-0 text-[#C9A86A]"
+                  aria-hidden="true"
+                />
                 <span>{contactDetails.phone}</span>
               </a>
             ) : (
               <span>Téléphone — à renseigner</span>
             )}
-            <span className="flex items-start gap-3"><MapPin className="mt-1 size-4 shrink-0 text-[#C9A86A]" aria-hidden="true" />{contactDetails.address}</span>
+            <span className="flex items-start gap-3">
+              <MapPin
+                className="mt-1 size-4 shrink-0 text-[#C9A86A]"
+                aria-hidden="true"
+              />
+              {contactDetails.address}
+            </span>
             {contactDetails.email !== "À renseigner" ? (
               <a
                 href={`mailto:${contactDetails.email}`}
                 className="flex items-start gap-3 hover:text-white"
               >
-                <Mail className="mt-1 size-4 shrink-0 text-[#C9A86A]" aria-hidden="true" />
+                <Mail
+                  className="mt-1 size-4 shrink-0 text-[#C9A86A]"
+                  aria-hidden="true"
+                />
                 <span>{contactDetails.email}</span>
               </a>
             ) : (
@@ -98,7 +123,13 @@ export function Footer() {
       </div>
       <div className="page-shell relative mt-24 flex flex-col gap-7 border-t border-white/10 pt-10 text-xs md:flex-row md:items-center md:justify-between">
         <p>© {new Date().getFullYear()} Absolu. Tous droits réservés.</p>
-        <div className="flex items-center gap-3"><LegalLinks /><ArrowUpRight className="hidden size-3 text-[#C9A86A] sm:block" aria-hidden="true" /></div>
+        <div className="flex items-center gap-3">
+          <LegalLinks />
+          <ArrowUpRight
+            className="hidden size-3 text-[#C9A86A] sm:block"
+            aria-hidden="true"
+          />
+        </div>
       </div>
     </footer>
   );

@@ -15,7 +15,7 @@ export function BookingSummary({
 }) {
   return (
     <aside
-      className={`border border-white/10 bg-[#121212] lg:sticky lg:top-28 lg:self-start ${compact ? "p-5" : "p-6 sm:p-8"}`}
+      className={`premium-panel border border-white/10 lg:sticky lg:top-28 lg:self-start ${compact ? "p-5" : "p-6 sm:p-8"}`}
     >
       <h2 className="font-heading text-3xl">Votre séjour</h2>
       <dl className="mt-6 space-y-4 text-sm">
@@ -49,7 +49,10 @@ export function BookingSummary({
         </div>
         {pricing.extras.map((extra) => (
           <div key={extra.key} className="flex justify-between gap-4">
-            <dt className="text-white/50">{extra.label}</dt>
+            <dt className="text-white/50">
+              {extra.label}
+              {(extra.quantity ?? 1) > 1 ? ` × ${extra.quantity}` : ""}
+            </dt>
             <dd>{formatAmount(extra.amount)}</dd>
           </div>
         ))}
