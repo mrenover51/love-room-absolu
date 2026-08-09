@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MobileMenu } from "./mobile-menu";
 import { LanguageSelector } from "@/components/i18n/language-selector";
+import type { Locale } from "@/lib/i18n/config";
 
 const exploreColumns = [
   {
@@ -100,7 +101,7 @@ function NavLink({
   );
 }
 
-export function Header() {
+export function Header({ locale = "fr" }: { locale?: Locale }) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -133,7 +134,7 @@ export function Header() {
       <header
         ref={headerRef}
         onMouseLeave={() => setMegaOpen(false)}
-        className={`luxury-header fixed inset-x-0 top-0 z-40 border-b bg-[#0B0908]/68 backdrop-blur-xl transition-[height,background-color,border-color,box-shadow] duration-500 ${scrolled || megaOpen ? "border-[#D0AE72]/15 bg-[#0B0908]/90 shadow-[0_18px_55px_rgba(24,13,9,.24)]" : "border-white/[.07]"}`}
+        className={`luxury-header fixed inset-x-0 top-0 z-40 border-b transition-[height,background-color,border-color,box-shadow,backdrop-filter] duration-500 ${scrolled || megaOpen ? "border-[#D0AE72]/15 bg-[#0B0908]/90 shadow-[0_18px_55px_rgba(24,13,9,.24)] backdrop-blur-xl" : "border-transparent bg-transparent"}`}
       >
         <div
           className={`grid w-full grid-cols-[1fr_auto_1fr] items-center px-6 transition-[height] duration-500 ease-out sm:px-10 xl:px-12 2xl:px-14 ${scrolled ? "h-[74px]" : "h-24"}`}
@@ -196,7 +197,7 @@ export function Header() {
             >
               Réserver maintenant
             </Link>
-            <LanguageSelector locale="fr" />
+            <LanguageSelector locale={locale} />
           </div>
           <button
             type="button"
