@@ -25,5 +25,17 @@ export function checkoutLineItems(
         },
       };
     }),
+    ...(pricing.feesAmount > 0
+      ? [
+          {
+            quantity: 1,
+            price_data: {
+              currency: "eur" as const,
+              unit_amount: pricing.feesAmount,
+              product_data: { name: "Taxe de séjour" },
+            },
+          },
+        ]
+      : []),
   ];
 }

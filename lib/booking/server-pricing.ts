@@ -7,6 +7,7 @@ export async function getPublicPricingConfig() {
   const times = await getStaySettings(),
     fallback = {
       ...BOOKING_CONFIG,
+      touristTaxRateAmount: 0,
       extras: BOOKING_CONFIG.extras
         .filter(
           (item) =>

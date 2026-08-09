@@ -1,5 +1,6 @@
 ﻿import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import type { PublicPricingConfig } from "@/lib/booking/types";
+import { touristTaxRateToAmount } from "@/lib/booking/tourist-tax";
 import { createAdminClient } from "@/lib/supabase/admin";
 export class SupabasePricingRepository {
   async validatePromoCode(code: string) {
@@ -49,7 +50,12 @@ export class SupabasePricingRepository {
       db
         .from("settings")
         .select("key,value")
-        .in("key", ["minimum_nights", "maximum_nights", "revenue_rules"]),
+        .in("key", [
+          "minimum_nights",
+          "maximum_nights",
+          "revenue_rules",
+          "taxes",
+        ]),
     ]);
     if (pe || oe || se || pre || ste) throw new Error("PRICING_READ_FAILED");
     const value = (key: string) =>
@@ -63,6 +69,16 @@ export class SupabasePricingRepository {
           ? item.value
           : fallback;
       },
+      rawTaxes = value("taxes"),
+      touristTaxRate =
+        typeof rawTaxes === "object" &&
+        rawTaxes !== null &&
+        "rate" in rawTaxes &&
+        typeof rawTaxes.rate === "number" &&
+        Number.isFinite(rawTaxes.rate) &&
+        rawTaxes.rate >= 0
+          ? rawTaxes.rate
+          : 0,
       rawRules = value("revenue_rules"),
       revenueRules =
         typeof rawRules === "object" &&
@@ -84,6 +100,7 @@ export class SupabasePricingRepository {
         minLeadDays: row.min_lead_days,
       }));
     return {
+      touristTaxRateAmount: touristTaxRateToAmount(touristTaxRate),
       weekdayAmounts: Object.fromEntries(
         (prices ?? []).map((row) => [row.weekday, row.price]),
       ) as Record<number, number>,

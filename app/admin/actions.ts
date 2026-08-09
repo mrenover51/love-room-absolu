@@ -248,7 +248,13 @@ export async function saveAdminSetting(formData: FormData) {
         "maintenance",
       ])
       .parse(formData.get("key")),
-    value = JSON.parse(z.string().max(20000).parse(formData.get("value"))),
+    rawValue: unknown = JSON.parse(
+      z.string().max(20000).parse(formData.get("value")),
+    ),
+    value =
+      key === "taxes"
+        ? z.object({ rate: z.number().finite().min(0).max(100) }).parse(rawValue)
+        : rawValue,
     { error } = await createAdminClient()
       .from("settings")
       .upsert(
@@ -258,4 +264,5 @@ export async function saveAdminSetting(formData: FormData) {
   if (error) throw new Error("Paramètre impossible à enregistrer");
   await auditAdminAction("setting.update", "setting", key);
   revalidatePath("/admin/parametres");
+  if (key === "taxes") revalidatePath("/reservation");
 }

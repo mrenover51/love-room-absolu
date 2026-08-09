@@ -40,22 +40,17 @@ export function BookingSummary({
           </div>
         )}
         <div className="flex justify-between">
-          <dt className="text-white/50">Taxes et frais</dt>
-          <dd>{formatAmount(pricing.feesAmount)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-white/50">Nuitées</dt>
+          <dt className="text-white/50">Séjour</dt>
           <dd>{formatAmount(pricing.baseAmount)}</dd>
         </div>
-        {pricing.extras.map((extra) => (
-          <div key={extra.key} className="flex justify-between gap-4">
-            <dt className="text-white/50">
-              {extra.label}
-              {(extra.quantity ?? 1) > 1 ? ` × ${extra.quantity}` : ""}
-            </dt>
-            <dd>{formatAmount(extra.amount)}</dd>
-          </div>
-        ))}
+        <div className="flex justify-between">
+          <dt className="text-white/50">Options</dt>
+          <dd>{formatAmount(pricing.extrasAmount)}</dd>
+        </div>
+        <div className="flex justify-between">
+          <dt className="text-white/50">Taxe de séjour</dt>
+          <dd>{formatAmount(pricing.feesAmount)}</dd>
+        </div>
         <div className="flex justify-between border-t border-white/10 pt-4 text-base">
           <dt>Total</dt>
           <dd className="text-[#C9A86A]">

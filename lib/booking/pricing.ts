@@ -1,6 +1,7 @@
 import { BOOKING_CONFIG } from "./constants";
 import { addDays, nightsBetween } from "./date-utils";
 import { parseIsoDate } from "./date-utils";
+import { calculateBookingTotal, calculateTouristTax } from "./tourist-tax";
 import type {
   ExtraBillingType,
   PriceBreakdown,
@@ -11,6 +12,7 @@ import type {
 export { nightsBetween } from "./date-utils";
 
 export const defaultPricingConfig: PublicPricingConfig = {
+  touristTaxRateAmount: 0,
   minimumNights: BOOKING_CONFIG.minimumNights,
   maximumNights: BOOKING_CONFIG.maximumNights,
   currency: BOOKING_CONFIG.currency,
@@ -143,15 +145,20 @@ export function calculatePriceFromConfig(
       (undiscountedBase * Math.min(80, Math.max(0, promoPercent))) / 100,
     ),
     baseAmount = undiscountedBase - discountAmount,
-    extrasAmount = extras.reduce((sum, extra) => sum + extra.amount, 0);
+    extrasAmount = extras.reduce((sum, extra) => sum + extra.amount, 0),
+    feesAmount = calculateTouristTax(
+      config.touristTaxRateAmount,
+      nights,
+      guestCount,
+    );
   return {
     nights,
     nightPrices,
     baseAmount,
     weekendSupplements: 0,
     extrasAmount,
-    feesAmount: 0,
-    totalAmount: baseAmount + extrasAmount,
+    feesAmount,
+    totalAmount: calculateBookingTotal(baseAmount, extrasAmount, feesAmount),
     currency: config.currency,
     extras,
     discountAmount,
