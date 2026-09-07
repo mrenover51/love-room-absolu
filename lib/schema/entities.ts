@@ -146,7 +146,9 @@ export function rootSchema(stay: StaySettings): JsonLdGraph {
       "@type": "WebPage",
       "@id": `${url}/#webpage`,
       url,
-      name: "Absolu — Suite romantique à Avize",
+      name: "Love Room près d’Épernay avec balnéo et sauna privatifs | Absolu",
+      description:
+        "Absolu est une suite romantique privative à Avize, près d’Épernay, au cœur de la Côte des Blancs.",
       isPartOf: { "@id": websiteId },
       about: { "@id": lodgingId },
       primaryImageOfPage: { "@id": imageId },

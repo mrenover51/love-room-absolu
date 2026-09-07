@@ -119,6 +119,9 @@ export function BookingFlow({
       label: steps[step],
     });
   }, [step]);
+  useEffect(() => {
+    trackConversion("calendar_open");
+  }, []);
   function goTo(nextStep: number) {
     setServerError("");
     setStep(nextStep);

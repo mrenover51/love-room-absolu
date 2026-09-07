@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata = pageMetadata({
-  title: "FAQ Love Room : 308 réponses pour préparer votre séjour",
+  title: "FAQ Love Room Absolu | Préparer votre séjour",
   description:
     "Réservation, paiement, spa privatif, sauna, parking et horaires : consultez les réponses détaillées du centre d’aide Absolu à Avize.",
   path: "/faq",
@@ -17,12 +17,11 @@ export const metadata = pageMetadata({
 });
 
 const featured = [
-  "Peut-on arriver discrètement ?",
-  "Le linge est-il fourni ?",
-  "Le parking est-il gratuit ?",
+  "Où se situe Absolu ?",
+  "Absolu est-elle proche d’Épernay ?",
+  "La baignoire balnéo est-elle privative ?",
   "Le sauna est-il privatif ?",
-  "Comment fonctionne la baignoire balnéo ?",
-  "Les animaux sont-ils acceptés ?",
+  "Peut-on réserver directement ?",
 ];
 const articles = [
   {
@@ -75,7 +74,7 @@ export default function FaqPage() {
         <InteriorHero
           image="/images/optimized/entree1.webp"
           title="Préparer votre séjour, l’esprit léger"
-          eyebrow="Avant de pousser la porte · 308 réponses"
+          eyebrow="Avant de pousser la porte · réponses utiles"
           description="Horaires, réservation, baignoire balnéo ou sauna privatif : retrouvez chaque détail utile pour arriver à Avize avec une seule chose en tête, profiter de votre temps à deux."
         />
         <section className="border-b border-white/10 bg-[#0C0C0C] py-20">

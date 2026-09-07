@@ -16,15 +16,20 @@ import { getReservationWorkflowSettings } from "@/lib/booking/workflow-settings"
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Réserver la Suite Absolu au meilleur tarif",
+  title: "Réserver la Suite Absolu à Avize | Disponibilités",
   description:
-    "Préparez votre séjour romantique dans la Suite Absolu à Avize : dates disponibles, réservation directe et paiement sécurisé au meilleur tarif.",
+    "Consultez les disponibilités et réservez directement la Suite Absolu à Avize. Prix total, options et taxe de séjour sont affichés avant validation.",
   path: "/reservation",
 });
 
 async function ReservationEngine() {
-  const [pricingConfig,workflow]=await Promise.all([getPublicPricingConfig(),getReservationWorkflowSettings()]);
-  return <BookingFlow pricingConfig={pricingConfig} bookingMode={workflow.mode} />;
+  const [pricingConfig, workflow] = await Promise.all([
+    getPublicPricingConfig(),
+    getReservationWorkflowSettings(),
+  ]);
+  return (
+    <BookingFlow pricingConfig={pricingConfig} bookingMode={workflow.mode} />
+  );
 }
 
 export default async function ReservationPage() {
@@ -49,7 +54,7 @@ export default async function ReservationPage() {
               Le début de votre parenthèse
             </p>
             <h1 className="mt-4 text-balance font-heading text-5xl sm:text-7xl">
-              Choisissez le soir où le temps ralentira.
+              Réservez votre séjour à la Suite Absolu
             </h1>
             <p className="mt-5 max-w-2xl leading-8 text-white/60">
               Imaginez les vignes au crépuscule, la chaleur du sauna puis les

@@ -41,3 +41,13 @@ Documentation détaillée dans [`docs/`](docs/), notamment la checklist finale e
 - Rapport vérifié : [`docs/final-audit.md`](docs/final-audit.md)
 
 La PWA ne met jamais en cache l’administration, les API ou la réservation. IA, push/SMS, analytics et langues supplémentaires restent désactivés tant qu’un fournisseur réel et le consentement requis ne sont pas configurés.
+
+## Google Search Console
+
+Après chaque déploiement SEO important :
+
+1. soumettre `https://love-room-absolu.fr/sitemap.xml` ;
+2. inspecter la page d’accueil ;
+3. inspecter `/love-room/epernay` ;
+4. inspecter `/love-room/avize` ;
+5. demander l’indexation de ces pages après vérification de leur version publiée.

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site-config";
-import { localCities } from "@/lib/local-seo/cities";
+import { indexableLocalCities, localCities } from "@/lib/local-seo/cities";
 import { searchIntents } from "@/lib/seo-intents/intents";
 import {
   magazineArticles,
@@ -16,7 +16,7 @@ import { getPublishedPartners } from "@/lib/partners/partners";
 import { seasonalEvents } from "@/lib/events/events";
 import { giftThemes } from "@/lib/gifts/catalog";
 import { conversationalAnswers } from "@/lib/ai-seo/conversations";
-import { locales } from "@/lib/i18n/config";
+import { languageAlternates, locales } from "@/lib/i18n/config";
 const routes = [
   {
     path: "",
@@ -112,10 +112,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       (image) => `${siteConfig.url}/images/optimized/${image}`,
     ),
   }));
-  const giftRoutes = giftThemes.map((gift) => ({ url: `${siteConfig.url}/bons-cadeaux/${gift.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.75, alternates: { languages: { fr: `${siteConfig.url}/bons-cadeaux/${gift.slug}` } }, images: [`${siteConfig.url}${gift.image}`] }));
-  const answerRoutes = conversationalAnswers.map((item) => ({ url: `${siteConfig.url}/reponses/${item.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.78, alternates: { languages: { fr: `${siteConfig.url}/reponses/${item.slug}` } } }));
-  const internationalRoutes = locales.flatMap((locale) => ["", "/blog", "/guides", "/faq"].map((path) => ({ url: `${siteConfig.url}/${locale}${path}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: path ? 0.65 : 0.82, alternates: { languages: Object.fromEntries(locales.map(code => [code, `${siteConfig.url}/${code}${path}`])) } })));
-  const localRoutes = localCities.map((city) => ({
+  const giftRoutes = giftThemes.map((gift) => ({
+    url: `${siteConfig.url}/bons-cadeaux/${gift.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+    alternates: {
+      languages: { fr: `${siteConfig.url}/bons-cadeaux/${gift.slug}` },
+    },
+    images: [`${siteConfig.url}${gift.image}`],
+  }));
+  const answerRoutes = conversationalAnswers.map((item) => ({
+    url: `${siteConfig.url}/reponses/${item.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.78,
+    alternates: {
+      languages: { fr: `${siteConfig.url}/reponses/${item.slug}` },
+    },
+  }));
+  const internationalRoutes = locales
+    .filter((locale) => locale !== "fr")
+    .flatMap((locale) =>
+      ["", "/blog", "/guides", "/faq"].map((path) => ({
+        url: `${siteConfig.url}/${locale}${path}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: path ? 0.65 : 0.82,
+        alternates: {
+          languages: languageAlternates(path),
+        },
+      })),
+    );
+  const localRoutes = indexableLocalCities(localCities).map((city) => ({
     url: `${siteConfig.url}/love-room/${city.slug}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,

@@ -26,7 +26,7 @@ export function BookingCta() {
           et la douceur de la suite écrire la suite.
         </p>
         <PremiumButton href="/reservation" className="mt-10">
-          Préparer votre séjour
+          Réserver votre séjour
         </PremiumButton>
       </div>
     </section>

@@ -76,11 +76,17 @@ export function Hero() {
             }}
           >
             <p className="eyebrow mb-6 text-[#D8C8B6]">Suite & spa privé</p>
-            <h1 className="font-heading text-7xl font-medium uppercase leading-[.86] tracking-[-.025em] text-[#F6F2EC] sm:text-8xl lg:text-[10rem]">
-              Absolu
+            <h1 className="font-heading font-medium leading-[.92] tracking-[-.025em] text-[#F6F2EC]">
+              <span className="block text-7xl uppercase sm:text-8xl lg:text-[10rem]">
+                Absolu
+              </span>
+              <span className="mt-5 block max-w-2xl text-2xl leading-tight sm:text-3xl lg:text-4xl">
+                Love Room près d’Épernay avec balnéo et sauna privatifs
+              </span>
             </h1>
             <p className="mt-3 font-heading text-2xl italic text-[#D8C8B6] sm:text-3xl">
-              Le silence, la lumière, et vous deux.
+              Suite romantique privative à Avize, au cœur de la Côte des Blancs,
+              à quelques minutes d’Épernay.
             </p>
             <p className="mt-6 text-xs font-medium uppercase tracking-[.18em] text-white/70 sm:text-sm">
               Baignoire balnéo <span aria-hidden="true">•</span> Sauna{" "}
@@ -99,7 +105,7 @@ export function Hero() {
             className="mt-12 grid max-w-xl gap-4 sm:grid-cols-2"
           >
             <PremiumButton href="/reservation">
-              Vivre cette expérience
+              Voir les disponibilités
             </PremiumButton>
             <PremiumButton href="/la-suite" variant="outline">
               Découvrir la suite

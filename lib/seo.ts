@@ -11,6 +11,7 @@ type PageMetadataOptions = {
   index?: boolean;
   image?: string;
   imageAlt?: string;
+  languageAlternates?: Record<string, string>;
 };
 
 /** A single source of truth for canonical, hreflang, Open Graph and X cards. */
@@ -21,6 +22,7 @@ export function pageMetadata({
   index = true,
   image = "/images/optimized/lit.webp",
   imageAlt = "Suite romantique Absolu à Avize",
+  languageAlternates,
 }: PageMetadataOptions): Metadata {
   const canonical = absoluteUrl(path);
   const socialImage = absoluteUrl(image);
@@ -31,7 +33,10 @@ export function pageMetadata({
     alternates: {
       canonical,
       // Ready for translated URLs: add a locale here when its route is published.
-      languages: { "fr-FR": canonical, "x-default": canonical },
+      languages: languageAlternates ?? {
+        "fr-FR": canonical,
+        "x-default": canonical,
+      },
     },
     robots: {
       index,

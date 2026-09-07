@@ -39,40 +39,40 @@ export function Footer() {
           </p>
         </div>
         <div>
-          <p className="eyebrow mb-5 text-[#C9A86A]">Explorer</p>
+          <p className="eyebrow mb-5 text-[#C9A86A]">Séjour & Champagne</p>
           <nav
             aria-label="Clusters thématiques"
             className="flex flex-col gap-4 text-sm [&_a]:w-fit [&_a]:transition-all [&_a]:duration-300 [&_a:hover]:translate-x-1 [&_a:hover]:text-white"
           >
-            <Link href="/experiences-romantiques" className="hover:text-white">
-              Inspirations romantiques
+            <Link href="/la-suite" className="hover:text-white">
+              La suite
             </Link>
-            <Link href="/love-room" className="hover:text-white">
-              Champagne et villes proches
-            </Link>
-            <Link href="/guide-touristique" className="hover:text-white">
-              Tourisme en Champagne
+            <Link href="/reservation" className="hover:text-white">
+              Réserver
             </Link>
             <Link href="/equipements" className="hover:text-white">
               Équipements privatifs
             </Link>
             <Link href="/faq" className="hover:text-white">
-              Réservation et FAQ
+              Questions fréquentes
             </Link>
-            <Link href="/reponses" className="hover:text-white">
-              Réponses aux questions naturelles
+            <Link href="/guide-touristique" className="hover:text-white">
+              Tourisme en Champagne
             </Link>
-            <Link href="/plan-du-site" className="hover:text-white">
-              Plan du site HTML
+            <Link href="/restaurants" className="hover:text-white">
+              Restaurants
             </Link>
-            <Link href="/partenaires" className="hover:text-white">
-              Partenaires locaux
+            <Link href="/love-room/epernay" className="hover:text-white">
+              Love room près d’Épernay
             </Link>
-            <Link href="/presse" className="hover:text-white">
-              Presse et médias
+            <Link href="/love-room/avize" className="hover:text-white">
+              Love room à Avize
             </Link>
-            <Link href="/evenements" className="hover:text-white">
-              Calendrier romantique
+            <Link href="/avis" className="hover:text-white">
+              Avis clients
+            </Link>
+            <Link href="/contact" className="hover:text-white">
+              Contact
             </Link>
           </nav>
         </div>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Reveal } from "@/components/shared/reveal";
 
 export function Introduction() {
@@ -9,19 +10,66 @@ export function Introduction() {
           <div className="max-w-xl">
             <p className="eyebrow text-[#9A7844]">L’expérience Absolu</p>
             <h2 className="mt-6 font-heading text-5xl leading-[1.06] sm:text-6xl lg:text-7xl">
-              Une parenthèse hors du temps.
+              Une love room au cœur de la Champagne
             </h2>
             <div className="mt-10 space-y-6 text-sm leading-8 text-[#625A53] sm:text-base sm:leading-9">
               <p>
-                À Avize, lorsque les dernières lueurs glissent sur les vignes,
-                une porte se referme doucement sur le reste du monde. Absolu est
-                une Love Room romantique de 35 m², entièrement privative et
-                pensée pour deux.
+                Absolu accueille les couples à Avize, village Grand Cru de la
+                Côte des Blancs, près d’Épernay. Cette adresse réelle au cœur du
+                vignoble champenois permet de découvrir l’avenue de Champagne,
+                les coteaux et les maisons alentour, puis de retrouver le calme
+                d’une suite indépendante pensée pour deux.
               </p>
               <p>
-                La pierre claire, le bois, l’eau chaude et la lumière tamisée
-                composent un refuge où l’on ralentit naturellement. Ici, le
-                bien-être en couple ne se programme pas&nbsp;: il se ressent.
+                La baignoire balnéo et le sauna infrarouge sont privatifs : vous
+                en profitez librement pendant votre séjour. La pierre claire, le
+                bois, l’eau chaude et la lumière tamisée composent un refuge
+                pour une nuit ou un week-end romantique en Champagne. Découvrez
+                <Link
+                  href="/la-suite"
+                  className="mx-1 underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  la suite Absolu
+                </Link>
+                et consultez directement les
+                <Link
+                  href="/reservation"
+                  className="ml-1 underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  disponibilités
+                </Link>
+                .
+              </p>
+              <p>
+                Pour préparer votre parenthèse, explorez notre
+                <Link
+                  href="/love-room/epernay"
+                  className="mx-1 underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  guide depuis Épernay
+                </Link>
+                , notre{" "}
+                <Link
+                  href="/love-room/avize"
+                  className="underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  page d’Avize
+                </Link>
+                , le{" "}
+                <Link
+                  href="/guide-touristique"
+                  className="mx-1 underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  guide de la Champagne
+                </Link>
+                et nos{" "}
+                <Link
+                  href="/restaurants"
+                  className="underline decoration-[#9A7844]/40 underline-offset-4"
+                >
+                  restaurants sélectionnés
+                </Link>
+                .
               </p>
             </div>
           </div>

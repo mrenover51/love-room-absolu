@@ -1,4 +1,8 @@
 export type ConversionEvent =
+  | "reserve_click"
+  | "calendar_open"
+  | "contact_phone_click"
+  | "contact_email_click"
   | "cro_sticky_cta_click"
   | "cro_popup_open"
   | "cro_quote_requested"
@@ -42,6 +46,20 @@ export function trackConversion(
   window.dataLayer.push(payload);
   window.gtag?.("event", event, properties);
   window.plausible?.(event, { props: properties });
-  const sessionId=sessionStorage.getItem("absolu-analytics-session");
-  if(sessionId)fetch("/api/analytics/event",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({sessionId,event,path:location.pathname,referrer:document.referrer||undefined,value:typeof properties.value==="number"?properties.value:undefined,metadata:properties}),keepalive:true}).catch(()=>undefined);
+  const sessionId = sessionStorage.getItem("absolu-analytics-session");
+  if (sessionId)
+    fetch("/api/analytics/event", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        sessionId,
+        event,
+        path: location.pathname,
+        referrer: document.referrer || undefined,
+        value:
+          typeof properties.value === "number" ? properties.value : undefined,
+        metadata: properties,
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
 }
