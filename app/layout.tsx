@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   title: "Absolu | Love Room avec baignoire balnéo et sauna privatif",
   description:
     "Découvrez Absolu, une Love Room haut de gamme avec baignoire balnéo, sauna infrarouge et ambiance romantique, pensée pour une parenthèse à deux.",
+  creator: "MRD Studio",
+  authors: [{ name: "MRD Studio", url: "https://mrdstudio.fr" }],
   keywords: [
     "love room",
     "suite romantique",

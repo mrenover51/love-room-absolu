@@ -132,6 +132,11 @@ export function rootSchema(stay: StaySettings): JsonLdGraph {
       name: siteConfig.commercialName,
       url,
       inLanguage: "fr-FR",
+      creator: {
+        "@type": "Organization",
+        name: "MRD Studio",
+        url: "https://mrdstudio.fr",
+      },
       publisher: { "@id": organizationId },
       potentialAction: {
         "@type": "SearchAction",

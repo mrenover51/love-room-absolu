@@ -131,6 +131,18 @@ export function Footer() {
           />
         </div>
       </div>
+      <p className="page-shell relative mt-8 text-center text-[11px] tracking-[0.04em] text-white/35">
+        Site créé par{" "}
+        <a
+          href="https://mrdstudio.fr"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visiter le site de MRD Studio (nouvel onglet)"
+          className="underline decoration-[#C9A86A]/30 underline-offset-4 transition-colors duration-300 hover:text-[#DCC18E] focus-visible:text-[#DCC18E] focus-visible:outline-none"
+        >
+          MRD Studio
+        </a>
+      </p>
     </footer>
   );
 }
