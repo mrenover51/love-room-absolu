@@ -117,6 +117,21 @@ export class SupabaseReservationRepository {
     if (re || be || externalError) throw new Error("AVAILABILITY_READ_FAILED");
     return !(r?.length || b?.length || external?.length);
   }
+  async findAvailabilityConflict(checkIn: string, checkOut: string, excludeReservationId?: string) {
+    const now = new Date().toISOString();
+    let reservations = this.db.from("reservations").select("id,check_in,check_out,source").lt("check_in", checkOut).gt("check_out", checkIn).or(`status.eq.confirmed,and(status.eq.pending_payment,payment_expires_at.gt.${now})`).limit(1);
+    if (excludeReservationId) reservations = reservations.neq("id", excludeReservationId);
+    const [{data:r,error:re},{data:b,error:be},{data:c,error:ce}] = await Promise.all([
+      reservations,
+      this.db.from("blocked_dates").select("start_date,end_date,source,external_uid").lt("start_date",checkOut).gt("end_date",checkIn).limit(10),
+      this.db.from("calendar_blocks").select("start_date,end_date,provider").in("provider",["booking","airbnb"]).in("status",["confirmed","blocked"]).lt("start_date",checkOut).gt("end_date",checkIn).limit(1),
+    ]);
+    if(re||be||ce)throw new Error("AVAILABILITY_READ_FAILED");
+    const reservation=r?.[0];if(reservation)return{source:`réservation ${reservation.source}`,start:reservation.check_in,end:reservation.check_out};
+    const external=c?.[0];if(external)return{source:external.provider,start:external.start_date,end:external.end_date};
+    const block=b?.find(item=>!(excludeReservationId&&item.source==="direct"&&item.external_uid===excludeReservationId));
+    return block?{source:`blocage ${block.source}`,start:block.start_date,end:block.end_date}:null;
+  }
   async occupiedRanges() {
     const now = new Date().toISOString();
     const [

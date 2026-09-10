@@ -159,7 +159,8 @@ export async function acceptManualReservationRequest(id: string) {
   const stored = row.options as { pricing?: PriceBreakdown };
   if (!stored.pricing || stored.pricing.totalAmount !== row.prix_calcule)
     throw new Error("RESERVATION_REQUEST_PRICE_INVALID");
-  await new ReservationService().validateMinimumAdvanceDays(row.date_arrivee);
+  // The lead-time rule is enforced when the request is created. Reapplying it
+  // here would invalidate an already recorded request as time passes.
   const { data: claimed } = await db
     .from("reservation_requests")
     .update({ statut: "accepted", updated_at: new Date().toISOString() })
@@ -243,6 +244,10 @@ export async function acceptManualReservationRequest(id: string) {
       })
       .eq("id", id)
       .eq("statut", "accepted");
+    if (error instanceof Error && error.message === "DATES_UNAVAILABLE") {
+      const conflict = await repository.findAvailabilityConflict(row.date_arrivee, row.date_depart);
+      if (conflict) throw new Error(`DATES_UNAVAILABLE|${conflict.source}|${conflict.start}|${conflict.end}`);
+    }
     throw error;
   }
 }
