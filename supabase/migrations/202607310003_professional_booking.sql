@@ -9,6 +9,7 @@ alter table public.reservations rename column stripe_payment_intent_id to stripe
 alter table public.reservations rename column internal_notes to admin_notes;
 alter table public.reservations add column if not exists taxes integer not null default 0 check (taxes >= 0);
 alter table public.reservations drop constraint if exists reservations_total_amount_check;
+alter table public.reservations drop constraint if exists reservations_check;
 alter table public.reservations add constraint reservations_total_check check (total = subtotal + extras_total + taxes);
 
 alter table public.reservation_extras rename to reservation_options;

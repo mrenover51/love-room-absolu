@@ -49,6 +49,7 @@ export class SupabaseReservationRepository {
         error?.message.includes("DATES_UNAVAILABLE")
           ? "DATES_UNAVAILABLE"
           : "RESERVATION_CREATE_FAILED",
+        { cause: error ?? undefined },
       );
     return String(data);
   }
