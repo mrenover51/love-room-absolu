@@ -1,0 +1,33 @@
+name: Guest communications
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: guest-communications
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Trigger guest communications
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Required GitHub secret CRON_SECRET is missing."
+            exit 1
+          fi
+
+          curl --fail --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 120 \
+            --output /dev/null \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            https://love-room-absolu.fr/api/cron/guest-communications

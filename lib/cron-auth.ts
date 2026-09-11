@@ -1,0 +1,2 @@
+import { timingSafeEqual } from "node:crypto";
+export function isCronAuthorized(request:Request,secret=process.env.CRON_SECRET){const provided=request.headers.get("authorization")?.replace(/^Bearer\s+/i,"");if(!secret||!provided)return false;const expectedBytes=Buffer.from(secret),providedBytes=Buffer.from(provided);return expectedBytes.length===providedBytes.length&&timingSafeEqual(expectedBytes,providedBytes)}

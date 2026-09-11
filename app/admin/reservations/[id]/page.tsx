@@ -14,6 +14,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { updateReservation } from "../../actions";
 import { RefundButton } from "@/components/admin/refund-button";
+import { GuestPortalAdmin } from "@/components/admin/guest-portal-admin";
+import { siteConfig } from "@/lib/site-config";
 
 const euro = (value: number) =>
   new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -36,7 +38,7 @@ export default async function ReservationDetail({
   const recipientHash = createHash("sha256")
       .update(r.guest_email.trim().toLowerCase())
       .digest("hex"),
-    [{ data: history }, { data: audits }, { data: emails }] = await Promise.all(
+    [{ data: history }, { data: audits }, { data: emails }, {data: communications}] = await Promise.all(
       [
         db
           .from("reservation_history")
@@ -56,6 +58,7 @@ export default async function ReservationDetail({
           .eq("recipient_hash", recipientHash)
           .order("created_at", { ascending: false })
           .limit(30),
+        db.from("reservation_communications").select("type,status,sent_at,scheduled_for").eq("reservation_id",id),
       ],
     ),
     phone = String(r.guest_phone).replaceAll(/[^+\d]/g, ""),
@@ -203,6 +206,7 @@ export default async function ReservationDetail({
           {r.message ?? "Aucun commentaire client."}
         </p>
       </section>
+      <GuestPortalAdmin id={r.id} url={r.guest_portal_token?`${siteConfig.url}/mon-sejour/${r.guest_portal_token}`:null} code={r.keybox_code} revealTime={r.keybox_reveal_time} communications={communications??[]}/>
       <form
         id="modifier"
         action={updateReservation}

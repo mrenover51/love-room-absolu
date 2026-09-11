@@ -2,7 +2,8 @@ import type Stripe from "stripe";
 import { stripeProvider } from "@/lib/stripe/stripe-provider";
 import { PaymentService } from "@/lib/stripe/payment-service";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendConfirmation, sendReservationRequestEmail, sendStatusEmail } from "@/lib/email";
+import { sendReservationRequestEmail, sendStatusEmail } from "@/lib/email";
+import { queueConfirmation } from "@/lib/guest-portal/communications";
 import { sendGiftCard } from "@/lib/gifts/email";
 export const runtime = "nodejs";
 type EmailRow = {
@@ -73,14 +74,7 @@ export async function POST(request: Request) {
               .update({ uses: promo.uses + 1 })
               .eq("code", promoCode);
         }
-        const { data } = await db
-          .from("reservations")
-          .select(
-            "reference,guest_first_name,guest_email,check_in,check_out,total",
-          )
-          .eq("id", id)
-          .single();
-        if (data) await sendConfirmation(emailData(data));
+        await queueConfirmation(id);
       }
     } else if (event.type === "checkout.session.expired") {
       const giftId = event.data.object.metadata?.gift_id;
