@@ -206,7 +206,7 @@ export default async function ReservationDetail({
           {r.message ?? "Aucun commentaire client."}
         </p>
       </section>
-      <GuestPortalAdmin id={r.id} url={r.guest_portal_token?`${siteConfig.url}/mon-sejour/${r.guest_portal_token}`:null} code={r.keybox_code} revealTime={r.keybox_reveal_time} communications={communications??[]}/>
+      <GuestPortalAdmin id={r.id} url={r.guest_portal_token?`${siteConfig.url}/mon-sejour/${r.guest_portal_token}`:null} code={r.keybox_code} communications={communications??[]}/>
       <form
         id="modifier"
         action={updateReservation}

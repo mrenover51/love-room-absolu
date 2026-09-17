@@ -1,6 +1,6 @@
 export type GuestExperienceSettings = {
   address: string; phone: string; email: string;
-  checkInTime: string; checkOutTime: string; keyboxRevealTime: string;
+  checkInTime: string; checkOutTime: string; accessLeadHours: number;
   defaultKeyboxCode: string; accessInstructions: string; parkingInstructions: string;
   keyboxInstructions: string; wifiName: string; wifiPassword: string;
   checkoutInstructions: string; houseRules: string; balneoInstructions: string;
@@ -10,5 +10,4 @@ export type GuestExperienceSettings = {
   guestPortalRetentionDays: number; smsEnabled: boolean;
 };
 
-export type CommunicationType = "confirmation" | "pre_arrival" | "access_ready" | "checkout_reminder" | "post_stay_review";
-
+export type CommunicationType = "confirmation" | "pre_arrival" | "access_48h" | "access_ready" | "checkout_reminder" | "post_stay_review";

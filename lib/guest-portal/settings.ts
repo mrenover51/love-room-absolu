@@ -3,10 +3,11 @@ import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { siteConfig } from "@/lib/site-config";
 import type { GuestExperienceSettings } from "./types";
+import { DEFAULT_ACCESS_LEAD_HOURS } from "./eligibility";
 
 export const DEFAULT_GUEST_EXPERIENCE: GuestExperienceSettings = {
   address: siteConfig.address.replace(", France", ""), phone: siteConfig.phone, email: siteConfig.email,
-  checkInTime: "16:00", checkOutTime: "10:00", keyboxRevealTime: "14:00", defaultKeyboxCode: "",
+  checkInTime: "16:00", checkOutTime: "10:00", accessLeadHours: DEFAULT_ACCESS_LEAD_HOURS, defaultKeyboxCode: "",
   accessInstructions: "", parkingInstructions: "", keyboxInstructions: "", wifiName: "", wifiPassword: "",
   checkoutInstructions: "", houseRules: "", balneoInstructions: "", saunaInstructions: "", tvInstructions: "",
   kitchenInstructions: "", coffeeInstructions: "", climateInstructions: "", facadeImageUrl: "",
@@ -21,7 +22,7 @@ export function parseGuestExperience(value: unknown): GuestExperienceSettings {
     address:text("address"), phone:text("phone"), email:text("email"),
     checkInTime:time.test(text("checkInTime"))?text("checkInTime"):"16:00",
     checkOutTime:time.test(text("checkOutTime"))?text("checkOutTime"):"10:00",
-    keyboxRevealTime:time.test(text("keyboxRevealTime"))?text("keyboxRevealTime"):"14:00",
+    accessLeadHours:typeof row.accessLeadHours === "number" ? Math.min(168,Math.max(1,Math.trunc(row.accessLeadHours))) : DEFAULT_ACCESS_LEAD_HOURS,
     defaultKeyboxCode:text("defaultKeyboxCode"), accessInstructions:text("accessInstructions"), parkingInstructions:text("parkingInstructions"),
     keyboxInstructions:text("keyboxInstructions"), wifiName:text("wifiName"), wifiPassword:text("wifiPassword"), checkoutInstructions:text("checkoutInstructions"),
     houseRules:text("houseRules"), balneoInstructions:text("balneoInstructions"), saunaInstructions:text("saunaInstructions"), tvInstructions:text("tvInstructions"),
@@ -39,4 +40,3 @@ export const getGuestExperienceSettings = cache(async () => {
     return parseGuestExperience(data?.value);
   } catch { return DEFAULT_GUEST_EXPERIENCE; }
 });
-
