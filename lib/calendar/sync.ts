@@ -5,6 +5,7 @@ import { lookup } from "node:dns/promises";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseIcal, type CalendarSource } from "@/lib/booking/ical";
 import { getCalendarSourceDefinitions } from "@/lib/calendar/sources";
+import { classifyImportedCalendarEvent } from "@/lib/calendar/event-kind";
 
 export type SyncResult = {
   source: CalendarSource;
@@ -144,6 +145,7 @@ export async function syncExternalCalendar(
       start: event.start,
       end: event.end,
       summary: event.summary,
+      kind: classifyImportedCalendarEvent(event.summary),
       cancelled: event.cancelled,
       reference: externalReference(source, event.uid),
       email: `ical-${createHash("sha256").update(`${source}:${event.uid}`).digest("hex").slice(0, 16)}@invalid.local`,

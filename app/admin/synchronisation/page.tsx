@@ -55,7 +55,7 @@ export default async function Synchronisation() {
       .limit(50),
     db
       .from("calendar_conflicts")
-      .select("id,provider,start_date,end_date,created_at,resolution_note")
+      .select("id,provider,start_date,end_date,created_at,resolution_note,conflict_kind,object_a_key,object_b_key")
       .eq("status", "open")
       .order("created_at", { ascending: false }),
     db
@@ -82,6 +82,10 @@ export default async function Synchronisation() {
     };
   const booking = source("booking"),
     airbnb = source("airbnb");
+  const protectedDatesCount = booking.protected_count + airbnb.protected_count;
+  const reservationConflictCount =
+    conflicts?.filter((conflict) => conflict.conflict_kind === "reservation_conflict").length ?? 0;
+  const legacyConflictCount = (conflicts?.length ?? 0) - reservationConflictCount;
   const lastAttempt = (provider: "booking" | "airbnb") =>
     logs?.find((log) => log.source === provider)?.created_at ?? null;
   return (
@@ -184,6 +188,26 @@ export default async function Synchronisation() {
           protectedCount={airbnb.protected_count}
         />
       </section>
+      <section className="mt-6 grid gap-4 sm:grid-cols-3">
+        <article className="rounded-[1.5rem] border border-emerald-400/15 bg-emerald-400/[.04] p-5">
+          <ShieldCheck className="size-5 text-emerald-300" />
+          <p className="mt-4 text-xs text-white/45">Dates protégées par sécurité iCal</p>
+          <p className="mt-1 font-heading text-3xl text-emerald-200">{protectedDatesCount}</p>
+          <p className="mt-2 text-[11px] leading-5 text-white/35">Ces blocs restent indisponibles tant que la réconciliation est suspecte.</p>
+        </article>
+        <article className="rounded-[1.5rem] border border-orange-400/15 bg-orange-400/[.04] p-5">
+          <AlertTriangle className="size-5 text-orange-300" />
+          <p className="mt-4 text-xs text-white/45">Conflits de réservation nécessitant une action</p>
+          <p className="mt-1 font-heading text-3xl text-orange-200">{reservationConflictCount}</p>
+          <p className="mt-2 text-[11px] leading-5 text-white/35">Uniquement les paires canoniques issues de deux réservations identifiées.</p>
+        </article>
+        <article className="rounded-[1.5rem] border border-white/10 bg-white/[.025] p-5">
+          <History className="size-5 text-white/45" />
+          <p className="mt-4 text-xs text-white/45">Conflits historiques à qualifier</p>
+          <p className="mt-1 font-heading text-3xl text-white/70">{legacyConflictCount}</p>
+          <p className="mt-2 text-[11px] leading-5 text-white/35">Conservés intacts pour une réconciliation manuelle séparée.</p>
+        </article>
+      </section>
       <section className="mt-6 grid gap-4 sm:grid-cols-2">
         {["Abritel", "Google Vacation Rentals"].map((name, keyIndex) => (
           <article
@@ -223,7 +247,9 @@ export default async function Synchronisation() {
                   <AlertTriangle className="mt-0.5 size-4 shrink-0 text-orange-300" />
                   <div>
                     <p className="text-sm capitalize">
-                      Conflit {conflict.provider}
+                      {conflict.conflict_kind === "reservation_conflict"
+                        ? `Vrai conflit de réservation · ${conflict.provider}`
+                        : `Historique à qualifier · ${conflict.provider}`}
                     </p>
                     <p className="mt-1 text-xs text-white/40">
                       {conflict.start_date} → {conflict.end_date}
@@ -235,6 +261,17 @@ export default async function Synchronisation() {
                   className="mt-4 flex flex-col gap-2 sm:flex-row"
                 >
                   <input type="hidden" name="id" value={conflict.id} />
+                  <select
+                    name="resolution_kind"
+                    required
+                    defaultValue=""
+                    className="min-h-10 rounded-lg border border-white/10 bg-black/30 px-3 text-xs"
+                  >
+                    <option value="" disabled>Type de résolution</option>
+                    <option value="resolved">Conflit résolu</option>
+                    <option value="technical_duplicate">Doublon technique</option>
+                    <option value="channel_mirror">Miroir interplateforme</option>
+                  </select>
                   <input
                     name="note"
                     required
