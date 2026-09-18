@@ -100,24 +100,24 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: "/fr",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/fr/:path*",
-        destination: "/:path*",
-        permanent: true,
-      },
+      { source: "/", destination: "/fr", permanent: true },
+      { source: "/la-suite", destination: "/fr/la-suite", permanent: true },
+      { source: "/reservation", destination: "/fr/reservation", permanent: true },
+      { source: "/equipements", destination: "/fr/equipements", permanent: true },
+      { source: "/balneo", destination: "/fr/balneo", permanent: true },
+      { source: "/sauna", destination: "/fr/sauna", permanent: true },
+      { source: "/faq", destination: "/fr/faq", permanent: true },
+      { source: "/contact", destination: "/fr/contact", permanent: true },
+      { source: "/conditions", destination: "/fr/conditions", permanent: true },
+      { source: "/politique-confidentialite", destination: "/fr/politique-confidentialite", permanent: true },
       {
         source: "/confidentialite",
-        destination: "/politique-confidentialite",
+        destination: "/fr/politique-confidentialite",
         permanent: true,
       },
       {
         source: "/conditions-reservation",
-        destination: "/conditions",
+        destination: "/fr/conditions",
         permanent: true,
       },
     ];

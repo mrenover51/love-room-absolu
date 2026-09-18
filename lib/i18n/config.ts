@@ -1,4 +1,4 @@
-export const locales = ["fr", "en", "de", "nl", "es", "it"] as const;
+export const locales = ["fr", "en", "de", "nl", "it", "es", "pt"] as const;
 export type Locale = (typeof locales)[number];
 export const isLocale = (value: string): value is Locale =>
   (locales as readonly string[]).includes(value);
@@ -9,6 +9,7 @@ export const languageNames: Record<Locale, string> = {
   nl: "Nederlands",
   es: "Español",
   it: "Italiano",
+  pt: "Português",
 };
 export const flags: Record<Locale, string> = {
   fr: "🇫🇷",
@@ -17,6 +18,7 @@ export const flags: Record<Locale, string> = {
   nl: "🇳🇱",
   es: "🇪🇸",
   it: "🇮🇹",
+  pt: "🇵🇹",
 };
 type Dictionary = {
   localeName: string;
@@ -303,13 +305,33 @@ export const dictionaries: Record<Locale, Dictionary> = {
       "Passeggiate tra i vigneti",
     ],
   },
+  pt: {
+    localeName: "Português",
+    title: "Suite romântica em Champagne com bem-estar privativo",
+    description: "Descubra Absolu em Avize: uma suite romântica privativa com banheira de hidromassagem e sauna de infravermelhos perto de Épernay.",
+    eyebrow: "Escapadinha romântica em Champagne",
+    hero: "Uma suite privativa no coração da Côte des Blancs.",
+    intro: "Absolu recebe casais em Avize, uma aldeia vinícola perto de Épernay. A suite de 35 m² inclui uma cama grande, banheira de hidromassagem e sauna de infravermelhos para uso exclusivo dos hóspedes.",
+    book: "Ver disponibilidade",
+    discover: "Descobrir a suite",
+    faqTitle: "Perguntas frequentes",
+    blogTitle: "Revista Champagne",
+    guideTitle: "Guia de viagem",
+    search: "Pesquisar",
+    facts: ["Avize, Côte des Blancs", "Banheira de hidromassagem privativa", "Sauna de infravermelhos privativa"],
+    faq: [
+      { q: "Onde fica Absolu?", a: "Absolu fica no número 36 da rue Pasteur, em Avize, no departamento francês de Marne." },
+      { q: "A suite fica perto de Épernay?", a: "A viagem demora aproximadamente vinte minutos, dependendo do trânsito." },
+      { q: "Os equipamentos de bem-estar são privativos?", a: "Sim. A banheira de hidromassagem e a sauna de infravermelhos ficam dentro da suite." },
+    ],
+    posts: ["O que fazer a dois em Épernay", "Visitar Avize a dois", "Como visitar as caves de Champagne"],
+    guides: ["Avenue de Champagne", "Rota da Côte des Blancs", "Passeios entre as vinhas"],
+  },
 };
 export const languageAlternates = (path = "") =>
   Object.fromEntries(
     locales.map((locale) => [
-      locale,
-      locale === "fr"
-        ? `https://love-room-absolu.fr${path}`
-        : `https://love-room-absolu.fr/${locale}${path}`,
+      locale === "fr" ? "fr-FR" : locale === "de" ? "de-DE" : locale === "nl" ? "nl-NL" : locale === "it" ? "it-IT" : locale === "es" ? "es-ES" : locale === "pt" ? "pt-PT" : "en",
+      `https://love-room-absolu.fr/${locale}${path}`,
     ]),
   );

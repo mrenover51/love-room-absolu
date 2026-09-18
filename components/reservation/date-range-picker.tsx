@@ -9,7 +9,8 @@ import {
 } from "@/lib/booking/minimum-advance-days";
 import type { DateRange } from "@/lib/booking/types";
 import { AvailabilityLegend } from "./availability-legend";
-const labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+import type { Locale } from "@/lib/i18n/config";
+import { bookingCopy, intlLocale } from "@/lib/i18n/booking";
 const localIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 export function DateRangePicker({
@@ -18,6 +19,7 @@ export function DateRangePicker({
   minimumAdvanceDays,
   minimumNights,
   maximumNights,
+  locale = "fr",
   onChange,
 }: {
   checkIn: string;
@@ -25,8 +27,10 @@ export function DateRangePicker({
   minimumAdvanceDays: number;
   minimumNights: number;
   maximumNights: number;
+  locale?: Locale;
   onChange: (start: string, end: string) => void;
 }) {
+  const copy = bookingCopy(locale), dateLocale = intlLocale[locale];
   const today = parisTodayIso(),
     [parisYear, parisMonth] = today.split("-").map(Number),
     firstAllowedMonth = new Date(parisYear, parisMonth - 1, 1),
@@ -51,9 +55,9 @@ export function DateRangePicker({
     fetch(`/api/availability?from=${from}&to=${to}`)
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data) => setRanges(data.ranges))
-      .catch(() => setError("Les disponibilités n’ont pas pu être chargées."))
+      .catch(() => setError(copy.calendar.loadError))
       .finally(() => setLoading(false));
-  }, [parisMonth, parisYear]);
+  }, [copy.calendar.loadError, parisMonth, parisYear]);
   const monthDays = (displayMonth: Date) => {
     const first = new Date(
         displayMonth.getFullYear(),
@@ -89,13 +93,11 @@ export function DateRangePicker({
     }
     const nights = nightsBetween(checkIn, value);
     if (nights < minimumNights) {
-      setError(
-        `Le séjour minimum est de ${minimumNights} nuit${minimumNights > 1 ? "s" : ""}.`,
-      );
+      setError(copy.calendar.minimum(minimumNights));
       return;
     }
     if (nights > maximumNights) {
-      setError(`Le séjour est limité à ${maximumNights} nuits.`);
+      setError(copy.calendar.maximum(maximumNights));
       return;
     }
     if (
@@ -103,7 +105,7 @@ export function DateRangePicker({
         dateRangesOverlap(checkIn, value, range.start, range.end),
       )
     ) {
-      setError("Cette période contient au moins une nuit indisponible.");
+      setError(copy.calendar.overlap);
       return;
     }
     onChange(checkIn, value);
@@ -119,7 +121,7 @@ export function DateRangePicker({
           }
           disabled={month <= firstAllowedMonth}
           className="grid size-11 place-items-center disabled:opacity-25"
-          aria-label="Afficher le mois précédent"
+          aria-label={copy.calendar.previous}
         >
           <ChevronLeft aria-hidden="true" />
         </button>
@@ -128,7 +130,7 @@ export function DateRangePicker({
           className="font-heading text-2xl"
           aria-live="polite"
         >
-          Choisissez vos dates
+          {copy.calendar.title}
         </h3>
         <button
           type="button"
@@ -137,7 +139,7 @@ export function DateRangePicker({
           }
           disabled={month >= lastAllowedMonth}
           className="grid size-11 place-items-center disabled:opacity-25"
-          aria-label="Afficher le mois suivant"
+          aria-label={copy.calendar.next}
         >
           <ChevronRight aria-hidden="true" />
         </button>
@@ -150,7 +152,7 @@ export function DateRangePicker({
               className={monthIndex === 1 ? "hidden md:block" : "min-w-0"}
             >
               <h4 className="mb-5 text-center font-heading text-2xl capitalize">
-                {new Intl.DateTimeFormat("fr-FR", {
+                {new Intl.DateTimeFormat(dateLocale, {
                   month: "long",
                   year: "numeric",
                 }).format(displayMonth)}
@@ -158,12 +160,12 @@ export function DateRangePicker({
               <div
                 className="grid grid-cols-7 text-center"
                 role="grid"
-                aria-label={new Intl.DateTimeFormat("fr-FR", {
+                aria-label={new Intl.DateTimeFormat(dateLocale, {
                   month: "long",
                   year: "numeric",
                 }).format(displayMonth)}
               >
-                {labels.map((label, keyIndex) => (
+                {copy.calendar.weekdays.map((label, keyIndex) => (
                   <span
                     role="columnheader"
                     key={`${label}-${keyIndex}`}
@@ -195,13 +197,13 @@ export function DateRangePicker({
                           onClick={() => choose(value)}
                           disabled={blocked || tooSoon || loading}
                           aria-disabled={blocked || tooSoon || loading}
-                          aria-label={`${date.toLocaleDateString("fr-FR", { dateStyle: "full" })}${blocked ? ", indisponible" : selected ? ", sélectionnée" : inRange ? ", dans la plage sélectionnée" : ""}`}
+                          aria-label={`${date.toLocaleDateString(dateLocale, { dateStyle: "full" })}${blocked ? `, ${copy.calendar.unavailable}` : selected ? `, ${copy.calendar.selected}` : inRange ? `, ${copy.calendar.inRange}` : ""}`}
                           aria-selected={selected || inRange}
                           className={`min-h-11 w-full border border-transparent text-sm transition-colors disabled:cursor-not-allowed sm:aspect-square ${blocked || tooSoon ? "bg-white/[.035] text-white/20" : selected ? "bg-[#C9A86A] text-black" : inRange ? "bg-[#C9A86A]/15 text-white" : value === today ? "border-[#C9A86A]/45 text-[#E8CC91]" : "hover:border-[#C9A86A]/50"}`}
                         >
                           {date.getDate()}
                           <span className="sr-only">
-                            {blocked ? " indisponible" : " disponible"}
+                            {blocked ? ` ${copy.calendar.unavailable}` : ` ${copy.calendar.available}`}
                           </span>
                         </button>
                       );
@@ -214,23 +216,22 @@ export function DateRangePicker({
         )}
       </div>
       <div className="mt-6">
-        <AvailabilityLegend />
+        <AvailabilityLegend locale={locale} />
       </div>
       {checkIn && (
         <p className="mt-5 text-sm text-white/65" aria-live="polite">
-          Arrivée :{" "}
+          {copy.calendar.arrival} :{" "}
           <strong>
-            {new Date(`${checkIn}T12:00:00`).toLocaleDateString("fr-FR")}
+            {new Date(`${checkIn}T12:00:00`).toLocaleDateString(dateLocale)}
           </strong>
           {checkOut && (
             <>
               {" "}
-              — Départ :{" "}
+              — {copy.calendar.departure} :{" "}
               <strong>
-                {new Date(`${checkOut}T12:00:00`).toLocaleDateString("fr-FR")}
+                {new Date(`${checkOut}T12:00:00`).toLocaleDateString(dateLocale)}
               </strong>{" "}
-              — {nightsBetween(checkIn, checkOut)} nuit
-              {nightsBetween(checkIn, checkOut) > 1 ? "s" : ""}
+              — {copy.calendar.nights(nightsBetween(checkIn, checkOut))}
             </>
           )}
         </p>

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-08-03T03:38:23.519Z",
+  "generatedAt": "2026-09-18T12:48:25.981Z",
   "status": "pass",
   "summary": {
     "passed": 16,
@@ -138,24 +138,48 @@
   ],
   "largestSources": [
     {
-      "file": "components/google-business/google-business-dashboard.tsx",
-      "bytes": 21967
+      "file": "app/love-room/[ville]/page.tsx",
+      "bytes": 32766
+    },
+    {
+      "file": "lib/i18n/editorial.ts",
+      "bytes": 32536
     },
     {
       "file": "lib/local-seo/cities.ts",
-      "bytes": 21405
+      "bytes": 27267
     },
     {
-      "file": "app/love-room/[ville]/page.tsx",
-      "bytes": 19622
+      "file": "app/l-art-de-recevoir/page.tsx",
+      "bytes": 23187
+    },
+    {
+      "file": "components/google-business/google-business-dashboard.tsx",
+      "bytes": 22745
     },
     {
       "file": "app/experiences-romantiques/[intention]/page.tsx",
-      "bytes": 19472
+      "bytes": 19517
+    },
+    {
+      "file": "app/notre-histoire/page.tsx",
+      "bytes": 19057
     },
     {
       "file": "components/assistant/booking-assistant.tsx",
-      "bytes": 16539
+      "bytes": 16971
+    },
+    {
+      "file": "app/admin/synchronisation/page.tsx",
+      "bytes": 16264
+    },
+    {
+      "file": "components/reservation/booking-flow.tsx",
+      "bytes": 15717
+    },
+    {
+      "file": "lib/faq/faq-data.ts",
+      "bytes": 15012
     },
     {
       "file": "lib/restaurants/restaurants.ts",
@@ -163,39 +187,15 @@
     },
     {
       "file": "components/gallery/lightbox.tsx",
-      "bytes": 14531
+      "bytes": 14653
+    },
+    {
+      "file": "lib/i18n/booking.ts",
+      "bytes": 14493
     },
     {
       "file": "components/admin/admin-calendar.tsx",
-      "bytes": 13942
-    },
-    {
-      "file": "app/evenements/[evenement]/page.tsx",
-      "bytes": 13775
-    },
-    {
-      "file": "lib/magazine/articles.ts",
-      "bytes": 13365
-    },
-    {
-      "file": "lib/ai-seo/conversations.ts",
-      "bytes": 12818
-    },
-    {
-      "file": "components/reservation/booking-flow.tsx",
-      "bytes": 12546
-    },
-    {
-      "file": "app/restaurants/[restaurant]/page.tsx",
-      "bytes": 12351
-    },
-    {
-      "file": "lib/faq/faq-data.ts",
-      "bytes": 12290
-    },
-    {
-      "file": "lib/equipment/equipment-data.ts",
-      "bytes": 10514
+      "bytes": 14259
     }
   ],
   "limitations": [

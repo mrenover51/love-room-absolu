@@ -1,4 +1,10 @@
 export type ConversionEvent =
+  | "language_selected"
+  | "booking_started"
+  | "date_selected"
+  | "option_selected"
+  | "checkout_started"
+  | "booking_completed"
   | "reserve_click"
   | "calendar_open"
   | "contact_phone_click"

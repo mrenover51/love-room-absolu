@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site-config";
+import { isLocale } from "@/lib/i18n/config";
 
 export type BreadcrumbItem = { label: string; href: string };
 
@@ -30,6 +31,7 @@ export function AutomaticBreadcrumb() {
   const pathname = usePathname();
   if (pathname === "/" || pathname.startsWith("/admin") || pathname.startsWith("/api") || pathname === "/maintenance" || pathname === "/offline") return null;
   const segments = pathname.split("/").filter(Boolean);
+  if (segments[0] && isLocale(segments[0])) return null;
   const embeddedBreadcrumb = pathname === "/galerie" || pathname === "/notre-histoire" || pathname === "/l-art-de-recevoir" || (["avis", "bons-cadeaux", "evenements", "equipements", "experiences-romantiques", "love-room", "restaurants", "partenaires", "reponses"].includes(segments[0]) && segments.length === 2) || (segments[0] === "guide-touristique" && segments.length === 2) || (segments[0] === "blog" && segments.length === 2 && !["auteur", "categorie", "tag", "recherche"].includes(segments[1]));
   if (embeddedBreadcrumb) return null;
   const elements = [{ name: "Accueil", item: siteConfig.url }, ...segments.map((segment, index) => { const href = `/${segments.slice(0, index + 1).join("/")}`; return { name: humanize(segment), ...(index < segments.length - 1 ? { item: `${siteConfig.url}${href}` } : {}) }; })];

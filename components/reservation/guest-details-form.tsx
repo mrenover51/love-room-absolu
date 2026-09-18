@@ -2,11 +2,15 @@ import Link from "next/link";
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { BOOKING_CONFIG } from "@/lib/booking/constants";
 import type { ReservationRequestInput } from "@/lib/booking/validation";
+import type { Locale } from "@/lib/i18n/config";
+import { bookingCopy } from "@/lib/i18n/booking";
+import { localizedPath } from "@/lib/i18n/routing";
 const inputClass =
   "mt-2 min-h-13 w-full border border-[#D0AE72]/20 bg-[#17120F]/85 px-4 py-3 text-[#F7F1E8] shadow-[inset_0_1px_0_rgba(255,244,225,.035)] outline-none placeholder:text-white/30";
 function fieldError(
   errors: FieldErrors<ReservationRequestInput>,
   name: keyof ReservationRequestInput,
+  required: string,
 ) {
   const message = errors[name]?.message;
   return message ? (
@@ -15,23 +19,26 @@ function fieldError(
       role="alert"
       className="mt-2 block text-xs text-red-300"
     >
-      {String(message)}
+      {required}
     </span>
   ) : null;
 }
 export function GuestDetailsForm({
   register,
   errors,
+  locale = "fr",
 }: {
   register: UseFormRegister<ReservationRequestInput>;
   errors: FieldErrors<ReservationRequestInput>;
+  locale?: Locale;
 }) {
+  const copy = bookingCopy(locale).guest;
   return (
     <fieldset>
-      <legend className="font-heading text-3xl">Vos informations</legend>
+      <legend className="font-heading text-3xl">{copy.title}</legend>
       <div className="mt-7 grid gap-5 sm:grid-cols-2">
         <label className="text-sm">
-          Prénom *
+          {copy.firstName} *
           <input
             {...register("firstName")}
             autoComplete="given-name"
@@ -39,10 +46,10 @@ export function GuestDetailsForm({
             aria-invalid={!!errors.firstName}
             aria-describedby={errors.firstName ? "firstName-error" : undefined}
           />
-          {fieldError(errors, "firstName")}
+          {fieldError(errors, "firstName", copy.required)}
         </label>
         <label className="text-sm">
-          Nom *
+          {copy.lastName} *
           <input
             {...register("lastName")}
             autoComplete="family-name"
@@ -50,10 +57,10 @@ export function GuestDetailsForm({
             aria-invalid={!!errors.lastName}
             aria-describedby={errors.lastName ? "lastName-error" : undefined}
           />
-          {fieldError(errors, "lastName")}
+          {fieldError(errors, "lastName", copy.required)}
         </label>
         <label className="text-sm">
-          Email *
+          {copy.email} *
           <input
             {...register("email")}
             type="email"
@@ -62,10 +69,10 @@ export function GuestDetailsForm({
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
-          {fieldError(errors, "email")}
+          {fieldError(errors, "email", copy.required)}
         </label>
         <label className="text-sm">
-          Téléphone *
+          {copy.phone} *
           <input
             {...register("phone")}
             type="tel"
@@ -74,10 +81,10 @@ export function GuestDetailsForm({
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? "phone-error" : undefined}
           />
-          {fieldError(errors, "phone")}
+          {fieldError(errors, "phone", copy.required)}
         </label>
         <label className="text-sm">
-          Nombre de personnes *
+          {copy.guests} *
           <select
             {...register("guestCount", { valueAsNumber: true })}
             className={inputClass}
@@ -88,20 +95,20 @@ export function GuestDetailsForm({
               </option>
             ))}
           </select>
-          {fieldError(errors, "guestCount")}
+          {fieldError(errors, "guestCount", copy.required)}
         </label>
         <label className="text-sm sm:col-span-2">
-          Message facultatif
+          {copy.message}
           <textarea
             {...register("message")}
             rows={4}
             maxLength={1500}
             className={inputClass}
           />
-          {fieldError(errors, "message")}
+          {fieldError(errors, "message", copy.required)}
         </label>
         <label className="sr-only" aria-hidden="true">
-          Site internet
+          {copy.website}
           <input {...register("website")} tabIndex={-1} autoComplete="off" />
         </label>
         <label className="flex gap-3 text-sm leading-6 sm:col-span-2">
@@ -115,14 +122,14 @@ export function GuestDetailsForm({
             }
           />
           <span>
-            J’accepte les{" "}
-            <Link href="/conditions" target="_blank" className="underline">
-              conditions de réservation
+            {copy.termsPrefix}{" "}
+            <Link href={localizedPath(locale, "conditions")} target="_blank" className="underline">
+              {copy.terms}
             </Link>
             . *
           </span>
         </label>
-        <div className="sm:col-span-2">{fieldError(errors, "acceptTerms")}</div>
+        <div className="sm:col-span-2">{fieldError(errors, "acceptTerms", copy.required)}</div>
         <label className="flex gap-3 text-sm leading-6 sm:col-span-2">
           <input
             {...register("acceptPrivacy")}
@@ -134,19 +141,19 @@ export function GuestDetailsForm({
             }
           />
           <span>
-            J’accepte la{" "}
+            {copy.privacyPrefix}{" "}
             <Link
-              href="/politique-confidentialite"
+              href={localizedPath(locale, "privacy")}
               target="_blank"
               className="underline"
             >
-              politique de confidentialité
+              {copy.privacy}
             </Link>
             . *
           </span>
         </label>
         <div className="sm:col-span-2">
-          {fieldError(errors, "acceptPrivacy")}
+          {fieldError(errors, "acceptPrivacy", copy.required)}
         </div>
       </div>
     </fieldset>

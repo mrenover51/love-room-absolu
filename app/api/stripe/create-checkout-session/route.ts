@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { rejectCrossSite } from "@/lib/security/request";
 import { reservationRequestSchema } from "@/lib/supabase/validators/reservation";
 import { CheckoutService } from "@/lib/stripe/checkout-service";
+import { isLocale } from "@/lib/i18n/config";
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
@@ -45,7 +46,8 @@ export async function POST(request: Request) {
         },
         { status: 400 },
       );
-    return NextResponse.json(await new CheckoutService().create(parsed.data), {
+    const locale = typeof body === "object" && body !== null && "locale" in body && typeof body.locale === "string" && isLocale(body.locale) ? body.locale : "fr";
+    return NextResponse.json(await new CheckoutService().create(parsed.data, locale), {
       status: 201,
     });
   } catch (error) {

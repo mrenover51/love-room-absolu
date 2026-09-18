@@ -12,6 +12,8 @@ import { DeferredBookingAssistant } from "@/components/performance/deferred-book
 import { CroLayer } from "@/components/cro/cro-layer";
 import { FirstPartyTracker } from "@/components/analytics/first-party-tracker";
 import { AutomaticBreadcrumb } from "@/components/seo/Breadcrumb";
+import { headers } from "next/headers";
+import { isLocale } from "@/lib/i18n/config";
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
   subsets: ["latin"],
@@ -95,23 +97,25 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const requestedLocale = (await headers()).get("x-absolu-locale") ?? "fr";
+  const locale = isLocale(requestedLocale) ? requestedLocale : "fr";
   const staySettings = await getStaySettings();
   return (
     <html
-      lang="fr"
+      lang={locale}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${serif.variable} ${sans.variable} dark antialiased`}
     >
       <body>
-        <StructuredData staySettings={staySettings} />
+        {locale === "fr" && <StructuredData staySettings={staySettings} />}
         <AutomaticBreadcrumb />
         <FirstPartyTracker />
         {children}
-        <CroLayer />
-        <DeferredBookingAssistant />
+        {locale === "fr" && <CroLayer />}
+        {locale === "fr" && <DeferredBookingAssistant />}
         <ConsentManager />
-        <ThemeControl />
+        <ThemeControl locale={locale} />
         <ServiceWorkerRegistration />
       </body>
     </html>

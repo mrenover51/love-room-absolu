@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T03:38:23.519Z",
+  "generatedAt": "2026-09-18T12:48:25.981Z",
   "status": "pending-ci",
   "configuration": "lighthouserc.json",
   "workflow": ".github/workflows/performance.yml",

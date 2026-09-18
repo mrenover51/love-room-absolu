@@ -2,10 +2,13 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { Locale } from "@/lib/i18n/config";
 
 type Theme = "dark" | "light" | "system";
 
-export function ThemeControl() {
+const labels: Record<Locale,string>={fr:"Changer de thème",en:"Change theme",de:"Design ändern",nl:"Thema wijzigen",it:"Cambia tema",es:"Cambiar tema",pt:"Alterar tema"};
+
+export function ThemeControl({locale="fr"}:{locale?:Locale}) {
   const [theme, setTheme] = useState<Theme>("dark");
 
   function apply(next: Theme) {
@@ -29,7 +32,7 @@ export function ThemeControl() {
     apply(next);
   }
 
-  return <button type="button" onClick={cycle} className="fixed bottom-3 right-3 z-40 grid size-10 place-items-center rounded-full border border-white/15 bg-black/80 text-white/60 backdrop-blur" aria-label={`Thème ${theme}. Changer de thème`}>
+  return <button type="button" onClick={cycle} className="fixed bottom-3 right-3 z-40 grid size-10 place-items-center rounded-full border border-white/15 bg-black/80 text-white/60 backdrop-blur" aria-label={`${labels[locale]}: ${theme}`}>
     {theme === "light" ? <Sun className="size-4" /> : <Moon className="size-4" />}
   </button>;
 }

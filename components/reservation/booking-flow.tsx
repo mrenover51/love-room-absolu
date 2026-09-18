@@ -18,22 +18,18 @@ import { GuestDetailsForm } from "./guest-details-form";
 import { BookingSummary } from "./booking-summary";
 import { trackConversion } from "@/lib/analytics/conversion";
 import type { BookingMode } from "@/lib/booking/workflow-settings";
-
-const steps = ["Dates", "Options", "Informations", "Confirmation"];
-const timelineSteps = [
-  "Dates",
-  "Informations",
-  "Options",
-  "Paiement",
-  "Confirmation",
-];
+import type { Locale } from "@/lib/i18n/config";
+import { bookingCopy } from "@/lib/i18n/booking";
 export function BookingFlow({
   pricingConfig,
   bookingMode,
+  locale = "fr",
 }: {
   pricingConfig: PublicPricingConfig;
   bookingMode: BookingMode;
+  locale?: Locale;
 }) {
+  const copy = bookingCopy(locale), steps = copy.steps, timelineSteps = copy.timeline;
   const router = useRouter(),
     searchParams = useSearchParams(),
     headingRef = useRef<HTMLHeadingElement>(null),
@@ -90,7 +86,7 @@ export function BookingFlow({
     promoPercent,
   ]);
   async function applyPromo() {
-    setPromoMessage("Vérification…");
+    setPromoMessage(copy.promo.checking);
     const response = await fetch("/api/promo-code", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -100,14 +96,12 @@ export function BookingFlow({
     if (!response.ok) {
       setPromoPercent(0);
       form.setValue("promoCode", "");
-      setPromoMessage(data.error ?? "Code invalide.");
+      setPromoMessage(copy.promo.invalid);
       return;
     }
     setPromoPercent(data.discountPercent);
     form.setValue("promoCode", data.code);
-    setPromoMessage(
-      `Code appliqué : −${data.discountPercent} % sur les nuitées.`,
-    );
+    setPromoMessage(copy.promo.applied(data.discountPercent));
     trackConversion("booking_promo_applied", {
       discount_percent: data.discountPercent,
     });
@@ -118,10 +112,11 @@ export function BookingFlow({
       step: step + 1,
       label: steps[step],
     });
-  }, [step]);
+  }, [step, steps]);
   useEffect(() => {
     trackConversion("calendar_open");
-  }, []);
+    trackConversion("booking_started", { language: locale });
+  }, [locale]);
   function goTo(nextStep: number) {
     setServerError("");
     setStep(nextStep);
@@ -138,7 +133,7 @@ export function BookingFlow({
     setServerError("");
     if (step === 0) {
       if (!values.checkIn || !values.checkOut || !pricing) {
-        setServerError("Sélectionnez une arrivée et un départ valides.");
+        setServerError(copy.errors.dates);
         return;
       }
       try {
@@ -147,20 +142,23 @@ export function BookingFlow({
           ),
           data = await response.json();
         if (!response.ok || data.ranges?.length) {
-          router.push("/reservation/indisponible");
+          router.push(locale === "fr" ? "/reservation/indisponible" : `/${locale}/reservation`);
           return;
         }
         trackConversion("booking_dates_selected", {
           nights: pricing.nights,
           value: pricing.totalAmount / 100,
         });
+        trackConversion("date_selected", {
+          nights: pricing.nights,
+          currency: "EUR",
+        });
       } catch {
-        setServerError(
-          "Les disponibilités ne peuvent pas être vérifiées pour le moment.",
-        );
+        setServerError(copy.errors.availability);
         return;
       }
     }
+    if (step === 1) trackConversion("option_selected", { language: locale });
     if (
       step === 2 &&
       !(await form.trigger([
@@ -187,6 +185,8 @@ export function BookingFlow({
         currency: "EUR",
       },
     );
+    if (bookingMode !== "manual")
+      trackConversion("checkout_started", { currency: "EUR" });
     try {
       const response = await fetch(
           bookingMode === "manual"
@@ -195,13 +195,13 @@ export function BookingFlow({
           {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify(data),
+            body: JSON.stringify({ ...data, locale }),
           },
         ),
         result = await response.json();
       if (!response.ok) {
         if (response.status === 409 && result.code === "DATES_UNAVAILABLE") {
-          router.push("/reservation/indisponible");
+          router.push(locale === "fr" ? "/reservation/indisponible" : `/${locale}/reservation`);
           return;
         }
         throw new Error(result.error);
@@ -212,9 +212,10 @@ export function BookingFlow({
           value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
           currency: "EUR",
         });
+        trackConversion("booking_completed", { mode: "manual", currency: "EUR" });
         return;
       }
-      if (!result.url) throw new Error("Le paiement n’a pas pu être ouvert.");
+      if (!result.url) throw new Error(copy.errors.payment);
       trackConversion("checkout_redirect", {
         value: pricing?.totalAmount ? pricing.totalAmount / 100 : 0,
         currency: "EUR",
@@ -222,7 +223,7 @@ export function BookingFlow({
       window.location.assign(result.url);
     } catch (error) {
       setServerError(
-        error instanceof Error ? error.message : "Une erreur est survenue.",
+        error instanceof Error && locale === "fr" ? error.message : copy.errors.generic,
       );
       setLoading(false);
     }
@@ -230,13 +231,12 @@ export function BookingFlow({
   if (requestSent)
     return (
       <section className="rounded-[1.75rem] border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-8 text-center sm:p-12">
-        <p className="eyebrow text-[#C9A86A]">Demande reçue</p>
+        <p className="eyebrow text-[#C9A86A]">{copy.success.eyebrow}</p>
         <h2 className="mt-4 font-heading text-4xl">
-          Votre parenthèse est entre de bonnes mains.
+          {copy.success.title}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl leading-8 text-white/65">
-          Nous vérifions personnellement la disponibilité de la suite. Vous
-          recevrez notre réponse par email avant toute demande de paiement.
+          {copy.success.body}
         </p>
       </section>
     );
@@ -244,7 +244,7 @@ export function BookingFlow({
     <form onSubmit={form.handleSubmit(submit)} noValidate>
       <ol
         className="mb-10 grid grid-cols-5 gap-1 sm:gap-2"
-        aria-label="Étapes de réservation"
+        aria-label={copy.stepLabel}
       >
         {timelineSteps.map((label, index) => (
           <li
@@ -268,7 +268,7 @@ export function BookingFlow({
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="premium-panel min-w-0 border border-white/10 p-5 sm:p-8">
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">
-            Étape {step + 1} : {steps[step]}
+            {copy.stepLabel} {step + 1} : {steps[step]}
           </h2>
           {step === 0 && (
             <DateRangePicker
@@ -277,6 +277,7 @@ export function BookingFlow({
               minimumAdvanceDays={pricingConfig.minimumAdvanceDays}
               minimumNights={pricingConfig.minimumNights}
               maximumNights={pricingConfig.maximumNights}
+              locale={locale}
               onChange={(checkIn, checkOut) => {
                 form.setValue("checkIn", checkIn, { shouldValidate: true });
                 form.setValue("checkOut", checkOut, { shouldValidate: true });
@@ -298,6 +299,7 @@ export function BookingFlow({
                 selected={values.extraKeys ?? []}
                 extras={pricingConfig.extras}
                 checkIn={values.checkIn}
+                locale={locale}
                 onChange={(extraKeys) =>
                   form.setValue("extraKeys", extraKeys, {
                     shouldValidate: true,
@@ -305,7 +307,7 @@ export function BookingFlow({
                 }
               />
               <section className="premium-panel mt-8 border border-white/10 p-5">
-                <h3 className="font-heading text-2xl">Code promotionnel</h3>
+                <h3 className="font-heading text-2xl">{copy.promo.title}</h3>
                 <div className="mt-4 flex gap-2">
                   <input
                     value={promoInput}
@@ -313,7 +315,7 @@ export function BookingFlow({
                       setPromoInput(event.target.value.toUpperCase())
                     }
                     maxLength={40}
-                    placeholder="Votre code"
+                    placeholder={copy.promo.placeholder}
                     className="min-h-12 min-w-0 flex-1 border border-white/15 bg-[#121212] px-4 uppercase outline-none focus:border-[#C9A86A]"
                   />
                   <button
@@ -321,7 +323,7 @@ export function BookingFlow({
                     onClick={applyPromo}
                     className="bg-white/10 px-5 text-sm hover:bg-[#C9A86A] hover:text-black"
                   >
-                    Appliquer
+                    {copy.promo.apply}
                   </button>
                 </div>
                 {promoMessage && (
@@ -336,51 +338,51 @@ export function BookingFlow({
             <GuestDetailsForm
               register={form.register}
               errors={form.formState.errors}
+              locale={locale}
             />
           )}
           {step === 3 && pricing && (
             <section aria-labelledby="review-title">
               <h3 id="review-title" className="font-heading text-3xl">
                 {bookingMode === "manual"
-                  ? "Vérifiez votre demande"
-                  : "Vérifiez avant paiement"}
+                  ? copy.review.request
+                  : copy.review.payment}
               </h3>
               <p className="mt-4 leading-7 text-white/60">
-                {values.firstName} {values.lastName} · {values.guestCount}{" "}
-                personne{values.guestCount > 1 ? "s" : ""}
+                {values.firstName} {values.lastName} · {copy.review.person(values.guestCount)}
                 <br />
                 {values.email} · {values.phone}
               </p>
               <nav
                 className="mt-6 flex flex-wrap gap-4 text-sm"
-                aria-label="Modifier la réservation"
+                aria-label={copy.review.edit}
               >
                 <button
                   type="button"
                   onClick={() => goTo(0)}
                   className="underline underline-offset-4"
                 >
-                  Modifier les dates
+                  {copy.review.editDates}
                 </button>
                 <button
                   type="button"
                   onClick={() => goTo(1)}
                   className="underline underline-offset-4"
                 >
-                  Modifier les options
+                  {copy.review.editOptions}
                 </button>
                 <button
                   type="button"
                   onClick={() => goTo(2)}
                   className="underline underline-offset-4"
                 >
-                  Modifier les coordonnées
+                  {copy.review.editDetails}
                 </button>
               </nav>
               <p className="mt-8 border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-4 text-sm">
                 {bookingMode === "manual"
-                  ? "Les dates et le montant seront revérifiés côté serveur. Aucun paiement ne sera demandé avant la validation de votre séjour."
-                  : "Les dates et le montant seront revérifiés côté serveur avant l’ouverture du paiement sécurisé Stripe."}
+                  ? copy.review.manualNote
+                  : copy.review.paymentNote}
               </p>
             </section>
           )}
@@ -401,7 +403,7 @@ export function BookingFlow({
                 onClick={() => goTo(step - 1)}
                 className="premium-action min-h-12 border border-white/20 px-6 text-sm"
               >
-                Retour
+                {copy.back}
               </button>
             ) : (
               <span />
@@ -413,7 +415,7 @@ export function BookingFlow({
                 disabled={step === 0 && !pricing}
                 className="premium-action min-h-12 bg-[#C9A86A] px-6 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Continuer
+                {copy.continue}
               </button>
             ) : (
               <button
@@ -424,11 +426,11 @@ export function BookingFlow({
               >
                 {loading
                   ? bookingMode === "manual"
-                    ? "Envoi de la demande…"
-                    : "Préparation du paiement…"
+                    ? copy.sending
+                    : copy.preparing
                   : bookingMode === "manual"
-                    ? "Demander cette parenthèse"
-                    : "Payer et réserver"}
+                    ? copy.request
+                    : copy.pay}
               </button>
             )}
           </div>
@@ -439,6 +441,7 @@ export function BookingFlow({
             checkOut={values.checkOut}
             pricing={pricing}
             compact
+            locale={locale}
           />
         )}
       </div>

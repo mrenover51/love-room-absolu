@@ -7,72 +7,8 @@ import { usePathname } from "next/navigation";
 import { MobileMenu } from "./mobile-menu";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import type { Locale } from "@/lib/i18n/config";
-
-const exploreColumns = [
-  {
-    title: "Découvrir",
-    links: [
-      {
-        label: "Guide touristique",
-        detail: "La Champagne à deux",
-        href: "/guide-touristique",
-      },
-      {
-        label: "Restaurants",
-        detail: "Nos adresses choisies",
-        href: "/restaurants",
-      },
-      {
-        label: "Carte interactive",
-        detail: "Explorer les alentours",
-        href: "/carte-touristique",
-      },
-      {
-        label: "Maisons de Champagne",
-        detail: "L’Avenue de Champagne",
-        href: "/guide-touristique/avenue-de-champagne",
-      },
-      { label: "Magazine", detail: "Histoires et art de vivre", href: "/blog" },
-      {
-        label: "Notre histoire",
-        detail: "Les origines d’Absolu",
-        href: "/notre-histoire",
-      },
-      {
-        label: "L’art de recevoir",
-        detail: "Notre manière de vous accueillir",
-        href: "/l-art-de-recevoir",
-      },
-    ],
-  },
-  {
-    title: "Expérience",
-    links: [
-      {
-        label: "Équipements",
-        detail: "Le confort en privé",
-        href: "/equipements",
-      },
-      { label: "Vidéos", detail: "Découvrir l’atmosphère", href: "/videos" },
-      {
-        label: "Inspirations",
-        detail: "Imaginer votre séjour",
-        href: "/experiences-romantiques",
-      },
-      {
-        label: "Avis clients",
-        detail: "L’expérience des couples",
-        href: "/avis",
-      },
-      { label: "FAQ", detail: "Préparer votre venue", href: "/faq" },
-      {
-        label: "Bons cadeaux",
-        detail: "Offrir une parenthèse",
-        href: "/bons-cadeaux",
-      },
-    ],
-  },
-] as const;
+import { localizedPath } from "@/lib/i18n/routing";
+import { getUiDictionary } from "@/lib/i18n/ui";
 
 function NavLink({
   href,
@@ -108,6 +44,31 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const labels = getUiDictionary(locale);
+  const homeHref = localizedPath(locale, "home");
+  const localizedExploreColumns = locale === "fr" ? [
+    { title: labels.nav.explore, links: [
+      { label: labels.nav.guide, detail: "Champagne", href: "/guide-touristique" },
+      { label: labels.nav.restaurants, detail: "Avize & Épernay", href: "/restaurants" },
+      { label: labels.nav.magazine, detail: "Champagne", href: "/blog" },
+    ]},
+    { title: labels.nav.suite, links: [
+      { label: labels.nav.equipment, detail: "35 m²", href: localizedPath(locale, "equipment") },
+      { label: labels.nav.faq, detail: "Absolu", href: localizedPath(locale, "faq") },
+      { label: labels.nav.gifts, detail: "Absolu", href: "/bons-cadeaux" },
+    ]},
+  ] : [
+    { title: labels.nav.explore, links: [
+      { label: "Champagne", detail: "Côte des Blancs", href: localizedPath(locale, "champagne") },
+      { label: "Avize", detail: "51190", href: localizedPath(locale, "avize") },
+      { label: "Épernay", detail: "Champagne", href: localizedPath(locale, "epernay") },
+    ]},
+    { title: labels.nav.suite, links: [
+      { label: labels.nav.equipment, detail: "35 m²", href: localizedPath(locale, "equipment") },
+      { label: labels.nav.faq, detail: "Absolu", href: localizedPath(locale, "faq") },
+      { label: labels.nav.contact, detail: "Avize", href: localizedPath(locale, "contact") },
+    ]},
+  ];
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 32);
@@ -140,27 +101,27 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
           className={`grid w-full grid-cols-[1fr_auto_1fr] items-center px-6 transition-[height] duration-500 ease-out sm:px-10 xl:px-12 2xl:px-14 ${scrolled ? "h-[74px]" : "h-24"}`}
         >
           <Link
-            href="/"
+            href={homeHref}
             className="w-fit pr-12 font-heading text-xl tracking-[.34em] text-white transition-colors duration-300 hover:text-[#E7D4AD] lg:text-2xl"
-            aria-label="Absolu, accueil"
+            aria-label="Absolu"
           >
             ABSOLU
           </Link>
 
           <nav
             className="hidden items-center gap-10 xl:flex 2xl:gap-14"
-            aria-label="Navigation principale"
+            aria-label={locale === "fr" ? "Navigation principale" : "Navigation"}
           >
             <NavLink
-              href="/la-suite"
-              label="La Suite"
-              active={pathname.startsWith("/la-suite")}
+              href={localizedPath(locale, "suite")}
+              label={labels.nav.suite}
+              active={pathname.startsWith(localizedPath(locale, "suite"))}
               onNavigate={() => setMegaOpen(false)}
             />
             <NavLink
-              href="/galerie"
-              label="Galerie"
-              active={pathname.startsWith("/galerie")}
+              href={localizedPath(locale, "gallery")}
+              label={labels.nav.gallery}
+              active={pathname.startsWith(localizedPath(locale, "gallery"))}
               onNavigate={() => setMegaOpen(false)}
             />
             <button
@@ -172,7 +133,7 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
               aria-expanded={megaOpen}
               aria-controls="explore-menu"
             >
-              Explorer{" "}
+              {labels.nav.explore}{" "}
               <ChevronDown
                 className={`size-3.5 transition-transform duration-500 ${megaOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
@@ -183,19 +144,19 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
               />
             </button>
             <NavLink
-              href="/contact"
-              label="Contact"
-              active={pathname.startsWith("/contact")}
+              href={localizedPath(locale, "contact")}
+              label={labels.nav.contact}
+              active={pathname.startsWith(localizedPath(locale, "contact"))}
               onNavigate={() => setMegaOpen(false)}
             />
           </nav>
 
           <div className="ml-auto hidden items-center gap-8 pl-12 xl:flex">
             <Link
-              href="/reservation"
+              href={localizedPath(locale, "reservation")}
               className="premium-action inline-flex min-h-11 items-center rounded-full border border-[#DEC38E] bg-[linear-gradient(135deg,#D7B778,#B88C50)] px-8 text-[.65rem] font-semibold uppercase tracking-[.2em] text-[#110D0A] shadow-[0_12px_32px_rgba(91,61,46,.24)] hover:brightness-105"
             >
-              Réserver maintenant
+              {labels.nav.book}
             </Link>
             <LanguageSelector locale={locale} />
           </div>
@@ -203,7 +164,7 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
             type="button"
             onClick={() => setMobileOpen(true)}
             className="col-start-3 ml-auto grid size-12 place-items-center text-white transition-colors hover:text-[#D8BD87] xl:hidden"
-            aria-label="Ouvrir le menu"
+            aria-label={labels.openMenu}
             aria-expanded={mobileOpen}
           >
             <Menu aria-hidden="true" />
@@ -216,7 +177,7 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
           aria-hidden={!megaOpen}
         >
           <div className="mx-auto grid w-[min(calc(100%_-_6rem),70rem)] grid-cols-2 gap-16 py-12">
-            {exploreColumns.map((column, columnIndex) => (
+            {localizedExploreColumns.map((column, columnIndex) => (
               <section
                 key={`${column.title}-${columnIndex}`}
                 className={
@@ -256,7 +217,7 @@ export function Header({ locale = "fr" }: { locale?: Locale }) {
           </div>
         </div>
       </header>
-      <MobileMenu open={mobileOpen} onClose={closeMobile} pathname={pathname} />
+      <MobileMenu open={mobileOpen} onClose={closeMobile} pathname={pathname} locale={locale} />
     </>
   );
 }

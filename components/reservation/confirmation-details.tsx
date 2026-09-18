@@ -14,17 +14,17 @@ export function ConfirmationDetails({
 }) {
   return (
     <div className="mx-auto max-w-2xl text-center">
-      <p className="eyebrow text-[#C9A86A]">Demande enregistrÃ©e</p>
+      <p className="eyebrow text-[#C9A86A]">Demande enregistrée</p>
       <h1 className="mt-5 font-heading text-5xl sm:text-7xl">
-        Votre demande a bien Ã©tÃ© enregistrÃ©e
+        Votre demande a bien été enregistrée
       </h1>
       <p className="mt-6 leading-8 text-white/60">
-        Votre demande de rÃ©servation a bien Ã©tÃ© enregistrÃ©e. Nous allons
-        vÃ©rifier les disponibilitÃ©s et vous contacter rapidement.
+        Votre demande de réservation a bien été enregistrée. Nous allons
+        vérifier les disponibilités et vous contacter rapidement.
       </p>
       <div className="mt-8 border border-[#C9A86A]/30 bg-[#C9A86A]/10 p-5">
         <span className="text-xs uppercase tracking-wider text-white/45">
-          RÃ©fÃ©rence
+          Référence
         </span>
         <strong className="mt-2 block text-xl text-[#D8C8B6]">
           {summary?.reference ?? reference ?? "Non disponible"}
@@ -45,13 +45,13 @@ export function ConfirmationDetails({
           href="/"
           className="min-h-12 border border-white/25 px-6 py-3 text-sm"
         >
-          Retour Ã  lâ€™accueil
+          Retour à l’accueil
         </Link>
         <Link
           href="/contact"
           className="min-h-12 bg-[#C9A86A] px-6 py-3 text-sm font-semibold text-black"
         >
-          Contacter lâ€™Ã©tablissement
+          Contacter l’établissement
         </Link>
       </div>
     </div>

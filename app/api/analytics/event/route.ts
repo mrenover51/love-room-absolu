@@ -4,6 +4,12 @@ import { rejectCrossSite } from "@/lib/security/request";
 import { createAdminClient } from "@/lib/supabase/admin";
 const names = z.enum([
   "page_view",
+  "language_selected",
+  "booking_started",
+  "date_selected",
+  "option_selected",
+  "checkout_started",
+  "booking_completed",
   "scroll",
   "click",
   "reserve_click",

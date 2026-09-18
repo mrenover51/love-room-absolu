@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { localeFromPathname, localizedPath } from "@/lib/i18n/routing";
+import { getUiDictionary } from "@/lib/i18n/ui";
 
 type Consent = { analytics: boolean; marketing: boolean; preferences: boolean };
 const empty: Consent = {
@@ -19,6 +22,9 @@ function loadScript(src: string, id: string) {
 }
 
 export function ConsentManager() {
+  const pathname = usePathname();
+  const locale = localeFromPathname(pathname) ?? "fr";
+  const labels = getUiDictionary(locale).cookies;
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(empty);
 
@@ -77,7 +83,7 @@ export function ConsentManager() {
         onClick={() => setOpen(true)}
         className="fixed bottom-3 left-3 z-40 rounded-full border border-white/15 bg-black/80 px-3 py-2 text-[.65rem] text-white/50 backdrop-blur"
       >
-        Cookies
+        {labels.button}
       </button>
     );
   }
@@ -90,16 +96,17 @@ export function ConsentManager() {
       className="fixed inset-x-3 bottom-3 z-[80] mx-auto max-w-3xl rounded-2xl border border-[#C9A86A]/30 bg-[#121212] p-5 text-[#F6F2EC] shadow-2xl"
     >
       <h2 id="consent-title" className="font-heading text-2xl">
-        Votre intimité compte.
+        {labels.title}
       </h2>
       <p className="mt-2 text-sm leading-6 text-white/55">
-        Les cookies nécessaires fonctionnent toujours. Analytics, marketing et
-        préférences restent désactivés sans votre accord.{" "}
+        {labels.body}{" "}
         <a
-          href="/cookies"
+          href={locale === "fr" ? "/cookies" : localizedPath(locale, "privacy")}
+          aria-label={`${labels.title} ${labels.learn}`}
           className="text-[#C9A86A] underline underline-offset-4"
         >
-          En savoir plus
+          {labels.learn}
+          <span className="sr-only"> — {labels.title}</span>
         </a>
         .
       </p>
@@ -114,10 +121,10 @@ export function ConsentManager() {
               }
             />
             {key === "analytics"
-              ? "Mesure d’audience"
+              ? labels.analytics
               : key === "marketing"
-                ? "Marketing"
-                : "Préférences"}
+                ? labels.marketing
+                : labels.preferences}
           </label>
         ))}
       </div>
@@ -127,14 +134,14 @@ export function ConsentManager() {
           onClick={() => apply(empty)}
           className="min-h-11 border border-white/20 px-4"
         >
-          Tout refuser
+          {labels.reject}
         </button>
         <button
           type="button"
           onClick={() => apply(settings)}
           className="min-h-11 border border-[#C9A86A]/50 px-4"
         >
-          Enregistrer
+          {labels.save}
         </button>
         <button
           type="button"
@@ -143,7 +150,7 @@ export function ConsentManager() {
           }
           className="min-h-11 bg-[#C9A86A] px-4 font-semibold text-black"
         >
-          Tout accepter
+          {labels.accept}
         </button>
       </div>
     </section>

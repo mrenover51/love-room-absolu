@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import type { Locale } from "@/lib/i18n/config";
 
 export async function createReservationCheckoutSession(input:{
   stripe:Pick<Stripe,"checkout">;
@@ -7,8 +8,9 @@ export async function createReservationCheckoutSession(input:{
   email:string;
   siteUrl:string;
   requestId?:string;
+  locale?:Locale;
 }) {
-  const {stripe,reservation,email,siteUrl,requestId,lineItems}=input;
+  const {stripe,reservation,email,siteUrl,requestId,lineItems,locale="fr"}=input;
   const metadata={reservation_id:reservation.id,reference:reservation.reference,...(requestId?{reservation_request_id:requestId}:{}),...(reservation.promoCode?{promo_code:reservation.promoCode}:{})};
-  return stripe.checkout.sessions.create({mode:"payment",customer_email:email,expires_at:Math.floor(Date.parse(reservation.expiresAt)/1000),line_items:lineItems,success_url:`${siteUrl}/reservation/succes?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${siteUrl}/reservation/annulee`,metadata,payment_intent_data:{metadata}},{idempotencyKey:`checkout-${reservation.id}`});
+  return stripe.checkout.sessions.create({mode:"payment",customer_email:email,expires_at:Math.floor(Date.parse(reservation.expiresAt)/1000),line_items:lineItems,success_url:`${siteUrl}/${locale}/reservation/succes?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${siteUrl}/${locale}/reservation`,metadata,payment_intent_data:{metadata}},{idempotencyKey:`checkout-${reservation.id}`});
 }

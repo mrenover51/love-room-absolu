@@ -8,6 +8,7 @@
     "validate:mesh": "node scripts/validate-internal-mesh.mjs",
     "performance:audit": "node scripts/performance-audit.mjs",
     "seo:audit": "node scripts/seo-audit.mjs",
+    "audit:i18n": "node scripts/i18n-seo-audit.mjs",
     "audit:release": "node scripts/release-audit.mjs",
     "test": "node --test tests/*.test.mjs",
     "verify": "npm run lint && npx tsc --noEmit && npm test && npm run audit:release",

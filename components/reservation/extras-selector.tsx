@@ -1,22 +1,28 @@
 import type { PublicPricingConfig } from "@/lib/booking/types";
 import { formatAmount, isExtraAvailable } from "@/lib/booking/pricing";
 import Link from "next/link";
+import type { Locale } from "@/lib/i18n/config";
+import { bookingCopy, localizedExtraName } from "@/lib/i18n/booking";
+import { localizedPath } from "@/lib/i18n/routing";
 export function ExtrasSelector({
   selected,
   onChange,
   extras,
   checkIn,
+  locale = "fr",
 }: {
   selected: string[];
   onChange: (keys: string[]) => void;
   extras: PublicPricingConfig["extras"];
   checkIn: string;
+  locale?: Locale;
 }) {
+  const copy = bookingCopy(locale).extras;
   return (
     <fieldset>
-      <legend className="font-heading text-3xl">Composez votre séjour</legend>
+      <legend className="font-heading text-3xl">{copy.title}</legend>
       <p className="mt-2 text-sm text-white/55">
-        Tarifs de démonstration, recalculés côté serveur lors de la demande.
+        {copy.note}
       </p>
       <div className="mt-7 grid gap-3 sm:grid-cols-2">
         {extras
@@ -42,42 +48,32 @@ export function ExtrasSelector({
                   )
                 }
               />
-              <strong>{extra.label}</strong>
-              {extra.description && (
+              <strong>{localizedExtraName(locale, extra.key, extra.label)}</strong>
+              {extra.description && locale === "fr" && (
                 <span className="mt-2 block pl-8 text-xs leading-5 text-white/50">
                   {extra.description}
                 </span>
               )}
               <span className="mt-2 block pl-8 text-sm text-[#C9A86A]">
-                {formatAmount(extra.amount)} {billingLabel(extra.billingType)}
+                {formatAmount(extra.amount)} {copy.billing[extra.billingType ?? "per_stay"]}
               </span>
             </label>
           ))}
       </div>
       <aside className="mt-6 rounded-2xl border border-[#C9A86A]/25 bg-[#C9A86A]/5 p-5">
         <p className="font-heading text-2xl">
-          Vous souhaitez offrir le séjour ?
+          {copy.giftTitle}
         </p>
         <p className="mt-2 text-sm leading-6 text-white/50">
-          Le bon cadeau suit ses propres conditions et ne s’ajoute pas comme une
-          prestation à une réservation datée.
+          {copy.giftBody}
         </p>
         <Link
-          href="/bons-cadeaux"
+          href={localizedPath(locale, "gifts")}
           className="mt-4 inline-block text-sm text-[#C9A86A] underline"
         >
-          Découvrir les bons cadeaux →
+          {copy.giftLink}
         </Link>
       </aside>
     </fieldset>
   );
-}
-
-function billingLabel(
-  type: PublicPricingConfig["extras"][number]["billingType"],
-) {
-  if (type === "per_night") return "par nuit";
-  if (type === "per_person") return "par personne";
-  if (type === "per_person_per_night") return "par personne et par nuit";
-  return "par séjour";
 }
