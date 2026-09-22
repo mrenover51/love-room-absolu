@@ -20,6 +20,7 @@ type ReservationRow = {
   id: string;
   reference: string;
   guest_first_name: string;
+  guest_last_name: string;
   guest_email: string;
   guest_count: number;
   check_in: string;
@@ -29,7 +30,7 @@ type ReservationRow = {
   payment_status: string;
   source: string;
   guest_portal_token: string | null;
-  reservation_options: Array<{ label: string }>;
+  reservation_options: Array<{ option_key: string; label: string }>;
 };
 
 export function communicationIsDue(
@@ -76,7 +77,7 @@ export async function processGuestCommunications(
   let query = db
     .from("reservations")
     .select(
-      "id,reference,guest_first_name,guest_email,guest_count,check_in,check_out,total,status,payment_status,source,guest_portal_token,reservation_options(label)",
+      "id,reference,guest_first_name,guest_last_name,guest_email,guest_count,check_in,check_out,total,status,payment_status,source,guest_portal_token,reservation_options(option_key,label)",
     );
   if (only) query = query.eq("id", only.reservationId);
   const { data, error } = await query;
@@ -173,18 +174,20 @@ export async function processGuestCommunications(
         const providerId = await sendGuestCommunication(
           {
             type,
+            reference: reservation.reference,
             firstName: reservation.guest_first_name,
+            lastName: reservation.guest_last_name,
             checkIn: reservation.check_in,
             checkOut: reservation.check_out,
             guestCount: reservation.guest_count,
             total: reservation.total,
             address: settings.address,
+            phone: settings.phone,
+            contactEmail: settings.email,
             portalUrl: `${siteConfig.url}/mon-sejour/${token}`,
             checkInTime: settings.checkInTime,
             checkOutTime: settings.checkOutTime,
-            options: (reservation.reservation_options ?? []).map(
-              (option) => option.label,
-            ),
+            options: reservation.reservation_options ?? [],
             accessInstructions: settings.accessInstructions,
             keyboxInstructions: settings.keyboxInstructions,
             keyboxCode,

@@ -15,7 +15,7 @@ export async function ensureGuestPortalToken(reservationId:string,regenerate=fal
 export async function getGuestPortal(token:string,now=new Date()){
   if(!TOKEN.test(token))return null;
   const db=createAdminClient(),settings=await getGuestExperienceSettings();
-  const {data:r}=await db.from("reservations").select("reference,guest_first_name,guest_last_name,guest_phone,guest_count,check_in,check_out,nights,total,currency,status,payment_status,source,estimated_arrival_time,precheckin_completed_at,guest_rules_accepted_at,reservation_options(label,quantity,total)").eq("guest_portal_token",token).maybeSingle();
+  const {data:r}=await db.from("reservations").select("reference,guest_first_name,guest_last_name,guest_phone,guest_count,check_in,check_out,nights,total,currency,status,payment_status,source,estimated_arrival_time,precheckin_completed_at,guest_rules_accepted_at,reservation_options(option_key,label,quantity,total)").eq("guest_portal_token",token).maybeSingle();
   if(!r)return null;
   const expired=portalExpired(r.check_out,settings.guestPortalRetentionDays,now);
   let keyboxCode:string|null=null;
