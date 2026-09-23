@@ -13,7 +13,7 @@ export type GuestCommunicationEmailData = {
   checkoutInstructions: string; googleReviewUrl: string;
 };
 
-const title: Record<CommunicationType, string> = {
+export const guestCommunicationSubjects: Record<CommunicationType, string> = {
   confirmation: "Votre séjour chez Absolu est confirmé",
   pre_arrival: "Votre séjour chez Absolu approche",
   access_48h: "Votre arrivée chez Absolu approche",
@@ -36,7 +36,7 @@ export function GuestCommunicationEmail(props: GuestCommunicationEmailData) {
     {props.type === "confirmation" ? <><br /><strong>Montant payé :</strong>{" "}{(props.total / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</> : null}
   </Text>;
 
-  return <EmailShell preview={title[props.type]} title={title[props.type]}>
+  return <EmailShell preview={guestCommunicationSubjects[props.type]} title={guestCommunicationSubjects[props.type]}>
     <Text style={emailText}>Bonjour {props.firstName}{props.lastName ? ` ${props.lastName}` : ""},</Text>
     {props.type === "confirmation" && <>
       <Text style={emailText}>Votre séjour chez Absolu est confirmé.</Text>
