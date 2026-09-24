@@ -9,6 +9,8 @@ import { getUiDictionary } from "@/lib/i18n/ui";
 import { isIndexableTranslatedRoute, localeAlternates, localizedPath, localizedSections, routeForLocalizedSection, type TranslatedRoute } from "@/lib/i18n/routing";
 import { siteConfig } from "@/lib/site-config";
 import { editorial, type EditorialPage } from "@/lib/i18n/editorial";
+import { VisualSuite } from "@/components/suite/visual-suite";
+import { VisualGallery } from "@/components/gallery/visual-gallery";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -43,6 +45,8 @@ export default async function LocalizedSection({ params }: { params: Promise<{ l
   if (!isLocale(locale)) notFound();
   const route=routeForLocalizedSection(locale,section);if(!route)notFound();
   const d = dictionaries[locale], title = sectionTitle(locale, route), isFaq = route === "faq";
+  if (route === "suite") return <><Header locale={locale}/><main id="main-content" lang={locale}><VisualSuite locale={locale}/></main><Footer locale={locale}/></>;
+  if (route === "gallery") return <><Header locale={locale}/><main id="main-content" lang={locale}><VisualGallery locale={locale}/></main><Footer locale={locale}/></>;
   const content = route in editorial[locale] ? editorial[locale][route as EditorialPage] : null;
   const items = isFaq ? d.faq.map((item) => item.q) : route === "guide" ? d.guides : route === "blog" ? d.posts : d.facts;
   const sections = content?.sections ?? items.map((item,index)=>({title:item,body:isFaq?d.faq[index].a:""}));

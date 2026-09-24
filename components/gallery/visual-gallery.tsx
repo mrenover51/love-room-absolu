@@ -1,0 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
+import type { Locale } from "@/lib/i18n/config";
+import { localizedPath } from "@/lib/i18n/routing";
+import { getVisualContent } from "@/lib/gallery/visual-content";
+import { Lightbox } from "./lightbox";
+export function VisualGallery({locale}:{locale:Locale}){const{copy,images}=getVisualContent(locale);return <><section className="relative flex min-h-[64svh] items-end overflow-hidden pb-12 pt-28 sm:min-h-[74svh] sm:pb-16"><Image src={images[3].src} alt={images[3].alt} fill preload fetchPriority="high" sizes="100vw" className="object-cover object-center"/><div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/20"/><div className="page-shell relative"><p className="eyebrow text-[#E4C98E]">{copy.galleryEyebrow}</p><h1 className="mt-4 max-w-4xl font-heading text-5xl sm:text-7xl lg:text-8xl">{copy.galleryTitle}</h1><p className="mt-5 max-w-2xl leading-8 text-white/75">{copy.galleryIntro}</p></div></section><section className="bg-[#090909] py-16 sm:py-24"><div className="page-shell"><Lightbox images={images} labels={copy}/></div></section><section className="bg-[#eee7dd] py-20 text-center text-[#201b18] sm:py-28"><div className="page-shell"><h2 className="font-heading text-5xl sm:text-6xl">{copy.galleryCtaTitle}</h2><Link href={localizedPath(locale,"reservation")} className="premium-action mt-8 inline-flex min-h-14 items-center bg-[#201b18] px-8 text-sm font-semibold text-white">{copy.availability}</Link></div></section></>}
